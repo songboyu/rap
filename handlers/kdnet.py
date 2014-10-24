@@ -1,44 +1,58 @@
-__author__ = 'boyu'
 # -*- coding: utf-8 -*-
+"""凯迪回复模块
 
-import requests, re
+* Author: songboyu
+* Modify: 2014-10-20
+* Coding: gb2312
+* Contain：凯迪社区
+
+"""
+import re
+
 from bs4 import BeautifulSoup
 
-import config
-from utils import *
+import utils
 
-# Coding: gb2312
-# Captcha: not required
-# Login: not required
+# 凯迪社区网页编码
+CODING = 'gb2312'
+
+# name:     凯迪社区
+# Feature:  club.kdnet.net
+# Captcha:  not required
+# Login:    not required
 def reply_kdnet(post_url, src):
-    logger = RAPLogger(post_url)
-    host = get_host(post_url)
-    s = RAPSession(src)
-    r = s.get(post_url)
+    """凯迪社区回复函数
 
-    iframeSrc = re.findall('<iframe src=\"(.*?)\"', r.content)[0]
+    :param post_url:   帖子地址
+    :param src:        {username, password, content etc.}
+    :return:           success? True:False
 
-    r = s.get(iframeSrc.decode('gb2312'))
+    """
+    logger = utils.RAPLogger(post_url)
+    session = utils.RAPSession(src)
+    request = session.get(post_url)
 
-    soup = BeautifulSoup(r.content)
-
+    # 获得回复iframe
+    iframe = re.findall('<iframe src=\"(.*?)\"', request.content)[0]
+    request = session.get(iframe.decode(CODING))
+    soup = BeautifulSoup(request.content)
+    # 获得回复form
     form = soup.find('form', attrs={'id': 't_form'})
-
-    payload = get_datadic(form)
-
+    # 获得boardid，作为post参数
+    boardid = re.findall(r'boardid=(.*\d)', post_url)[0]
+    # 构造回复参数
+    payload = utils.get_datadic(form)
     payload['UserName'] = src['username']
     payload['password'] = src['password']
-    payload['body'] = src['content'].decode('utf8').encode('gb2312')
-    boardid = re.findall('boardid=(.*\d)',post_url)[0]
-    r = s.post('http://upfile1.kdnet.net/do_lu_shuiyin.asp?action=sre&method=fastreply&BoardID='+boardid, data=payload)
-
-    print re.findall('=4>(.*?)</font', r.content.decode('gb2312'))[0],
-
-
-    if u'成功回复'.encode('gb2312') not in r.content:
+    payload['body'] = src['content'].decode('utf8').encode(CODING)
+    # 回复地址
+    reply_url = 'http://upfile1.kdnet.net/do_lu_shuiyin.asp?'\
+              +'action=sre&method=fastreply&BoardID='
+    # 发送回复post包
+    request = session.post(reply_url + boardid, data=payload)
+    # 若指定字样出现在response中，表示回复成功
+    if u'成功回复'.encode(CODING) not in request.content:
         logger.error(' Reply Error')
         return (False, str(logger))
-
     logger.debug(' Reply OK')
     return (True, str(logger))
-
