@@ -27,8 +27,8 @@ def login_sina(session, post_url, src):
 
     """
     logger = utils.RAPLogger(post_url)
-    request = session.get('http://club.mil.news.sina.com.cn/')
-    soup = BeautifulSoup(request.content)
+    response = session.get('http://club.mil.news.sina.com.cn/')
+    soup = BeautifulSoup(response.content)
     # 获取登录form
     form = soup.find('form', attrs={'name': 'login'})
     # 构造登录函数
@@ -38,28 +38,28 @@ def login_sina(session, post_url, src):
     # 登录地址
     login_url = 'https://login.sina.com.cn/sso/login.php'
     # 发送登录post包
-    request = session.post(login_url, data=payload)
+    response = session.post(login_url, data=payload)
 
     post_times = 0
     # 验证是否成功，如果失败再次发送
     # 失败可能原因：验证码错误
-    while u'正在登录' not in request.content.decode(CODING) \
+    while u'正在登录' not in response.content.decode(CODING) \
             and post_times < src['TTl']:
         # 限制最大发送次数
         post_times = post_times +1
         # 获取页面跳转地址
         redirects = re.findall(r'location.replace\(\"(.*?)\"\)',
-                               request.content)
+                               response.content)
         logger.debug(' login need captcha')
-        request = session.post(redirects[0])
+        response = session.post(redirects[0])
         # 获取页面跳转地址
         redirects = re.findall(r'href=\"(.*?)\">如果',
-                               request.content
+                               response.content
                                .decode(CODING).encode('utf-8'))
-        request = session.post(redirects[0])
+        response = session.post(redirects[0])
         # 验证码地址
         captcha_url = re.findall(r'id=\"capcha\" src=\"(.*?)\"',
-                                 request.content)[0]
+                                 response.content)[0]
         # 获取验证码图片
         captcha = session.get(captcha_url,
                               headers={
@@ -70,7 +70,7 @@ def login_sina(session, post_url, src):
         seccode = utils.crack_captcha(captcha.content)
         logger.debug(' seccode:'+seccode)
 
-        soup = BeautifulSoup(request.content)
+        soup = BeautifulSoup(response.content)
         # 获取登录form
         form = soup.find('form', attrs={'name': 'login'})
         # 构造登录参数
@@ -80,15 +80,15 @@ def login_sina(session, post_url, src):
         # 验证码
         payload['door'] = seccode
         # 发送登录post包
-        request = session.post(login_url, data=payload)
+        response = session.post(login_url, data=payload)
         # 获取页面跳转地址
         redirects = re.findall(r'location.replace\(\"(.*?)\"\)',
-                               request.content)
+                               response.content)
         # 获取登录结果
-        request = session.post(redirects[0])
+        response = session.post(redirects[0])
     # 若指定字样出现在response中，表示登录成功
-    if u'正在登录' not in request.content.decode(CODING):
-        message = re.findall(r'<p>(.*?)</p>', request.content)[0]
+    if u'正在登录' not in response.content.decode(CODING):
+        message = re.findall(r'<p>(.*?)</p>', response.content)[0]
         logger.debug(message.decode(CODING).encode('utf-8'))
         return False
     return True
@@ -115,12 +115,12 @@ def reply_sina_club(post_url, src):
     logger.debug(' Login OK')
 
     ## Step 2: 回复
-    request = session.get(post_url)
+    response = session.get(post_url)
     host = utils.get_host(post_url)
     # 获取回复地址
     reply_url = re.findall(r'id=\"postform\" action=\"(.*?)\"',
-                           request.content)[0]
-    soup = BeautifulSoup(request.content)
+                           response.content)[0]
+    soup = BeautifulSoup(response.content)
     # 获取回复form
     form = soup.find('form', attrs={'id': 'postform'})
     # 构造回复参数
@@ -129,7 +129,7 @@ def reply_sina_club(post_url, src):
     # 替换回复地址中的特殊符号
     reply_url = reply_url.replace('&amp;', '&')
     # 发送回复post包
-    request = session.post(reply_url, data=payload,
+    response = session.post(reply_url, data=payload,
                            headers={
                                'Origin':utils.get_host(post_url),
                                'Referer':post_url
@@ -137,7 +137,7 @@ def reply_sina_club(post_url, src):
     post_times = 0
     # 验证是否成功，如果失败再次发送
     # 失败可能原因：验证码错误
-    while 'postform' not in request.content \
+    while 'postform' not in response.content \
             and post_times < src['TTl']:
         # 限制最大发送次数
         post_times = post_times + 1
@@ -154,13 +154,13 @@ def reply_sina_club(post_url, src):
         # 回复参数中增加验证码
         payload['seccodeverify'] = seccode.decode(CODING)
         # 发送回复post包
-        request = session.post(reply_url, data=payload,
+        response = session.post(reply_url, data=payload,
                                headers={
                                    'Origin':utils.get_host(post_url),
                                    'Referer':post_url
                                })
     # 若指定字样出现在response中，表示回复成功
-    if 'postform' not in request.content:
+    if 'postform' not in response.content:
         logger.error(' Reply Error')
         return (False, str(logger))
     logger.debug(' Reply OK')
@@ -180,7 +180,7 @@ def reply_sina_news(post_url, src):
     """
     logger = utils.RAPLogger(post_url)
     session = utils.RAPSession(src)
-    request = session.get(post_url)
+    response = session.get(post_url)
 
     ## Step 1: 登录
     if not login_sina(session, post_url, src):
@@ -190,9 +190,9 @@ def reply_sina_news(post_url, src):
 
     ## Step 2: 回复
     # 频道id
-    channel = re.findall(r'channel:\'(.*?)\'', request.content)[0]
+    channel = re.findall(r'channel:\'(.*?)\'', response.content)[0]
     # 新闻id
-    newsid = re.findall(r'newsid:\'(.*?)\'', request.content)[0]
+    newsid = re.findall(r'newsid:\'(.*?)\'', response.content)[0]
 
     # 构造回复参数
     payload = {
@@ -211,12 +211,12 @@ def reply_sina_news(post_url, src):
     # 回复地址
     reply_url = 'http://comment5.news.sina.com.cn/cmnt/submit'
     # 发送回复post包
-    request = session.post(reply_url, data=payload,
+    response = session.post(reply_url, data=payload,
                            headers={
                                'Referer':post_url
                            })
     # 若指定字样出现在response中，表示回复成功
-    if 'result' not in request.content:
+    if 'result' not in response.content:
         logger.error(' Reply Error')
         return (False, str(logger))
     logger.debug(' Reply OK')
