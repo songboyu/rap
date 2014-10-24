@@ -18,10 +18,13 @@ chaoren_password = '1qazxsw2'
 # URL dispatch
 dispatch_rule = {
     # By HSS
+    # kdnet
     'club\.kdnet\.net/': 'kdnet',
+    # 163
     'blog\.163\.com/': '163_blog',
     'news\.163\.com/[0-9]': '163_news',
     'bbs.*\.163\.com/bbs/': '163_bbs',
+    # sina
     '(forum|club).*\.sina\.com\.cn': 'sina_club',
     '^http://[^(c|f)].*\.sina\.com\.cn/':'sina_news',
 
