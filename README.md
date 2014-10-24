@@ -1,10 +1,7 @@
 RAP
 ====
 
-    RAP is an automated system for reply and post on various websites including 
-    news, blogs and forums.
-
-### 国内外论坛/博客/新闻网站回帖、发帖
+RAP is an automated system for reply and post on various websites including news, blogs and forums.
 
     多维博客        dwnews_blog
     多维新闻        dwnews_news
