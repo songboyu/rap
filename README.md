@@ -26,3 +26,5 @@ RAP is an automated system for reply and post on various websites including news
     网易论坛        163_bbs
     新浪新闻        sina_news
     新浪论坛        sina_club
+    倍可亲          backchina_forum
+    超级苹果        powerapple_forum
