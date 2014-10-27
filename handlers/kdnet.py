@@ -6,7 +6,7 @@
 @summary: 凯迪社区
 
 @var CHARSET: 凯迪社区网页编码
-@type CHARSET: String
+@type CHARSET: str
 
 """
 import re
@@ -26,23 +26,23 @@ def reply_kdnet(post_url, src):
         - Login:    NO
 
     @param post_url:   帖子地址
-    @type post_url:    String
+    @type post_url:    str
 
     @param src:        用户名，密码，回复内容，等等。
-    @type src:         dictionary
+    @type src:         dict
     
     @return:           是否回复成功
-    @rtype:            boolean
+    @rtype:            bool
 
     """
     logger = utils.RAPLogger(post_url)
-    session = utils.RAPSession(src)
-    request = session.get(post_url)
+    s = utils.RAPSession(src)
+    resp = s.get(post_url)
 
     # 获得回复iframe
-    iframe = re.findall('<iframe src=\"(.*?)\"', request.content)[0]
-    request = session.get(iframe.decode(CHARSET))
-    soup = BeautifulSoup(request.content)
+    iframe = re.findall('<iframe src=\"(.*?)\"', resp.content)[0]
+    resp = s.get(iframe.decode(CHARSET))
+    soup = BeautifulSoup(resp.content)
     # 获得回复form
     form = soup.find('form', attrs={'id': 't_form'})
     # 获得boardid，作为post参数
@@ -56,9 +56,9 @@ def reply_kdnet(post_url, src):
     reply_url = 'http://upfile1.kdnet.net/do_lu_shuiyin.asp?'\
         + 'action=sre&method=fastreply&BoardID='
     # 发送回复post包
-    request = session.post(reply_url + boardid, data=payload)
+    resp = s.post(reply_url + boardid, data=payload)
     # 若指定字样出现在response中，表示回复成功
-    if u'成功回复'.encode(CHARSET) not in request.content:
+    if u'成功回复'.encode(CHARSET) not in resp.content:
         logger.error(' Reply Error')
         return (False, str(logger))
     logger.debug(' Reply OK')

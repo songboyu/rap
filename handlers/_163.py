@@ -6,7 +6,7 @@
 @summary: 网易博客、网易新闻、网易论坛
 
 @var CHARSET: 网易网页编码
-@type CHARSET: String
+@type CHARSET: str
 
 """
 import re
@@ -21,23 +21,23 @@ import utils
 CHARSET = 'gbk'
 
 
-def login_163(session, src):
+def login_163(s, src):
     """ 网易登录函数
 
-    @param session:    request.Session()
-    @type session:     Session
+    @param s:    requests.Session()
+    @type s:     Session
 
     @param src:        用户名，密码，回复内容，等等。
-    @type src:         dictionary
+    @type src:         dict
     
     @return:           是否登录成功
-    @rtype:            boolean
+    @rtype:            bool
 
     """
     # 登录页面
     login_page = 'http://reg.163.com/'
-    request = session.get(login_page)
-    soup = BeautifulSoup(request.content)
+    resp = s.get(login_page)
+    soup = BeautifulSoup(resp.content)
     # 获取登录form
     form = soup.find('form', attrs={'id': 'fLogin'})
     # 构造登录参数
@@ -45,14 +45,14 @@ def login_163(session, src):
     payload['username'] = src['username']
     payload['password'] = src['password']
     # 发送登录post包
-    request = session.post(login_page + 'logins.jsp', data=payload)
+    resp = s.post(login_page + 'logins.jsp', data=payload)
     # 获取页面跳转地址
     redirects = re.findall(r'location.replace\(\"(.*?)\"\)',
-                           request.content)
+                           resp.content)
     # 获取登录结果
-    request = session.get(redirects[0])
+    resp = s.get(redirects[0])
     # 若指定字样出现在response中，表示登录成功
-    if '上次登录情况' not in request.content:
+    if '上次登录情况' not in resp.content:
         return False
     return True
 
@@ -66,45 +66,45 @@ def reply_163_blog(post_url, src):
         - Login:    YES
 
     @param post_url:   博客地址
-    @type post_url:    String
+    @type post_url:    str
 
     @param src:        用户名，密码，回复内容，等等。
-    @type src:         dictionary
+    @type src:         dict
 
     @return:           是否回复成功
-    @rtype:            boolean
+    @rtype:            bool
 
     """
     logger = utils.RAPLogger(post_url)
-    session = utils.RAPSession(src)
+    s = utils.RAPSession(src)
 
     # Step 1: 登录
-    if not login_163(session, src):
+    if not login_163(s, src):
         logger.error(' Login Error')
         return (False, str(logger))
     logger.debug(' Login OK')
 
     # Step 2: 验证码
-    request = session.get(post_url)
-    parent_id = re.findall(r'userId:(.*?),', request.content)[0]
+    resp = s.get(post_url)
+    parent_id = re.findall(r'userId:(.*?),', resp.content)[0]
     # 获取验证码图片
-    request = session.get('http://api.blog.163.com/cap/captcha.jpgx?'
+    resp = s.get('http://api.blog.163.com/cap/captcha.jpgx?'
                           'parentId=' + parent_id,
                           headers={
                               'Accept': config.accept_image,
                               'Referer': post_url,
                           })
     # 获取验证码字符串
-    seccode = utils.crack_captcha(request.content)
+    seccode = utils.crack_captcha(resp.content)
     logger.debug(' seccode:' + seccode)
 
     # Step 3: 提交回复
-    request = session.get(post_url)
-    soup = BeautifulSoup(request.content)
+    resp = s.get(post_url)
+    soup = BeautifulSoup(resp.content)
     meta = soup.find('meta', attrs={'name': 'author'})
     # 从页面中获取各项参数
-    page_id = re.findall('id:\'(.*?)\'', request.content)[0]
-    parent_id = re.findall('parentId=(.*?)&', request.content)[0]
+    page_id = re.findall('id:\'(.*?)\'', resp.content)[0]
+    parent_id = re.findall('parentId=(.*?)&', resp.content)[0]
     author_0 = urllib.quote(meta.attrs['content'].split(',')[0].encode(CHARSET))
     author_1 = urllib.quote(meta.attrs['content'].split(',')[1].encode(CHARSET))
     content = urllib.quote(src['content'] + '<wbr>')
@@ -125,7 +125,7 @@ def reply_163_blog(post_url, src):
         'c0-e9=number:''' + parent_id + '\n' +\
         'c0-e10=string:''' + author_0 + '\n' +\
         'c0-e11=string:''' + author_1 + '\n' +\
-        'c0-e12=boolean:true\n' +\
+        'c0-e12=bool:true\n' +\
         'c0-param0=Object_Object:' \
         '{blogId:reference:c0-e1,' \
         'blogUserId:reference:c0-e2,' \
@@ -140,7 +140,7 @@ def reply_163_blog(post_url, src):
         'replyToUserNick:reference:c0-e11,' \
         'synchMiniBlog:reference:c0-e12}\n' +\
         'c0-param1=string:''' + seccode + '\n' +\
-        'c0-param2=boolean:false\n' +\
+        'c0-param2=bool:false\n' +\
         'batchId=118652'
     # 请求头设置
     headers = {'Content-Type': 'text/plain',
@@ -148,12 +148,12 @@ def reply_163_blog(post_url, src):
                'Referer': 'http://api.blog.163.com/crossdomain.html?t=20100205',
                'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6'}
     # 发送回复post包
-    request = session.post('http://api.blog.163.com/xinluduwu/dwr/'
+    resp = s.post('http://api.blog.163.com/xinluduwu/dwr/'
                            'call/plaincall/BlogBeanNew.addBlogComment.dwr',
                            data=payload, headers=headers)
     # 若指定字样出现在response中，表示回复成功
-    if '_remoteHandleCallback' not in request.content:
-        logger.debug(request.content)
+    if '_remoteHandleCallback' not in resp.content:
+        logger.debug(resp.content)
         logger.error(' Reply Error')
         return (False, str(logger))
     logger.debug(' Reply OK')
@@ -169,29 +169,29 @@ def reply_163_news(post_url, src):
         - Login:    YES
 
     @param post_url:   新闻地址
-    @type post_url:    String
+    @type post_url:    str
 
     @param src:        用户名，密码，回复内容，等等。
-    @type src:         dictionary
+    @type src:         dict
     
     @return:           是否回复成功
-    @rtype:            boolean
+    @rtype:            bool
 
     """
     logger = utils.RAPLogger(post_url)
-    session = utils.RAPSession(src)
+    s = utils.RAPSession(src)
 
     # Step 1: 登录
-    if not login_163(session, src):
+    if not login_163(s, src):
         logger.error(' Login Error')
         return (False, str(logger))
     logger.debug(' Login OK')
 
     # Step 2: 验证码
-    request = session.get(post_url)
+    resp = s.get(post_url)
     # 获取各项参数
-    board_id = re.findall('boardId = \"(.*?)\"', request.content)[0]
-    thread_id = re.findall('threadId = \"(.*?)\"', request.content)[0]
+    board_id = re.findall('boardId = \"(.*?)\"', resp.content)[0]
+    thread_id = re.findall('threadId = \"(.*?)\"', resp.content)[0]
     comments_url = "http://comment.news.163.com/" + \
         board_id + "/" + thread_id + ".html"
     # 构造请求头
@@ -200,10 +200,10 @@ def reply_163_news(post_url, src):
                'Referer': comments_url,
                'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6'}
     # 询问是否需要验证码
-    request = session.get('http://comment.news.163.com/reply/needvalidate.jsp?'
+    resp = s.get('http://comment.news.163.com/reply/needvalidate.jsp?'
                           'time=1413303328581', headers=headers)
     # 询问结果
-    need_validate = re.findall('needValidate:([0-9])', request.content)[0]
+    need_validate = re.findall('needValidate:([0-9])', resp.content)[0]
 
     seccode = ''
     validate_sucess = False
@@ -216,24 +216,24 @@ def reply_163_news(post_url, src):
             # 限制最大发送次数
             post_times = post_times + 1
             # 获取验证图片
-            request = session.get('http://comment.news.163.com/reply/'
+            resp = s.get('http://comment.news.163.com/reply/'
                                   'auth/validatecode.jsp?rnd=',
                                   headers={
                                       'Accept': config.accept_image,
                                       'Referer': comments_url,
                                   })
             # 获取验证码字符串
-            seccode = utils.crack_captcha(request.content)
+            seccode = utils.crack_captcha(resp.content)
             logger.debug(' seccode:' + seccode)
             # 询问验证码是否正确
-            request = session.get('http://comment.news.163.com/reply/'
+            resp = s.get('http://comment.news.163.com/reply/'
                                   'isValidateCodeValid.jsp?'
                                   'validateCode=' + seccode,
                                   headers={
                                       'Referer': comments_url,
                                   })
-            logger.debug(request.content)
-            validate_sucess = 'true' in request.content
+            logger.debug(resp.content)
+            validate_sucess = 'true' in resp.content
 
     # Step 3: 回复
     # 构造回复参数
@@ -249,10 +249,10 @@ def reply_163_news(post_url, src):
         'validateCode': seccode,
     }
     # 发送回复post包
-    request = session.post('http://comment.news.163.com/reply/dopost.jsp',
+    resp = s.post('http://comment.news.163.com/reply/dopost.jsp',
                            data=payload, headers=headers)
     # 若指定字样出现在response中，表示回复成功
-    if '网易首页' not in request.content:
+    if '网易首页' not in resp.content:
         logger.error(' Reply Error')
         return (False, str(logger))
     logger.debug(' Reply OK')
@@ -268,20 +268,20 @@ def reply_163_bbs(post_url, src):
         - Login:    YES
 
     @param post_url:   帖子地址
-    @type post_url:    String
+    @type post_url:    str
 
     @param src:        用户名，密码，回复内容，等等。
-    @type src:         dictionary
+    @type src:         dict
     
     @return:           是否回复成功
-    @rtype:            boolean
+    @rtype:            bool
 
     """
     logger = utils.RAPLogger(post_url)
-    session = utils.RAPSession(src)
+    s = utils.RAPSession(src)
 
     # Step 1: 登录
-    if not login_163(session, src):
+    if not login_163(s, src):
         logger.error(' Login Error')
         return (False, str(logger))
     logger.debug(' Login OK')
@@ -289,14 +289,14 @@ def reply_163_bbs(post_url, src):
     # Step 2: 验证码
     host = utils.get_host(post_url)
     logger.debug(host)
-    page = session.get(post_url)
+    page = s.get(post_url)
     # 获取各项参数
     board_id = re.findall('boardId = \"(.*?)\"', page.content)[0]
     thread_id = re.findall('threadId = \"(.*?)\"', page.content)[0]
     # 当前时间戳
     timestamp = str(time.time())
     # 询问是否需要验证码
-    request = session.post(host + 'v2/post/replyCheck/' + board_id +
+    resp = s.post(host + 'v2/post/replyCheck/' + board_id +
                            '/' + thread_id + '/?timestamp=' + timestamp,
                            headers={
                                'X-Requested-With': 'XMLHttpRequest',
@@ -305,7 +305,7 @@ def reply_163_bbs(post_url, src):
                                'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6'
                            })
     # 询问结果
-    check_code = re.findall('\"checkCode\":\"(.*?)\",', request.content)[0]
+    check_code = re.findall('\"checkCode\":\"(.*?)\",', resp.content)[0]
     logger.debug(check_code)
 
     seccode = ''
@@ -319,24 +319,24 @@ def reply_163_bbs(post_url, src):
             # 限制最大发送次数
             post_times = post_times + 1
             # 获取验证码图片
-            request = session.get(host + 'v2/checkcode/codeimg?timestamp='
+            resp = s.get(host + 'v2/checkcode/codeimg?timestamp='
                                   + timestamp,
                                   headers={
                                       'Accept': config.accept_image,
                                       'Referer': post_url,
                                   })
             # 获取验证码字符串
-            seccode = utils.crack_captcha(request.content)
+            seccode = utils.crack_captcha(resp.content)
             logger.debug(' seccode:' + seccode)
             # 发送验证码，询问是否正确
             payload = {'code': seccode.encode('utf-8')}
-            request = session.post(host + 'v2/checkcode/validate', data=payload,
+            resp = s.post(host + 'v2/checkcode/validate', data=payload,
                                    headers={
                                        'Origin': host,
                                        'Referer': post_url,
                                    })
-            logger.debug(request.content)
-            validate_sucess = '"code":1' in request.content
+            logger.debug(resp.content)
+            validate_sucess = '"code":1' in resp.content
 
     # Step 3: 回复
     # 构造回复参数
@@ -348,15 +348,15 @@ def reply_163_bbs(post_url, src):
         'threadId': thread_id
     }
     # 发送回复post包
-    request = session.post(host + 'v2/post/doReply', data=payload,
+    resp = s.post(host + 'v2/post/doReply', data=payload,
                            headers={
                                'Referer': post_url,
                            })
     # 若指定字样出现在response中，表示回复成功
-    if '\"message\">' in request.content:
+    if '\"message\">' in resp.content:
         logger.error(' Reply Error ' +
                      re.findall('\"message\">(.*?)</td>',
-                                request.content.decode(CHARSET))[0])
+                                resp.content.decode(CHARSET))[0])
         return (False, str(logger))
     logger.debug(' Reply OK')
     return (True, str(logger))
