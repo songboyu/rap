@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 from hashlib import md5
 from utils import get_datadic
 from utils import get_host
-fromutils import RAPSession
+from utils import RAPSession
 from utils import RAPLogger
 
 # Coding: utf8
