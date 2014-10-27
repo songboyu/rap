@@ -10,10 +10,10 @@
 """
 from bs4 import BeautifulSoup
 from hashlib import md5
-from handlers.utils import get_datadic
-from handlers.utils import get_host
-from handlers.utils import RAPSession
-from handlers.utils import RAPLogger
+from utils import get_datadic
+from utils import get_host
+fromutils import RAPSession
+from utils import RAPLogger
 
 # Coding: utf8
 # Captcha: arithmetic
