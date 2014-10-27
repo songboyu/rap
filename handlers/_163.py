@@ -21,11 +21,11 @@ import utils
 CHARSET = 'gbk'
 
 
-def login_163(s, src):
+def login_163(sess, src):
     """ 网易登录函数
 
-    @param s:    requests.Session()
-    @type s:     Session
+    @param sess:    requests.Session()
+    @type sess:     Session
 
     @param src:        用户名，密码，回复内容，等等。
     @type src:         dict
@@ -36,7 +36,7 @@ def login_163(s, src):
     """
     # 登录页面
     login_page = 'http://reg.163.com/'
-    resp = s.get(login_page)
+    resp = sess.get(login_page)
     soup = BeautifulSoup(resp.content)
     # 获取登录form
     form = soup.find('form', attrs={'id': 'fLogin'})
@@ -45,12 +45,12 @@ def login_163(s, src):
     payload['username'] = src['username']
     payload['password'] = src['password']
     # 发送登录post包
-    resp = s.post(login_page + 'logins.jsp', data=payload)
+    resp = sess.post(login_page + 'logins.jsp', data=payload)
     # 获取页面跳转地址
     redirects = re.findall(r'location.replace\(\"(.*?)\"\)',
                            resp.content)
     # 获取登录结果
-    resp = s.get(redirects[0])
+    resp = sess.get(redirects[0])
     # 若指定字样出现在response中，表示登录成功
     if '上次登录情况' not in resp.content:
         return False
@@ -76,19 +76,19 @@ def reply_163_blog(post_url, src):
 
     """
     logger = utils.RAPLogger(post_url)
-    s = utils.RAPSession(src)
+    sess = utils.RAPSession(src)
 
     # Step 1: 登录
-    if not login_163(s, src):
+    if not login_163(sess, src):
         logger.error(' Login Error')
         return (False, str(logger))
     logger.debug(' Login OK')
 
     # Step 2: 验证码
-    resp = s.get(post_url)
+    resp = sess.get(post_url)
     parent_id = re.findall(r'userId:(.*?),', resp.content)[0]
     # 获取验证码图片
-    resp = s.get('http://api.blog.163.com/cap/captcha.jpgx?'
+    resp = sess.get('http://api.blog.163.com/cap/captcha.jpgx?'
                           'parentId=' + parent_id,
                           headers={
                               'Accept': config.accept_image,
@@ -99,7 +99,7 @@ def reply_163_blog(post_url, src):
     logger.debug(' seccode:' + seccode)
 
     # Step 3: 提交回复
-    resp = s.get(post_url)
+    resp = sess.get(post_url)
     soup = BeautifulSoup(resp.content)
     meta = soup.find('meta', attrs={'name': 'author'})
     # 从页面中获取各项参数
@@ -148,7 +148,7 @@ def reply_163_blog(post_url, src):
                'Referer': 'http://api.blog.163.com/crossdomain.html?t=20100205',
                'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6'}
     # 发送回复post包
-    resp = s.post('http://api.blog.163.com/xinluduwu/dwr/'
+    resp = sess.post('http://api.blog.163.com/xinluduwu/dwr/'
                            'call/plaincall/BlogBeanNew.addBlogComment.dwr',
                            data=payload, headers=headers)
     # 若指定字样出现在response中，表示回复成功
@@ -179,16 +179,16 @@ def reply_163_news(post_url, src):
 
     """
     logger = utils.RAPLogger(post_url)
-    s = utils.RAPSession(src)
+    sess = utils.RAPSession(src)
 
     # Step 1: 登录
-    if not login_163(s, src):
+    if not login_163(sess, src):
         logger.error(' Login Error')
         return (False, str(logger))
     logger.debug(' Login OK')
 
     # Step 2: 验证码
-    resp = s.get(post_url)
+    resp = sess.get(post_url)
     # 获取各项参数
     board_id = re.findall('boardId = \"(.*?)\"', resp.content)[0]
     thread_id = re.findall('threadId = \"(.*?)\"', resp.content)[0]
@@ -200,7 +200,7 @@ def reply_163_news(post_url, src):
                'Referer': comments_url,
                'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6'}
     # 询问是否需要验证码
-    resp = s.get('http://comment.news.163.com/reply/needvalidate.jsp?'
+    resp = sess.get('http://comment.news.163.com/reply/needvalidate.jsp?'
                           'time=1413303328581', headers=headers)
     # 询问结果
     need_validate = re.findall('needValidate:([0-9])', resp.content)[0]
@@ -216,7 +216,7 @@ def reply_163_news(post_url, src):
             # 限制最大发送次数
             post_times = post_times + 1
             # 获取验证图片
-            resp = s.get('http://comment.news.163.com/reply/'
+            resp = sess.get('http://comment.news.163.com/reply/'
                                   'auth/validatecode.jsp?rnd=',
                                   headers={
                                       'Accept': config.accept_image,
@@ -226,7 +226,7 @@ def reply_163_news(post_url, src):
             seccode = utils.crack_captcha(resp.content)
             logger.debug(' seccode:' + seccode)
             # 询问验证码是否正确
-            resp = s.get('http://comment.news.163.com/reply/'
+            resp = sess.get('http://comment.news.163.com/reply/'
                                   'isValidateCodeValid.jsp?'
                                   'validateCode=' + seccode,
                                   headers={
@@ -249,7 +249,7 @@ def reply_163_news(post_url, src):
         'validateCode': seccode,
     }
     # 发送回复post包
-    resp = s.post('http://comment.news.163.com/reply/dopost.jsp',
+    resp = sess.post('http://comment.news.163.com/reply/dopost.jsp',
                            data=payload, headers=headers)
     # 若指定字样出现在response中，表示回复成功
     if '网易首页' not in resp.content:
@@ -278,10 +278,10 @@ def reply_163_bbs(post_url, src):
 
     """
     logger = utils.RAPLogger(post_url)
-    s = utils.RAPSession(src)
+    sess = utils.RAPSession(src)
 
     # Step 1: 登录
-    if not login_163(s, src):
+    if not login_163(sess, src):
         logger.error(' Login Error')
         return (False, str(logger))
     logger.debug(' Login OK')
@@ -289,14 +289,14 @@ def reply_163_bbs(post_url, src):
     # Step 2: 验证码
     host = utils.get_host(post_url)
     logger.debug(host)
-    page = s.get(post_url)
+    page = sess.get(post_url)
     # 获取各项参数
     board_id = re.findall('boardId = \"(.*?)\"', page.content)[0]
     thread_id = re.findall('threadId = \"(.*?)\"', page.content)[0]
     # 当前时间戳
     timestamp = str(time.time())
     # 询问是否需要验证码
-    resp = s.post(host + 'v2/post/replyCheck/' + board_id +
+    resp = sess.post(host + 'v2/post/replyCheck/' + board_id +
                            '/' + thread_id + '/?timestamp=' + timestamp,
                            headers={
                                'X-Requested-With': 'XMLHttpRequest',
@@ -319,7 +319,7 @@ def reply_163_bbs(post_url, src):
             # 限制最大发送次数
             post_times = post_times + 1
             # 获取验证码图片
-            resp = s.get(host + 'v2/checkcode/codeimg?timestamp='
+            resp = sess.get(host + 'v2/checkcode/codeimg?timestamp='
                                   + timestamp,
                                   headers={
                                       'Accept': config.accept_image,
@@ -330,7 +330,7 @@ def reply_163_bbs(post_url, src):
             logger.debug(' seccode:' + seccode)
             # 发送验证码，询问是否正确
             payload = {'code': seccode.encode('utf-8')}
-            resp = s.post(host + 'v2/checkcode/validate', data=payload,
+            resp = sess.post(host + 'v2/checkcode/validate', data=payload,
                                    headers={
                                        'Origin': host,
                                        'Referer': post_url,
@@ -348,7 +348,7 @@ def reply_163_bbs(post_url, src):
         'threadId': thread_id
     }
     # 发送回复post包
-    resp = s.post(host + 'v2/post/doReply', data=payload,
+    resp = sess.post(host + 'v2/post/doReply', data=payload,
                            headers={
                                'Referer': post_url,
                            })

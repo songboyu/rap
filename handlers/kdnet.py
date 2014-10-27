@@ -36,12 +36,12 @@ def reply_kdnet(post_url, src):
 
     """
     logger = utils.RAPLogger(post_url)
-    s = utils.RAPSession(src)
-    resp = s.get(post_url)
+    sess = utils.RAPSession(src)
+    resp = sess.get(post_url)
 
     # 获得回复iframe
     iframe = re.findall('<iframe src=\"(.*?)\"', resp.content)[0]
-    resp = s.get(iframe.decode(CHARSET))
+    resp = sess.get(iframe.decode(CHARSET))
     soup = BeautifulSoup(resp.content)
     # 获得回复form
     form = soup.find('form', attrs={'id': 't_form'})
@@ -56,7 +56,7 @@ def reply_kdnet(post_url, src):
     reply_url = 'http://upfile1.kdnet.net/do_lu_shuiyin.asp?'\
         + 'action=sre&method=fastreply&BoardID='
     # 发送回复post包
-    resp = s.post(reply_url + boardid, data=payload)
+    resp = sess.post(reply_url + boardid, data=payload)
     # 若指定字样出现在response中，表示回复成功
     if u'成功回复'.encode(CHARSET) not in resp.content:
         logger.error(' Reply Error')

@@ -19,11 +19,11 @@ import utils
 CHARSET = 'gbk'
 
 
-def login_sina(s, post_url, src):
+def login_sina(sess, post_url, src):
     """ 新浪登录函数
 
-    @param s:    requests.Session()
-    @type s:     Session
+    @param sess:    requests.Session()
+    @type sess:     Session
 
     @param post_url:   帖子地址
     @type post_url:    str
@@ -36,7 +36,7 @@ def login_sina(s, post_url, src):
 
     """
     logger = utils.RAPLogger(post_url)
-    resp = s.get('http://club.mil.news.sina.com.cn/')
+    resp = sess.get('http://club.mil.news.sina.com.cn/')
     soup = BeautifulSoup(resp.content)
     # 获取登录form
     form = soup.find('form', attrs={'name': 'login'})
@@ -47,7 +47,7 @@ def login_sina(s, post_url, src):
     # 登录地址
     login_url = 'https://login.sina.com.cn/sso/login.php'
     # 发送登录post包
-    resp = s.post(login_url, data=payload)
+    resp = sess.post(login_url, data=payload)
 
     post_times = 0
     # 验证是否成功，如果失败再次发送
@@ -60,17 +60,17 @@ def login_sina(s, post_url, src):
         redirects = re.findall(r'location.replace\(\"(.*?)\"\)',
                                resp.content)
         logger.debug(' login need captcha')
-        resp = s.post(redirects[0])
+        resp = sess.post(redirects[0])
         # 获取页面跳转地址
         redirects = re.findall(r'href=\"(.*?)\">如果',
                                resp.content
                                .decode(CHARSET).encode('utf-8'))
-        resp = s.post(redirects[0])
+        resp = sess.post(redirects[0])
         # 验证码地址
         captcha_url = re.findall(r'id=\"capcha\" src=\"(.*?)\"',
                                  resp.content)[0]
         # 获取验证码图片
-        captcha = s.get(captcha_url,
+        captcha = sess.get(captcha_url,
                               headers={
                                   'Accept': config.accept_image,
                                   'Referer': post_url
@@ -89,12 +89,12 @@ def login_sina(s, post_url, src):
         # 验证码
         payload['door'] = seccode
         # 发送登录post包
-        resp = s.post(login_url, data=payload)
+        resp = sess.post(login_url, data=payload)
         # 获取页面跳转地址
         redirects = re.findall(r'location.replace\(\"(.*?)\"\)',
                                resp.content)
         # 获取登录结果
-        resp = s.post(redirects[0])
+        resp = sess.post(redirects[0])
     # 若指定字样出现在response中，表示登录成功
     if u'正在登录' not in resp.content.decode(CHARSET):
         message = re.findall(r'<p>(.*?)</p>', resp.content)[0]
@@ -122,16 +122,16 @@ def reply_sina_club(post_url, src):
 
     """
     logger = utils.RAPLogger(post_url)
-    s = utils.RAPSession(src)
+    sess = utils.RAPSession(src)
 
     # Step 1: 登录
-    if not login_sina(s, post_url, src):
+    if not login_sina(sess, post_url, src):
         logger.error(' Login Error')
         return (False, str(logger))
     logger.debug(' Login OK')
 
     # Step 2: 回复
-    resp = s.get(post_url)
+    resp = sess.get(post_url)
     host = utils.get_host(post_url)
     # 获取回复地址
     reply_url = re.findall(r'id=\"postform\" action=\"(.*?)\"',
@@ -145,7 +145,7 @@ def reply_sina_club(post_url, src):
     # 替换回复地址中的特殊符号
     reply_url = reply_url.replace('&amp;', '&')
     # 发送回复post包
-    resp = s.post(reply_url, data=payload,
+    resp = sess.post(reply_url, data=payload,
                            headers={
                                'Origin': utils.get_host(post_url),
                                'Referer': post_url
@@ -159,7 +159,7 @@ def reply_sina_club(post_url, src):
         post_times = post_times + 1
         logger.debug(' reply need captcha')
         # 获取验证码图片
-        captcha = s.get(host + 'seccode.php',
+        captcha = sess.get(host + 'seccode.php',
                               headers={
                                   'Accept': config.accept_image,
                                   'Referer': reply_url
@@ -170,7 +170,7 @@ def reply_sina_club(post_url, src):
         # 回复参数中增加验证码
         payload['seccodeverify'] = seccode.decode(CHARSET)
         # 发送回复post包
-        resp = s.post(reply_url, data=payload,
+        resp = sess.post(reply_url, data=payload,
                                headers={
                                    'Origin': utils.get_host(post_url),
                                    'Referer': post_url
@@ -202,11 +202,11 @@ def reply_sina_news(post_url, src):
 
     """
     logger = utils.RAPLogger(post_url)
-    s = utils.RAPSession(src)
-    resp = s.get(post_url)
+    sess = utils.RAPSession(src)
+    resp = sess.get(post_url)
 
     # Step 1: 登录
-    if not login_sina(s, post_url, src):
+    if not login_sina(sess, post_url, src):
         logger.error(' Login Error')
         return (False, str(logger))
     logger.debug(' Login OK')
@@ -234,7 +234,7 @@ def reply_sina_news(post_url, src):
     # 回复地址
     reply_url = 'http://comment5.news.sina.com.cn/cmnt/submit'
     # 发送回复post包
-    resp = s.post(reply_url, data=payload,
+    resp = sess.post(reply_url, data=payload,
                            headers={
                                'Referer': post_url
                            })
