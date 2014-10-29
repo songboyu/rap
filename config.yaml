@@ -1,0 +1,35 @@
+# Basic configs.
+db:
+  ip: 125.211.198.185
+  username: bluetech
+  password: No.9332
+  dbname: eventdb
+
+beanstalk:
+  ip: 125.211.198.186
+  port: 11300
+
+# logging configs.
+version: 1
+formatters:
+  simple:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+  file:
+    class: logging.handlers.TimedRotatingFileHandler
+    level: DEBUG
+    formatter: simple
+    filename: 'log/log'
+    when: D
+
+root:
+  level: DEBUG
+  handlers:
+    - console
+    - file
