@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""新浪回复模块
+"""新浪回复模块（新浪论坛、新浪新闻）
 
 @author: HSS
 @since: 2014-10-20
@@ -53,7 +53,7 @@ def login_sina(sess, post_url, src):
     # 验证是否成功，如果失败再次发送
     # 失败可能原因：验证码错误
     while u'正在登录' not in resp.content.decode(CHARSET) \
-            and post_times < src['TTl']:
+            and post_times < src['TTL']:
         # 限制最大发送次数
         post_times = post_times + 1
         # 获取页面跳转地址
@@ -141,7 +141,8 @@ def reply_sina_club(post_url, src):
     form = soup.find('form', attrs={'id': 'postform'})
     # 构造回复参数
     payload = utils.get_datadic(form)
-    payload['message'] = src['content'].decode('utf8').encode(CHARSET)
+    # payload['message'] = src['content'].decode('utf8').encode(CHARSET)
+    payload['message'] = src['content'].encode(CHARSET)
     # 替换回复地址中的特殊符号
     reply_url = reply_url.replace('&amp;', '&')
     # 发送回复post包
@@ -154,7 +155,7 @@ def reply_sina_club(post_url, src):
     # 验证是否成功，如果失败再次发送
     # 失败可能原因：验证码错误
     while 'postform' not in resp.content \
-            and post_times < src['TTl']:
+            and post_times < src['TTL']:
         # 限制最大发送次数
         post_times = post_times + 1
         logger.debug(' reply need captcha')

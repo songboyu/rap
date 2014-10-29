@@ -1,3 +1,5 @@
 
 # file patterns
 *.pyc
+.idea
+log

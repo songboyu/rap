@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""网易回复模块
+"""网易回复模块（网易博客、网易新闻、网易论坛）
 
 @author: HSS
 @since: 2014-10-20
@@ -212,7 +212,7 @@ def reply_163_news(post_url, src):
     if need_validate == '1':
         # 询问验证码是否正确，如果不正确再次发送
         while not validate_sucess \
-                and post_times < src['TTl']:
+                and post_times < src['TTL']:
             # 限制最大发送次数
             post_times = post_times + 1
             # 获取验证图片
@@ -315,7 +315,7 @@ def reply_163_bbs(post_url, src):
     if check_code == '1':
         # 询问验证码是否正确，如果不正确再次发送
         while not validate_sucess \
-                and post_times < src['TTl']:
+                and post_times < src['TTL']:
             # 限制最大发送次数
             post_times = post_times + 1
             # 获取验证码图片
@@ -342,7 +342,8 @@ def reply_163_bbs(post_url, src):
     # 构造回复参数
     payload = {
         'checkcode': seccode,
-        'content': src['content'].decode('utf8').encode(CHARSET),
+        # 'content': src['content'].decode('utf8').encode(CHARSET),
+        'content': src['content'].encode(CHARSET),
         'title': re.findall('<title>(.*?)</title>', page.content)[0],
         'boardId': board_id,
         'threadId': thread_id

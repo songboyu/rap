@@ -2,10 +2,9 @@
 # RAP: Reply & Post
 
 # Local config
-import config
-from utils import *
+import re
 
-# Import handlers
+from utils import *
 import handlers
 
 # Export functions
@@ -29,7 +28,7 @@ def reply(post_url, src):
 
     # Get specific handler
     for pattern, handler in config.dispatch_rule.items():
-        if pattern in post_url:
+        if re.search(pattern, post_url):
             real_reply = getattr(handlers, 'reply_' + handler)
             break
     else:
