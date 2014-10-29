@@ -122,6 +122,7 @@ def main():
                                      CONFIG['beanstalk']['port'])
         # 监听rap_server
         bean.watch('rap_server')
+        bean.ignore('default')
     except:
         logging.critical('Cann\'t connect to beanstalk server')
         return
