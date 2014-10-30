@@ -66,8 +66,8 @@ def reply(job_body):
     @type job_body:     json
 
     """
-    job_id = ''
     src = job_body['src']
+    job_id = job_body['job_id']
     post_url = job_body['post_url']
     # 获取帖子标题
     url_title = get_url_title(post_url)
@@ -77,23 +77,24 @@ def reply(job_body):
     # 将beanstalkc队列中获取到的信息记录到数据库中
     # 将初始状态（status）置为 1 --- 正在发送
     cursor.execute('set character set "utf8"')
-    cursor.execute('insert into reply_job '
-                   '(url, content, username, password, nickname, title, proxy, reply_time, status, update_time, url_title) '
-                   'values (%s, %s, %s, %s, %s, %s, %s, now(), 1, now(), %s)',
-                   (post_url,
-                    src['content'],     # 回复内容
-                    src['username'],    # 用户名
-                    src['password'],    # 密码
-                    src['nickname'],    # 昵称
-                    src['subject'],     # 主题
-                    src['proxies'],     # 代理
-                    url_title))
+    cursor.execute('update reply_job set status = 1 where job_id = %s', (job_id))
+    # cursor.execute('insert into reply_job '
+    #                '(url, content, username, password, nickname, title, proxy, reply_time, status, update_time, url_title) '
+    #                'values (%s, %s, %s, %s, %s, %s, %s, now(), 1, now(), %s)',
+    #                (post_url,
+    #                 src['content'],     # 回复内容
+    #                 src['username'],    # 用户名
+    #                 src['password'],    # 密码
+    #                 src['nickname'],    # 昵称
+    #                 src['subject'],     # 主题
+    #                 src['proxies'],     # 代理
+    #                 url_title))
     # 将 "正在发送" 状态提交
     conn.commit()
     # 查找刚刚插入记录的主键 --- job_id
-    cursor.execute('select @@IDENTITY')
-    for row in cursor.fetchall():
-        job_id = row[0]
+    # cursor.execute('select @@IDENTITY')
+    # for row in cursor.fetchall():
+    #     job_id = row[0]
     # 调用回复函数
     r, log = rap.reply(post_url, src)
     # 判断回复结果状态
@@ -108,8 +109,8 @@ def reply(job_body):
     if 'Login Error' in log:
         # Set the is_invalid tag of this account.
         cursor.execute('update account set is_invalid = 1 '
-                       'where username = %s and site_sign in (select site_sign from site where site_url like %s)',
-                       (src['username'], '%' + get_site_sign(post_url) + '%'))
+                       'where username = %(username)s and site_sign in (select site_sign from site where site_url like %s)',
+                       (src, '%' + get_site_sign(post_url) + '%'))
     # 提交账号状态
     conn.commit()
     conn.close()
@@ -121,7 +122,7 @@ def main():
         bean = beanstalkc.Connection(CONFIG['beanstalk']['ip'],
                                      CONFIG['beanstalk']['port'])
         # 监听rap_server
-        bean.watch('rap_server')
+        bean.watch('rap_out')
         bean.ignore('default')
     except:
         logging.critical('Cann\'t connect to beanstalk server')
