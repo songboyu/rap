@@ -29,7 +29,7 @@ def reply(post_url, src):
     # Get specific handler
     for pattern, handler in config.dispatch_rule.items():
         if re.search(pattern, post_url):
-            real_reply = getattr(handlers, 'reply_' + handler)
+            real_reply = getattr(handlers, 'reply_' + handler[0])
             break
     else:
         logger.error('No handler')

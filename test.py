@@ -2,7 +2,7 @@
 """beanstalkc测试
 
 @author: HSS
-@since: 2014-10-229
+@since: 2014-10-29
 @summary: beanstalkc测试
 
 """

@@ -19,60 +19,60 @@ chaoren_password = '1qazxsw2'
 dispatch_rule = {
     # By HSS
     # kdnet
-    'club\.kdnet\.net/': 'kdnet',
+    'club\.kdnet\.net/': ('kdnet', 'IN'),
     # 163
-    'blog\.163\.com/': '163_blog',
-    'news\.163\.com/[0-9]': '163_news',
-    'bbs.*\.163\.com/bbs/': '163_bbs',
+    'blog\.163\.com/': ('163_blog', 'IN'),
+    'news\.163\.com/[0-9]': ('163_news', 'IN'),
+    'bbs.*\.163\.com/bbs/': ('163_bbs', 'IN'),
     # sina
-    '(forum|club).*\.sina\.com\.cn': 'sina_club',
-    '^http://[^(c|f)].*\.sina\.com\.cn/':'sina_news',
+    '(forum|club).*\.sina\.com\.cn': ('sina_club', 'IN'),
+    '^http://[^(c|f)].*\.sina\.com\.cn/': ('sina_news', 'IN'),
 
     # By kerry
     # backchina
-    'www\.backchina\.com': 'backchina_forum',
+    'www\.backchina\.com': ('backchina_forum', 'OUT'),
     # powerapple
-    'bbs\.powerapple\.com': 'powerapple_forum',
+    'bbs\.powerapple\.com': ('powerapple_forum', 'OUT'),
 
     # By sniper
     # dwnews
-    'dwnews\.com/news': 'dwnews_news',
-    'blog\.dwnews\.com': 'dwnews_blog',
+    'dwnews\.com/news': ('dwnews_news', 'OUT'),
+    'blog\.dwnews\.com': ('dwnews_blog', 'OUT'),
     # mirrorbooks
-    'www\.mirrorbooks\.com': 'mirrorbooks_news',
-    'www\.mingjingnews\.com': 'mirrorbooks_news',
+    'www\.mirrorbooks\.com': ('mirrorbooks_news', 'OUT'),
+    'www\.mingjingnews\.com': ('mirrorbooks_news', 'OUT'),
     # ieasy5
-    'ieasy5\.com/htm': 'ieasy5_news',
-    'ieasy5\.com/bbs': 'ieasy5_forum',
+    'ieasy5\.com/htm': ('ieasy5_news', 'OUT'),
+    'ieasy5\.com/bbs': ('ieasy5_forum', 'OUT'),
     # aboluowang
-    'bbs\.aboluowang\.com': 'aboluowang_forum',
-    'space\.aboluowang\.com': 'aboluowang_forum',
-    'www\.aboluowang\.com': 'aboluowang_news',
-    'tw\.aboluowang\.com': 'aboluowang_news',
+    'bbs\.aboluowang\.com': ('aboluowang_forum', 'OUT'),
+    'space\.aboluowang\.com': ('aboluowang_forum', 'OUT'),
+    'www\.aboluowang\.com': ('aboluowang_news', 'OUT'),
+    'tw\.aboluowang\.com': ('aboluowang_news', 'OUT'),
     # wolfax
-    'bbs\.wolfax\.com': 'wolfax_forum',
+    'bbs\.wolfax\.com': ('wolfax_forum', 'OUT'),
     # vanhi
-    'forum\.vanhi\.com': 'vanhi_forum',
+    'forum\.vanhi\.com': ('vanhi_forum', 'OUT'),
     # secretchina
-    'www\.secretchina\.com': 'secretchina_news',
+    'www\.secretchina\.com': ('secretchina_news', 'OUT'),
     # creaders
-    'news\.creaders\.net': 'creaders_news',
+    'news\.creaders\.net': ('creaders_news', 'OUT'),
 
     # By hm
     # wenxuecity
-    'bbs\.wenxuecity\.com': 'wenxuecity_forum',
-    'wenxuecity\.com/news': 'wenxuecity_news',
-    'wenxuecity\.com/myblog': 'wenxuecity_blog',
+    'bbs\.wenxuecity\.com': ('wenxuecity_forum', 'OUT'),
+    'wenxuecity\.com/news': ('wenxuecity_news', 'OUT'),
+    'wenxuecity\.com/myblog': ('wenxuecity_blog', 'OUT'),
     # memehk
-    'forum\.memehk\.com': 'memehk_forum',
+    'forum\.memehk\.com': ('memehk_forum', 'OUT'),
     # 51
-    'bbs\.51\.ca': '51_forum',
+    'bbs\.51\.ca': ('51_forum', 'OUT'),
     # eulam
-    'bbs\.eulam\.com': 'eulam_forum',
+    'bbs\.eulam\.com': ('eulam_forum', 'OUT'),
     # boxun
-    'boxun\.com/forum': 'boxun_forum',
+    'boxun\.com/forum': ('boxun_forum', 'OUT'),
 
     # CasperJS
-    'boxun\.com/news': 'disqus',
-    'blog\.boxun\.com': 'disqus',
+    'boxun\.com/news': ('disqus', 'OUT'),
+    'blog\.boxun\.com': ('disqus', 'OUT'),
 }
