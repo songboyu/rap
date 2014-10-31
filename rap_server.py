@@ -77,7 +77,7 @@ def reply(job_body):
     # 将beanstalkc队列中获取到的信息记录到数据库中
     # 将初始状态（status）置为 1 --- 正在发送
     cursor.execute('set character set "utf8"')
-    cursor.execute('update reply_job set status = 1 where job_id = %s', (job_id,))
+    cursor.execute('update reply_job set status = 1, url_title = %s where job_id = %s', (url_title, job_id))
     # cursor.execute('insert into reply_job '
     #                '(url, content, username, password, nickname, title, proxy, reply_time, status, update_time, url_title) '
     #                'values (%s, %s, %s, %s, %s, %s, %s, now(), 1, now(), %s)',
