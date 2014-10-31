@@ -40,10 +40,12 @@ def reply(post_url, src):
         src['TTL'] = config.max_try
     if 'proxies' not in src:
         src['proxies'] = ''
-
+    print src
     # Log the username and password if necessary
-    if 'username' in src:
-        logger.debug('Account: ' + src['username'] + ' ' + src['password'])
+    if src['username'] and src['password']:
+        logger.debug('Account: ' + src['username'] + '/' + src['password'])
+    else:
+        logger.debug('Account: none/none')
 
     # Use http instead of https
     post_url = post_url.replace('https', 'http')
