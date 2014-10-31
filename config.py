@@ -22,7 +22,7 @@ dispatch_rule = {
     'club\.kdnet\.net/': ('kdnet', 'IN'),
     # 163
     'blog\.163\.com/': ('163_blog', 'IN'),
-    'news\.163\.com/[0-9]': ('163_news', 'IN'),
+    '(view|news)\.163\.com/[0-9]': ('163_news', 'IN'),
     'bbs.*\.163\.com/bbs/': ('163_bbs', 'IN'),
     # sina
     '(forum|club).*\.sina\.com\.cn': ('sina_club', 'IN'),

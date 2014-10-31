@@ -18,7 +18,7 @@ def reply(post_url, src):
 
     return rap.reply(post_url, src)
 if __name__ == '__main__':
-    r, log = reply('http://news.sina.com.cn/s/2014-10-31/123331075531.shtml',
-                   {'username': 'liwang199923@gmail.com',
-                    'password': 'blueshit',
+    r, log = reply('http://view.163.com/14/1030/09/A9Q0FD8J00012Q9L.html',
+                   {'username': 'ajsdhsjdfoo@163.com',
+                    'password': '13936755635',
                     'content': '大家中午好'})
