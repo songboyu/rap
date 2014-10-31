@@ -6,6 +6,7 @@
 @summary: RAP Server
 
 """
+import re
 import json
 import logging
 import logging.config
@@ -13,8 +14,8 @@ import logging.config
 import beanstalkc
 import MySQLdb
 import yaml
+import chardet
 import requests
-from bs4 import BeautifulSoup
 
 import rap
 
@@ -29,9 +30,9 @@ def get_url_title(post_url):
     """
     try:
         resp = requests.get(post_url)
-        soup = BeautifulSoup(resp.content)
-        title = soup.find('title').text.encode('utf8')
-        return title
+        title = re.findall('<title>(.*?)</title>',resp.content)[0]
+        result = chardet.detect(title)  
+        return title.decode(result['encoding'])
     except:
         return ''
 
@@ -107,14 +108,6 @@ def reply(job_body):
     conn.close()
 
 def _decode_dict(data):
-    """json.loads()返回编码由unicode转换为utf8
-
-    @param data:    json源数据
-    @type data:     str
-
-    @return:        json编码后数据
-    @rtype:         json(utf8)
-    """
     rv = {}
     for key, value in data.iteritems():
         if isinstance(key, unicode):
@@ -135,7 +128,7 @@ def main():
         bean = beanstalkc.Connection(CONFIG['beanstalk']['ip'],
                                      CONFIG['beanstalk']['port'])
         # 监听rap_server
-        bean.watch('rap_out')
+        bean.watch('rap_in')
         bean.ignore('default')
     except:
         logging.critical('Cann\'t connect to beanstalk server')
