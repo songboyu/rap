@@ -106,6 +106,28 @@ def reply(job_body):
     conn.commit()
     conn.close()
 
+def _decode_dict(data):
+    """json.loads()返回编码由unicode转换为utf8
+
+    @param data:    json源数据
+    @type data:     str
+
+    @return:        json编码后数据
+    @rtype:         json(utf8)
+    """
+    rv = {}
+    for key, value in data.iteritems():
+        if isinstance(key, unicode):
+            key = key.encode('utf-8')
+        if isinstance(value, unicode):
+            value = value.encode('utf-8')
+        elif isinstance(value, list):
+            value = _decode_list(value)
+        elif isinstance(value, dict):
+            value = _decode_dict(value)
+        rv[key] = value
+    return rv
+
 def main():
     """Main eventloop."""
     try:
@@ -124,11 +146,9 @@ def main():
         logging.info(job.body)
         try:
             # job_body转为json格式
-            job_body = json.loads(job.body).encode('utf8')
+            job_body = json.loads(job.body, object_hook=_decode_dict)
 
-            logging.info(job_body['job_id'])
-            logging.info(job_body['post_url'])
-            logging.info(job_body['src'])
+            logging.info(job_body)
             logging.info('load json ok')
 
             reply(job_body)
