@@ -59,42 +59,43 @@ def login_sina(sess, post_url, src):
         # 获取页面跳转地址
         redirects = re.findall(r'location.replace\(\"(.*?)\"\)',
                                resp.content)
-        logger.debug(' login need captcha')
         resp = sess.post(redirects[0])
         # 获取页面跳转地址
         redirects = re.findall(r'href=\"(.*?)\">如果',
                                resp.content
                                .decode(CHARSET).encode('utf-8'))
-        resp = sess.post(redirects[0])
-        # 验证码地址
-        captcha_url = re.findall(r'id=\"capcha\" src=\"(.*?)\"',
-                                 resp.content)[0]
-        # 获取验证码图片
-        captcha = sess.get(captcha_url,
-                              headers={
-                                  'Accept': config.accept_image,
-                                  'Referer': post_url
-                              })
-        # 获取验证码字符串
-        seccode = utils.crack_captcha(captcha.content)
-        logger.debug(' seccode:' + seccode)
+        if len(redirects)>0:
+            logger.debug(' login need captcha')
+            resp = sess.post(redirects[0])
+            # 验证码地址
+            captcha_url = re.findall(r'id=\"capcha\" src=\"(.*?)\"',
+                                     resp.content)[0]
+            # 获取验证码图片
+            captcha = sess.get(captcha_url,
+                                  headers={
+                                      'Accept': config.accept_image,
+                                      'Referer': post_url
+                                  })
+            # 获取验证码字符串
+            seccode = utils.crack_captcha(captcha.content)
+            logger.debug(' seccode:' + seccode)
 
-        soup = BeautifulSoup(resp.content)
-        # 获取登录form
-        form = soup.find('form', attrs={'name': 'login'})
-        # 构造登录参数
-        payload = utils.get_datadic(form)
-        payload['username'] = src['username']
-        payload['password'] = src['password']
-        # 验证码
-        payload['door'] = seccode
-        # 发送登录post包
-        resp = sess.post(login_url, data=payload)
-        # 获取页面跳转地址
-        redirects = re.findall(r'location.replace\(\"(.*?)\"\)',
-                               resp.content)
-        # 获取登录结果
-        resp = sess.post(redirects[0])
+            soup = BeautifulSoup(resp.content)
+            # 获取登录form
+            form = soup.find('form', attrs={'name': 'login'})
+            # 构造登录参数
+            payload = utils.get_datadic(form)
+            payload['username'] = src['username']
+            payload['password'] = src['password']
+            # 验证码
+            payload['door'] = seccode
+            # 发送登录post包
+            resp = sess.post(login_url, data=payload)
+            # 获取页面跳转地址
+            redirects = re.findall(r'location.replace\(\"(.*?)\"\)',
+                                   resp.content)
+            # 获取登录结果
+            resp = sess.post(redirects[0])
     # 若指定字样出现在response中，表示登录成功
     if u'正在登录' not in resp.content.decode(CHARSET):
         message = re.findall(r'<p>(.*?)</p>', resp.content)[0]
