@@ -141,8 +141,7 @@ def reply_sina_club(post_url, src):
     form = soup.find('form', attrs={'id': 'postform'})
     # 构造回复参数
     payload = utils.get_datadic(form)
-    # payload['message'] = src['content'].decode('utf8').encode(CHARSET)
-    payload['message'] = src['content'].encode(CHARSET)
+    payload['message'] = src['content'].decode('utf8').encode(CHARSET)
     # 替换回复地址中的特殊符号
     reply_url = reply_url.replace('&amp;', '&')
     # 发送回复post包

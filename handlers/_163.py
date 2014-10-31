@@ -342,8 +342,7 @@ def reply_163_bbs(post_url, src):
     # 构造回复参数
     payload = {
         'checkcode': seccode,
-        # 'content': src['content'].decode('utf8').encode(CHARSET),
-        'content': src['content'].encode(CHARSET),
+        'content': src['content'].decode('utf8').encode(CHARSET),
         'title': re.findall('<title>(.*?)</title>', page.content)[0],
         'boardId': board_id,
         'threadId': thread_id

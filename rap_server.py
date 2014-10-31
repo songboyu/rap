@@ -69,34 +69,25 @@ def reply(job_body):
     src = job_body['src']
     job_id = job_body['job_id']
     post_url = job_body['post_url']
+
     # 获取帖子标题
     url_title = get_url_title(post_url)
+
     # 连接数据库
     conn = db_connect()
     cursor = conn.cursor()
+
     # 将beanstalkc队列中获取到的信息记录到数据库中
     # 将初始状态（status）置为 1 --- 正在发送
     cursor.execute('set character set "utf8"')
     cursor.execute('update reply_job set status = 1, url_title = %s where job_id = %s', (url_title, job_id))
-    # cursor.execute('insert into reply_job '
-    #                '(url, content, username, password, nickname, title, proxy, reply_time, status, update_time, url_title) '
-    #                'values (%s, %s, %s, %s, %s, %s, %s, now(), 1, now(), %s)',
-    #                (post_url,
-    #                 src['content'],     # 回复内容
-    #                 src['username'],    # 用户名
-    #                 src['password'],    # 密码
-    #                 src['nickname'],    # 昵称
-    #                 src['subject'],     # 主题
-    #                 src['proxies'],     # 代理
-    #                 url_title))
+    
     # 将 "正在发送" 状态提交
     conn.commit()
-    # 查找刚刚插入记录的主键 --- job_id
-    # cursor.execute('select @@IDENTITY')
-    # for row in cursor.fetchall():
-    #     job_id = row[0]
+    
     # 调用回复函数
     r, log = rap.reply(post_url, src)
+
     # 判断回复结果状态
     # 2 --- OK
     # 3 --- Error.
@@ -130,12 +121,16 @@ def main():
     while True:
         # 开启守护进程，持续接收信息
         job = bean.reserve()
-        logging.debug(job.body)
-
+        logging.info(job.body)
         try:
             # job_body转为json格式
-            job_body = json.loads(job.body)
-            logging.debug('load json ok')
+            job_body = json.loads(job.body).encode('utf8')
+
+            logging.info(job_body['job_id'])
+            logging.info(job_body['post_url'])
+            logging.info(job_body['src'])
+            logging.info('load json ok')
+
             reply(job_body)
         except:
             logging.exception('reply exception')

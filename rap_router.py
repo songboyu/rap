@@ -29,6 +29,7 @@ def rap_dispatcher(msg):
     src = json.loads(msg)
     for pattern, handler in config.dispatch_rule.items():
         if re.search(pattern, src['post_url']):
+            logging.info(handler)
             if handler[1] == 'IN':
                 return ['rap_in']
             elif handler[1] == 'OUT':

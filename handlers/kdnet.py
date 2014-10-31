@@ -51,8 +51,7 @@ def reply_kdnet(post_url, src):
     payload = utils.get_datadic(form)
     payload['UserName'] = src['username']
     payload['password'] = src['password']
-    # payload['body'] = src['content'].decode('utf8').encode(CHARSET)
-    payload['body'] = src['content'].encode(CHARSET)
+    payload['body'] = src['content'].decode('utf8').encode(CHARSET)
     # 回复地址
     reply_url = 'http://upfile1.kdnet.net/do_lu_shuiyin.asp?'\
         + 'action=sre&method=fastreply&BoardID='
