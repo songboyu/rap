@@ -30,9 +30,12 @@ def rap_dispatcher(msg):
     for pattern, handler in config.dispatch_rule.items():
         if re.search(pattern, src['post_url']):
             if handler[1] == 'IN':
-                return 'rap_in'
+                return ['rap_in']
             elif handler[1] == 'OUT':
-                return 'rap_out'
+                return ['rap_out']
+    # Although no such handler, discarding it will cause some db problems. So
+    # pass it to a queue.
+    return ['rap_in']
 
 
 if __name__ == '__main__':
