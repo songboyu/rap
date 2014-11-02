@@ -109,7 +109,7 @@ def cli(cmd_prefix):
             import subprocess
             try:
                 # Also capture standard error in the result.
-                r = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
+                r = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
                 return (True, r)
             except subprocess.CalledProcessError as e:
                 return (False, e.output)
