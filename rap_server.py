@@ -30,7 +30,7 @@ def get_url_title(post_url):
     """
     try:
         resp = requests.get(post_url)
-        title = re.findall('<title>(.*?)</title>',resp.content)[0]
+        title = re.findall('<(title|TITLE)>(.*?)</(title|TITLE)>',resp.content)[0][1]
         result = chardet.detect(title)  
         return title.decode(result['encoding'])
     except:
@@ -81,7 +81,7 @@ def reply(job_body):
     # 将beanstalkc队列中获取到的信息记录到数据库中
     # 将初始状态（status）置为 1 --- 正在发送
     cursor.execute('set character set "utf8"')
-    cursor.execute('update reply_job set status = 1, url_title = %s where job_id = %s', (url_title, job_id))
+    cursor.execute('update reply_job set status = 1, url_title = %s, update_time = now() where job_id = %s', (url_title, job_id))
     
     # 将 "正在发送" 状态提交
     conn.commit()
