@@ -28,5 +28,5 @@ def reply_boxun_forum(post_url, src):
     if u'错误'.encode('gb2312') in r.content:
         logger.error('Reply Error')
         return (False, str(logger))
-    logger.debug('Reply OK')
+    logger.info('Reply OK')
     return (True, str(logger))

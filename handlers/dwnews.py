@@ -31,9 +31,9 @@ def reply_dwnews_news(post_url, src):
         })
 
     if 'success' not in r.content:
-        logger.debug('Reply Error')
+        logger.info('Reply Error')
         return (False, str(logger))
-    logger.debug('Reply OK')
+    logger.info('Reply OK')
     return (True, str(logger))
 
 # Coding: utf8
@@ -61,7 +61,7 @@ def reply_dwnews_blog(post_url, src):
         })
 
     if 'success' not in r.content:
-        logger.debug('Reply Error')
+        logger.info('Reply Error')
         return (False, str(logger))
-    logger.debug('Reply OK')
+    logger.info('Reply OK')
     return (True, str(logger))

@@ -32,7 +32,7 @@ def reply_aboluowang_forum(post_url, src):
     if tag:
         logger.error('Login Error: ' + tag.find('p').text)
         return (False, str(logger))
-    logger.debug('Login OK')
+    logger.info('Login OK')
 
     # Step 2: Load post page
     r = s.get(post_url)
@@ -61,7 +61,7 @@ def reply_aboluowang_forum(post_url, src):
     a = chinese_numbers.index(formula[plus_index - 1]) 
     b = chinese_numbers.index(formula[plus_index + 1]) 
     seccode = a + b
-    logger.debug('%d + %d = %d' % (a, b, seccode))
+    logger.info('%d + %d = %d' % (a, b, seccode))
 
     # Step 4: Submit and check
     payload = get_datadic(form)
@@ -82,7 +82,7 @@ def reply_aboluowang_forum(post_url, src):
             src['TTL'] -= 1
             return reply_aboluowang_forum(post_url, src)
         return (False, str(logger))
-    logger.debug('Reply OK')
+    logger.info('Reply OK')
     return (True, str(logger))
 
 # Coding: utf8
@@ -116,5 +116,5 @@ def reply_aboluowang_news(post_url, src):
     if '操作成功' not in r.content:
         logger.error('Reply Error')
         return (False, str(logger))
-    logger.debug('Reply OK')
+    logger.info('Reply OK')
     return (True, str(logger))

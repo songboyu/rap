@@ -150,11 +150,11 @@ class RAPLogger():
     def __str__(self):
         return self.buf
 
-    def debug(self, msg):
+    def info(self, msg):
         if isinstance(msg, unicode):
             msg = msg.encode('utf8')
-        self.logger.debug(msg)
-        self.buf += ' - '.join([datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'DEBUG', msg]) + '\n'
+        self.logger.info(msg)
+        self.buf += ' - '.join([datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'INFO', msg]) + '\n'
 
     def error(self, msg):
         if isinstance(msg, unicode):

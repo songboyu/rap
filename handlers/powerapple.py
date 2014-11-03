@@ -61,7 +61,7 @@ def reply_powerapple_forum(post_url, src):
 
     #判断登录后页面是否含有用户字段，若存在则证明登录成功，否则失败
     if src['username'] in resp.content:
-        logger.debug('Login OK')
+        logger.info('Login OK')
     else:
         logger.error(
             'Login Error: Username Or Password error , please try again !')
@@ -87,7 +87,7 @@ def reply_powerapple_forum(post_url, src):
 
     #判断回帖后页面是否含有回帖内容，若存在则证明回帖成功，否则失败
     if src['content'] in resp.content:
-        logger.debug('Reply OK')
+        logger.info('Reply OK')
     else:
         logger.error('Login Error: Reply Error, please try again !')
         return (False, str(logger))

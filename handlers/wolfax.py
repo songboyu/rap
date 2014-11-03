@@ -32,7 +32,7 @@ def reply_wolfax_forum(post_url, src):
     if tag:
         logger.error('Login Error: ' + tag.find('p').text)
         return (False, str(logger))
-    logger.debug('Login OK')
+    logger.info('Login OK')
 
     # Step 2: Load post page
     r = s.get(post_url)
@@ -56,7 +56,7 @@ def reply_wolfax_forum(post_url, src):
     # ...
     a, op, b = re.findall("'(\d+) (.) (\d+)", r.content)[0]
     seccode = int(a) + int(b) if op == '+' else int(a) - int(b)
-    logger.debug('%s %s %s = %d' % (a, op, b, seccode))
+    logger.info('%s %s %s = %d' % (a, op, b, seccode))
 
     # Step 4: Submit and check
     payload = get_datadic(form)
@@ -78,5 +78,5 @@ def reply_wolfax_forum(post_url, src):
             src['TTL'] -= 1
             return reply_wolfax_forum(post_url, src)
         return (False, str(logger))
-    logger.debug('Reply OK')
+    logger.info('Reply OK')
     return (True, str(logger))

@@ -44,5 +44,5 @@ def reply_secretchina_news(post_url, src):
     if 'success' not in r.content: 
         logger.error('Reply Error')
         return (False, str(logger))
-    logger.debug('Reply OK')
+    logger.info('Reply OK')
     return (True, str(logger))

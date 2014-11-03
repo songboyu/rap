@@ -47,5 +47,5 @@ def reply_mirrorbooks_news(post_url, src):
             src['TTL'] -= 1
             return reply_mirrorbooks_news2(post_url, src)
         return (False, str(logger))
-    logger.debug('Reply OK')
+    logger.info('Reply OK')
     return (True, str(logger))

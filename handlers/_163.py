@@ -82,7 +82,7 @@ def reply_163_blog(post_url, src):
     if not login_163(sess, src):
         logger.error(' Login Error')
         return (False, str(logger))
-    logger.debug(' Login OK')
+    logger.info(' Login OK')
 
     # Step 2: 验证码
     resp = sess.get(post_url)
@@ -96,7 +96,7 @@ def reply_163_blog(post_url, src):
                           })
     # 获取验证码字符串
     seccode = utils.crack_captcha(resp.content)
-    logger.debug(' seccode:' + seccode)
+    logger.info(' seccode:' + seccode)
 
     # Step 3: 提交回复
     resp = sess.get(post_url)
@@ -153,10 +153,10 @@ def reply_163_blog(post_url, src):
                            data=payload, headers=headers)
     # 若指定字样出现在response中，表示回复成功
     if '_remoteHandleCallback' not in resp.content:
-        logger.debug(resp.content)
+        logger.info(resp.content)
         logger.error(' Reply Error')
         return (False, str(logger))
-    logger.debug(' Reply OK')
+    logger.info(' Reply OK')
     return (True, str(logger))
 
 
@@ -185,7 +185,7 @@ def reply_163_news(post_url, src):
     if not login_163(sess, src):
         logger.error(' Login Error')
         return (False, str(logger))
-    logger.debug(' Login OK')
+    logger.info(' Login OK')
 
     # Step 2: 验证码
     resp = sess.get(post_url)
@@ -224,7 +224,7 @@ def reply_163_news(post_url, src):
                                   })
             # 获取验证码字符串
             seccode = utils.crack_captcha(resp.content)
-            logger.debug(' seccode:' + seccode)
+            logger.info(' seccode:' + seccode)
             # 询问验证码是否正确
             resp = sess.get('http://comment.news.163.com/reply/'
                                   'isValidateCodeValid.jsp?'
@@ -232,7 +232,7 @@ def reply_163_news(post_url, src):
                                   headers={
                                       'Referer': comments_url,
                                   })
-            logger.debug(resp.content)
+            logger.info(resp.content)
             validate_sucess = 'true' in resp.content
 
     # Step 3: 回复
@@ -255,7 +255,7 @@ def reply_163_news(post_url, src):
     if '网易首页' not in resp.content:
         logger.error(' Reply Error')
         return (False, str(logger))
-    logger.debug(' Reply OK')
+    logger.info(' Reply OK')
     return (True, str(logger))
 
 
@@ -284,11 +284,11 @@ def reply_163_bbs(post_url, src):
     if not login_163(sess, src):
         logger.error(' Login Error')
         return (False, str(logger))
-    logger.debug(' Login OK')
+    logger.info(' Login OK')
 
     # Step 2: 验证码
     host = utils.get_host(post_url)
-    logger.debug(host)
+    logger.info(host)
     page = sess.get(post_url)
     # 获取各项参数
     board_id = re.findall('boardId = \"(.*?)\"', page.content)[0]
@@ -306,7 +306,7 @@ def reply_163_bbs(post_url, src):
                            })
     # 询问结果
     check_code = re.findall('\"checkCode\":\"(.*?)\",', resp.content)[0]
-    logger.debug(check_code)
+    logger.info(check_code)
 
     seccode = ''
     validate_sucess = False
@@ -327,7 +327,7 @@ def reply_163_bbs(post_url, src):
                                   })
             # 获取验证码字符串
             seccode = utils.crack_captcha(resp.content)
-            logger.debug(' seccode:' + seccode)
+            logger.info(' seccode:' + seccode)
             # 发送验证码，询问是否正确
             payload = {'code': seccode.encode('utf-8')}
             resp = sess.post(host + 'v2/checkcode/validate', data=payload,
@@ -335,7 +335,7 @@ def reply_163_bbs(post_url, src):
                                        'Origin': host,
                                        'Referer': post_url,
                                    })
-            logger.debug(resp.content)
+            logger.info(resp.content)
             validate_sucess = '"code":1' in resp.content
 
     # Step 3: 回复
@@ -358,5 +358,5 @@ def reply_163_bbs(post_url, src):
                      re.findall('\"message\">(.*?)</td>',
                                 resp.content.decode(CHARSET))[0])
         return (False, str(logger))
-    logger.debug(' Reply OK')
+    logger.info(' Reply OK')
     return (True, str(logger))

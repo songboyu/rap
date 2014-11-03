@@ -29,7 +29,7 @@ def reply_vanhi_forum(post_url, src):
                 context.eval('location.assign = get_url, location.replace = get_url;')
                 context.eval(js)
                 real_url = context.eval('url || location.href')
-                logger.debug(real_url)
+                logger.info(real_url)
                 r = s.get(host + real_url)
             ret = re.findall('seccode_(\w*)', r.content)
             if ret:
@@ -65,7 +65,7 @@ def reply_vanhi_forum(post_url, src):
             r = s.post(host + form['action'], data=payload)
             ret = re.findall("location\.href='(.*)'", r.content)
             if ret:
-                logger.debug('Login 1 OK')
+                logger.info('Login 1 OK')
                 return host + ret[0]
             logger.error('Login 1 Error')
         raise RAPMaxTryException('login_1')
@@ -86,7 +86,7 @@ def reply_vanhi_forum(post_url, src):
             soup = BeautifulSoup(r.content)
             tag = soup.find('div', attrs={'id': 'messagetext'})
             if tag and tag.find('a') and hasattr(tag.find('a'), 'text') and u'自动跳转' in tag.find('a').text:
-                logger.debug('Login 2 OK')
+                logger.info('Login 2 OK')
                 return
             logger.error('Login 2 Error')
         raise RAPMaxTryException('login_2')
@@ -110,7 +110,7 @@ def reply_vanhi_forum(post_url, src):
             soup = BeautifulSoup(r.content)
             tag = soup.find('div', attrs={'id': 'messagetext'})
             if not tag:
-                logger.debug('Reply OK')
+                logger.info('Reply OK')
                 return (True, str(logger))
             logger.error(tag.find('p').text)
         raise RAPMaxTryException('submit')

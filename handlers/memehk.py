@@ -25,7 +25,7 @@ def reply_memehk_forum(post_url, src):
     if '失敗' in r.content:
         logger.error('Login Error')
         return (False, str(logger))
-    logger.debug('Login OK')
+    logger.info('Login OK')
 
     r = s.get(post_url)
     soup = BeautifulSoup(r.content)
@@ -36,5 +36,5 @@ def reply_memehk_forum(post_url, src):
     if 'errorhandle_fastpost' in r.content:
         logger.error('Reply Error')
         return (False, str(logger))
-    logger.debug('Reply OK')
+    logger.info('Reply OK')
     return (True, str(logger))

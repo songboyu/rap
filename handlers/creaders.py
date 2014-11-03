@@ -36,6 +36,6 @@ def reply_creaders_news(post_url, src):
     if u'评论成功'.encode('gb2312') not in r.content:
     	logger.error('Reply Error')
     	return (False, str(logger))
-    logger.debug('Reply OK')
+    logger.info('Reply OK')
     return (True, str(logger))
 

@@ -43,9 +43,9 @@ def reply(post_url, src):
     print src
     # Log the username and password if necessary
     if src['username'] and src['password']:
-        logger.debug('Account: ' + src['username'] + '/' + src['password'])
+        logger.info('Account: ' + src['username'] + '/' + src['password'])
     else:
-        logger.debug('Account: none/none')
+        logger.info('Account: none/none')
 
     # Use http instead of https
     post_url = post_url.replace('https', 'http')

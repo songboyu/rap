@@ -52,7 +52,7 @@ def reply_ieasy5_news(post_url, src):
             src['TTL'] -= 1
             return reply_ieasy5_news(post_url, src)
         return (False, str(logger))
-    logger.debug('Reply OK')
+    logger.info('Reply OK')
     return (True, str(logger))
 
 # Coding: gbk
@@ -81,7 +81,7 @@ def reply_ieasy5_forum(post_url, src):
     if u'顺利登录' not in tag.text:
         logger.error('Login Error: ' + tag.text)
         return (False, str(logger))
-    logger.debug('Login OK')
+    logger.info('Login OK')
 
     # Step 2: Load post page
     r = s.get(post_url)
@@ -100,5 +100,5 @@ def reply_ieasy5_forum(post_url, src):
     if u'跳转' not in tag.find('a').text:
         logger.error('Reply Error')
         return (False, str(logger))
-    logger.debug('Reply OK')
+    logger.info('Reply OK')
     return (True, str(logger))

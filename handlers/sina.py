@@ -65,7 +65,7 @@ def login_sina(sess, post_url, src):
                                resp.content
                                .decode(CHARSET).encode('utf-8'))
         if len(redirects)>0:
-            logger.debug(' login need captcha')
+            logger.info(' login need captcha')
             resp = sess.post(redirects[0])
             # 验证码地址
             captcha_url = re.findall(r'id=\"capcha\" src=\"(.*?)\"',
@@ -78,7 +78,7 @@ def login_sina(sess, post_url, src):
                                   })
             # 获取验证码字符串
             seccode = utils.crack_captcha(captcha.content)
-            logger.debug(' seccode:' + seccode)
+            logger.info(' seccode:' + seccode)
 
             soup = BeautifulSoup(resp.content)
             # 获取登录form
@@ -99,7 +99,7 @@ def login_sina(sess, post_url, src):
     # 若指定字样出现在response中，表示登录成功
     if u'正在登录' not in resp.content.decode(CHARSET):
         message = re.findall(r'<p>(.*?)</p>', resp.content)[0]
-        logger.debug(message.decode(CHARSET).encode('utf-8'))
+        logger.info(message.decode(CHARSET).encode('utf-8'))
         return False
     return True
 
@@ -129,7 +129,7 @@ def reply_sina_club(post_url, src):
     if not login_sina(sess, post_url, src):
         logger.error(' Login Error')
         return (False, str(logger))
-    logger.debug(' Login OK')
+    logger.info(' Login OK')
 
     # Step 2: 回复
     resp = sess.get(post_url)
@@ -158,7 +158,7 @@ def reply_sina_club(post_url, src):
             and post_times < src['TTL']:
         # 限制最大发送次数
         post_times = post_times + 1
-        logger.debug(' reply need captcha')
+        logger.info(' reply need captcha')
         # 获取验证码图片
         captcha = sess.get(host + 'seccode.php',
                               headers={
@@ -167,7 +167,7 @@ def reply_sina_club(post_url, src):
                               })
         # 获取验证码字符串
         seccode = utils.crack_captcha(captcha.content)
-        logger.debug(' seccode:' + seccode)
+        logger.info(' seccode:' + seccode)
         # 回复参数中增加验证码
         payload['seccodeverify'] = seccode.decode(CHARSET)
         # 发送回复post包
@@ -180,7 +180,7 @@ def reply_sina_club(post_url, src):
     if 'postform' not in resp.content:
         logger.error(' Reply Error')
         return (False, str(logger))
-    logger.debug(' Reply OK')
+    logger.info(' Reply OK')
     return (True, str(logger))
 
 
@@ -210,7 +210,7 @@ def reply_sina_news(post_url, src):
     if not login_sina(sess, post_url, src):
         logger.error(' Login Error')
         return (False, str(logger))
-    logger.debug(' Login OK')
+    logger.info(' Login OK')
 
     # Step 2: 回复
     # 频道id
@@ -243,5 +243,5 @@ def reply_sina_news(post_url, src):
     if 'result' not in resp.content:
         logger.error(' Reply Error')
         return (False, str(logger))
-    logger.debug(' Reply OK')
+    logger.info(' Reply OK')
     return (True, str(logger))

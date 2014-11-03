@@ -61,5 +61,5 @@ def reply_kdnet(post_url, src):
     if u'成功回复'.encode(CHARSET) not in resp.content:
         logger.error(' Reply Error')
         return (False, str(logger))
-    logger.debug(' Reply OK')
+    logger.info(' Reply OK')
     return (True, str(logger))
