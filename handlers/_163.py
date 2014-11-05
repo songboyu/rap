@@ -360,3 +360,79 @@ def reply_163_bbs(post_url, src):
         return (False, str(logger))
     logger.info(' Reply OK')
     return (True, str(logger))
+
+def get_account_info_163_bbs(src):
+    """ 网易论坛账户信息获取函数
+
+    @param src:        用户名，密码
+    @type src:         dict
+
+    @return:           账户信息
+    @rtype:            dict
+    """
+    logger = utils.RAPLogger(src['username'])
+    sess = utils.RAPSession(src)
+
+    faild_info = {'Error':'Failed to get account info'}
+    # Step 1: 登录
+    if not login_163(sess, src):
+        logger.error(' Login Error')
+        return (faild_info, str(logger))
+    logger.info(' Login OK')
+
+    resp = sess.get('http://bbs.163.com/user/profile.do')
+    head_image = re.findall(r'<img src=\"(.*?)\" alt="face"', resp.content)[0]
+
+    acount_score = re.findall(r'总积分：(\d*)', resp.content)[0]
+    acount_class = re.findall(r'等级：(\d*)', resp.content)[0]
+
+    time_register = re.findall(r'注册时间：(.*?)<', resp.content)[0]
+    time_last_login = re.findall(r'最后登录：(.*?)<', resp.content)[0]
+    login_count = ''
+
+    count = -1
+    page = 1
+    count_post = 0
+    while count != 0:
+        resp = sess.get('http://bbs.163.com/user/topic.do?page='+str(page))
+        count = len(re.findall(r'my_bbs_title', resp.content))
+        count_post = count_post + count
+        page = page + 1
+
+    count = -1
+    page = 1
+    count_reply = 0
+    while count != 0:
+        resp = sess.get('http://bbs.163.com/user/reply.do?page='+str(page))
+        count = len(re.findall(r'my_bbs_title', resp.content))
+        count_reply = count_reply + count
+        page = page + 1
+
+    acount_info = {
+        #########################################
+        # 用户名
+        'username':src['username'],
+        # 密码
+        'password':src['password'],
+        # 头像图片
+        'head_image':head_image,
+        #########################################
+        # 积分
+        'acount_score':acount_score,
+        # 等级
+        'acount_class':acount_class,
+        #########################################
+        # 注册时间
+        'time_register':time_register,
+        # 最近登录时间
+        'time_last_login':time_last_login,
+        # 登录次数
+        'login_count':login_count,
+        #########################################
+        # 主帖数
+        'count_post':count_post,
+        # 回复数
+        'count_reply':count_reply
+        #########################################
+    }
+    return (acount_info, str(logger))
