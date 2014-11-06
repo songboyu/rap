@@ -18,6 +18,10 @@ chaoren_password = '1qazxsw2'
 # URL dispatch
 dispatch_rule = {
     # By HSS
+    # unitedtimes
+    'unitedtimes\.com\.au/':('unitedtimes','OUT'),
+    # inmediahk
+    'www\.inmediahk\.net/':('inmediahk','OUT'),
     # kdnet
     'club\.kdnet\.net/': ('kdnet', 'IN'),
     # 163
@@ -30,7 +34,7 @@ dispatch_rule = {
 
     # By kerry
     # backchina
-    'www\.backchina\.com': ('backchina_forum', 'OUT'),
+    'www\.backchina\.com/forum': ('backchina_forum', 'OUT'),
     # powerapple
     'bbs\.powerapple\.com': ('powerapple_forum', 'OUT'),
 
