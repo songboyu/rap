@@ -3,7 +3,9 @@ RAP
 
 RAP is an automated system for reply and post on various websites including news, blogs and forums.
 
-    多维博客        dwnews_blog
+    website list:
+    
+    多维博客        dwnews_blog         
     多维新闻        dwnews_news
     明镜新闻        mirrorbooks_news
     加拿大加易新闻  ieasy5_news
@@ -27,4 +29,17 @@ RAP is an automated system for reply and post on various websites including news
     新浪新闻        sina_news
     新浪论坛        sina_club
     倍可亲          backchina_forum
-    超级苹果        powerapple_forum
+    超级苹果论坛    powerapple_forum
+    超级苹果论坛    powerapple_news
+    香港独立媒体    inmediahk
+    澳洲联合网      unitedtimes
+    
+python library  (pip install ---)
+
+    requests
+    Beautifulsoup4
+    MySQl-python
+    PyYAML
+    beanstalkc
+    chardet
+    
