@@ -18,6 +18,7 @@ import chardet
 import requests
 
 import rap
+import account_info
 
 def get_url_title(post_url):
     """Get url title with utf8 encoding format.
@@ -28,13 +29,10 @@ def get_url_title(post_url):
     @return:            帖子标题
     @rtype：            str
     """
-    try:
-        resp = requests.get(post_url)
-        title = re.findall('<(title|TITLE)>(.*?)</(title|TITLE)>',resp.content)[0][1]
-        result = chardet.detect(title)  
-        return title.decode(result['encoding'])
-    except:
-        return ''
+    resp = requests.get(post_url)
+    title = re.findall('<title>(.*?)</title>',resp.content)[0]
+    result = chardet.detect(title)  
+    return title.decode(result['encoding'])
 
 def db_connect():
     """数据库连接
@@ -70,6 +68,7 @@ def reply(job_body):
     src = job_body['src']
     job_id = job_body['job_id']
     post_url = job_body['post_url']
+    mode = job_body['mode']
 
     # 获取帖子标题
     url_title = get_url_title(post_url)
@@ -81,8 +80,12 @@ def reply(job_body):
     # 将beanstalkc队列中获取到的信息记录到数据库中
     # 将初始状态（status）置为 1 --- 正在发送
     cursor.execute('set character set "utf8"')
-    cursor.execute('update reply_job set status = 1, url_title = %s, update_time = now() where job_id = %s', (url_title, job_id))
-    
+    count = cursor.execute('update reply_job set '
+                           'status = 1, '
+                           'url_title = %s, '
+                           'update_time = now(),'
+                           'mode = %s where job_id = %s', (url_title, mode, job_id))
+    logging.info('updated reply status 1: ' + str(count))
     # 将 "正在发送" 状态提交
     conn.commit()
     
@@ -93,18 +96,38 @@ def reply(job_body):
     # 2 --- OK
     # 3 --- Error.
     status = 2 if r else 3
-    cursor.execute('update reply_job set status = %s, error = %s, update_time = now() where job_id = %s',
+    count = cursor.execute('update reply_job set status = %s, error = %s, update_time = now() where job_id = %s',
                    (status, log, job_id))
     # 将 "发送成功" 或 "发送失败" 状态提交
     conn.commit()
-    # 如果登录失败，将账号状态置为无效
-    if 'Login Error' in log:
-        # Set the is_invalid tag of this account.
-        cursor.execute('update account set is_invalid = 1 '
-                       'where username = %(username)s and site_sign in (select site_sign from site where site_url like %s)',
-                       (src, '%' + get_site_sign(post_url) + '%'))
+    logging.info('updated reply status '+ str(status) + ': ' + str(count))
+    # 更新账户信息
+    account_is_invalid = 1 if 'Login Error' in log else 0
+    info,log = account_info.get_account_info(post_url,
+                                             {'username':src['username'],
+                                              'password':src['password']})
+    info['is_invalid'] = account_is_invalid
+    info['site_url'] = '%' + get_site_sign(post_url) + '%'
+
+    logging.info(info)
+
+    sql_str = 'update account set ' \
+           'head_image = %(head_image)s, '\
+           'account_score = %(account_score)s, '\
+           'account_class = %(account_class)s, '\
+           'time_register = %(time_register)s, '\
+           'time_last_login = now(), '\
+           'login_count = %(login_count)s, '\
+           'count_post = %(count_post)s, '\
+           'count_reply = %(count_reply)s, '\
+           'is_invalid = %(is_invalid)s ' \
+           'where username = %(username)s and site_sign in '\
+           '(select site_sign from site where site_url like %(site_url)s)'
+    count = cursor.execute(sql_str,(info))
+    logging.info('updated account: ' + str(count))
     # 提交账号状态
     conn.commit()
+
     conn.close()
 
 def _decode_dict(data):
@@ -115,7 +138,7 @@ def _decode_dict(data):
         if isinstance(value, unicode):
             value = value.encode('utf-8')
         elif isinstance(value, list):
-            value = _decode_list(value)
+            value = _decode_dict(value)
         elif isinstance(value, dict):
             value = _decode_dict(value)
         rv[key] = value

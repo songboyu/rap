@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""凯迪回复模块（凯迪社区）
+"""凯迪回复模块
 
 @author: HSS
 @since: 2014-10-20
@@ -16,7 +16,6 @@ from bs4 import BeautifulSoup
 import utils
 
 CHARSET = 'gb2312'
-
 def login_kdnet(sess, src):
     """ 凯迪社区登录函数
 
@@ -42,6 +41,7 @@ def login_kdnet(sess, src):
     if 'msg' in resp.content:
         return False
     return True
+
 
 def reply_kdnet(post_url, src):
     """ 凯迪社区回复函数
@@ -75,19 +75,20 @@ def reply_kdnet(post_url, src):
     boardid = re.findall(r'boardid=(.*\d)', post_url)[0]
     # 构造回复参数
     payload = utils.get_datadic(form)
-    payload['UserName'] = src['username']
-    payload['password'] = src['password']
+    payload['UserName'] = src['username'].decode('utf8').encode(CHARSET)
+    payload['password'] = src['password'].decode('utf8').encode(CHARSET)
     payload['body'] = src['content'].decode('utf8').encode(CHARSET)
     # 回复地址
     reply_url = 'http://upfile1.kdnet.net/do_lu_shuiyin.asp?'\
         + 'action=sre&method=fastreply&BoardID='
     # 发送回复post包
     resp = sess.post(reply_url + boardid, data=payload)
+    print resp.content.decode(CHARSET)
     # 若指定字样出现在response中，表示回复成功
     if u'成功回复'.encode(CHARSET) not in resp.content:
         logger.error(' Reply Error')
         return (False, str(logger))
-    logger.info(' Reply OK')
+    logger.debug(' Reply OK')
     return (True, str(logger))
 
 def get_account_info_kdnet(src):
@@ -107,7 +108,7 @@ def get_account_info_kdnet(src):
     if not login_kdnet(sess, src):
         logger.error(' Login Error')
         return (faild_info, str(logger))
-    logger.info(' Login OK')
+    logger.debug(' Login OK')
 
     resp = sess.get('http://user.kdnet.net/index.asp')
     head_image = re.findall(r'<img id=\"userface_img_index\" onerror=\"this.src = duf_190_190;\" src=\"(.*?)\"', resp.content)[0]
@@ -122,19 +123,19 @@ def get_account_info_kdnet(src):
     login_count = re.findall(r'登录次数：(\d*)<', content)[0]
 
     resp = sess.get('http://user.kdnet.net/posts.asp')
-    content = resp.content.decode(CHARSET).encode('utf8')
-    if '还未发表内容' in content:
+    content = resp.content
+    if u'还未发表内容'.encode(CHARSET) in content:
         count_post = 0
     else:
-        count_post = re.findall(r'共(\d*)条记录', content)[0]
+        count_post = re.findall(ur'共(\d*)条记录'.encode(CHARSET), content)[0]
 
 
     resp = sess.get('http://user.kdnet.net/reply.asp')
-    content = resp.content.decode(CHARSET).encode('utf8')
-    if '还未发表内容' in content:
+    content = resp.content
+    if u'还未发表内容'.encode(CHARSET) in content:
         count_reply = 0
     else:
-        count_reply = re.findall(r'共(\d*)条记录', content)[0]
+        count_reply = re.findall(ur'共(\d*)条记录'.encode(CHARSET), content)[0]
 
     acount_info = {
         #########################################
@@ -146,9 +147,9 @@ def get_account_info_kdnet(src):
         'head_image':head_image,
         #########################################
         # 积分
-        'acount_score':acount_score,
+        'account_score':acount_score,
         # 等级
-        'acount_class':acount_class,
+        'account_class':acount_class,
         #########################################
         # 注册时间
         'time_register':time_register,
