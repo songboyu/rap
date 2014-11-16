@@ -30,7 +30,7 @@ RAP is an automated system for reply and post on various websites including news
     新浪论坛        sina_club
     倍可亲          backchina_forum
     超级苹果论坛    powerapple_forum
-    超级苹果论坛    powerapple_news
+    超级苹果新闻    powerapple_news
     香港独立媒体    inmediahk
     澳洲联合网      unitedtimes
     
