@@ -159,7 +159,7 @@ class RAPLogger():
     def error(self, msg):
         if isinstance(msg, unicode):
             msg = msg.encode('utf8')
-        self.logger.error(msg)
+        self.logger.exception(msg)
         self.buf += ' - '.join([datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'ERROR', msg]) + '\n'
 
 ################################################################################
