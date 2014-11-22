@@ -33,6 +33,7 @@ RAP is an automated system for reply and post on various websites including news
     超级苹果新闻    powerapple_news
     香港独立媒体    inmediahk
     澳洲联合网      unitedtimes
+    搜狐新闻        news.sohu.com
     
 python library  (pip install ---)
 
