@@ -32,4 +32,4 @@ root:
   level: DEBUG
   handlers:
     - console
-    - file
+#    - file

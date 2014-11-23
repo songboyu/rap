@@ -56,3 +56,37 @@ def reply(post_url, src):
     except Exception as e:
         logger.error(str(type(e)) + ' ' + str(e))
         return (False, str(logger))
+
+def post(post_url, src):
+    logger = RAPLogger(post_url)
+
+    # Get specific handler
+    for pattern, handler in config.dispatch_rule.items():
+        if re.search(pattern, post_url):
+            real_post = getattr(handlers, 'post_' + handler[0])
+            break
+    else:
+        logger.error('No handler')
+        return (False, str(logger))
+
+    # Fill the default src
+    if 'TTL' not in src:
+        src['TTL'] = config.max_try
+    if 'proxies' not in src:
+        src['proxies'] = ''
+    # Log the username and password if necessary
+    if src['username'] and src['password']:
+        logger.info('Account: ' + src['username'] + '/' + src['password'])
+    else:
+        logger.info('Account: none/none')
+
+    # Use http instead of https
+    post_url = post_url.replace('https', 'http')
+
+    # Real reply
+    try:
+        r, log = real_post(post_url, src)
+        return (r, str(logger) + log)
+    except Exception as e:
+        logger.error(str(type(e)) + ' ' + str(e))
+        return (False, str(logger))
