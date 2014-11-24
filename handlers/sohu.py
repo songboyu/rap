@@ -133,7 +133,7 @@ def reply_sohu_news(post_url, src):
     reply_url = 'http://changyan.sohu.com/api/2/comment/submit'
     payload = {
         'client_id':appid,
-        'topic_id':'364211617',
+        'topic_id':topicid,
         'content':src['content'],
         'cmt_bold':'false',
         'cmt_color':'false',
@@ -162,7 +162,7 @@ def reply_sohu_news(post_url, src):
         'callback':'fn',
         'comment_id':comment_id,
         'client_id':appid,
-        'topic_id':'364211617',
+        'topic_id':topicid,
         '_':int(time.time())*1000
     }
     resp = sess.get('http://changyan.sohu.com/api/2/comment/floor',params=payload,
