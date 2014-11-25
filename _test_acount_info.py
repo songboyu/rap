@@ -17,7 +17,10 @@ def get_account_info(website, src):
     return account_info.get_account_info(website, src)
 
 if __name__ == '__main__':
-    info,log = get_account_info('bbs.163.com/bbs/',
-                     {'username':'kulala1982',
-                      'password':'13936755635'})
+    #info,log = get_account_info('bbs.163.com/bbs/',
+    #                 {'username':'kulala1982',
+    #                 'password':'13936755635'})
+    info,log = get_account_info('www.backchina.com/forum',
+                     {'username':'like_test',
+                      'password':'Like12345'})
     print info
