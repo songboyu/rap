@@ -99,14 +99,14 @@ def post_kdnet(post_url, src):
         - Captcha:  NO
         - Login:    NO
 
-    @param post_url:   板块地址
+    @param post_url:   板块地址 如：http://club.kdnet.net/list.asp?boardid=2
     @type post_url:    str
 
     @param src:        用户名，密码，标题，主帖内容，等等。
     @type src:         dict
 
-    @return:           是否发帖成功
-    @rtype:            bool
+    @return:           是否发帖成功，帖子URL
+    @rtype:            bool,str
 
     """
     logger = utils.RAPLogger(post_url)
@@ -114,31 +114,32 @@ def post_kdnet(post_url, src):
     # Step 1: 登录
     if not login_kdnet(sess, src):
         logger.error(' Login Error')
-        return (faild_info, str(logger))
+        return (False, '', str(logger))
     logger.info(' Login OK')
 
     # 获得boardid，作为post参数
     boardid = re.findall(r'boardid=(\d*)',post_url)[0]
     resp = sess.get('http://upfile1.kdnet.net/textareaeditor/post_ubb.asp?action=new&boardid='+boardid)
     soup = BeautifulSoup(resp.content)
-    print soup
     # 获得发帖form
     form = soup.find('form', attrs={'id': 'Dvform'})
     # 构造回复参数
     payload = utils.get_datadic(form)
     payload['topic'] = src['title'].decode('utf8').encode(CHARSET)
     payload['body'] = src['content'].decode('utf8').encode(CHARSET)
-    payload['font1'] = u'[灌水]'.encode(CHARSET)
+    payload['font1'] = u'[原创]'.encode(CHARSET)
     # 发送发帖post包
     resp = sess.post('http://upfile1.kdnet.net/SavePost_ubb.asp?Action=snew&boardid=' + boardid, data=payload)
 
-    print resp.content.decode(CHARSET)
+    # print resp.content.decode(CHARSET)
     # 若指定字样出现在response中，表示发帖成功
     if u'发帖成功'.encode(CHARSET) not in resp.content:
-        logger.error(' Reply Error')
-        return (False, str(logger))
-    logger.info(' Reply OK')
-    return (True, str(logger))
+        logger.error(' Post Error')
+        return (False, '', str(logger))
+    logger.info(' Post OK')
+    url = re.findall(r'var url="(.*?)"',resp.content)[0]
+    logger.info(url)
+    return (True, url, str(logger))
 
 def get_account_info_kdnet(src):
     """ 凯迪社区账户信息获取函数

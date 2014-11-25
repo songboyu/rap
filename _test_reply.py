@@ -18,7 +18,7 @@ def reply(post_url, src):
 
     return rap.reply(post_url, src)
 if __name__ == '__main__':
-    r, log = reply('http://news.sohu.com/20141121/n406256637.shtml',
-                   {'username': 'nnolllejjwi@sohu.com',
+    r, log = reply('http://blog.dwnews.com/post-811383.html',
+                   {'username': 'kulala1982@163.com',
                     'password': '13936755635',
-                    'content': '据罗马尼亚电视台报道，罗一架军用直升机21日在该国中部坠毁，有人员伤亡。'})
+                    'content': '有人员伤亡。'})

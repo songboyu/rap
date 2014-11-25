@@ -85,8 +85,8 @@ def post(post_url, src):
 
     # Real reply
     try:
-        r, log = real_post(post_url, src)
-        return (r, str(logger) + log)
+        r, url, log = real_post(post_url, src)
+        return (r, url, str(logger) + log)
     except Exception as e:
         logger.error(str(type(e)) + ' ' + str(e))
-        return (False, str(logger))
+        return (False, '', str(logger))
