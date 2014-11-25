@@ -22,4 +22,7 @@ if __name__ == '__main__':
     #               {'username': 'ajsdhsjdfoo@163.com',
     #               'password': '13936755635',
     #                'content': '大家中午好'})
-    r, log = reply('http://www.backchina.com/forum/20141122/info-1245817-1-1.html',{'username': 'like_test', 'password': 'Like12345', 'content': '看起来很不错的样子'})
+    r, log = reply('http://www.backchina.com/forum/20141122/info-1245817-1-1.html',
+                   {'username': 'like_test',
+                    'password': 'Like12345',
+                    'content': '看起来很不错的样子'})

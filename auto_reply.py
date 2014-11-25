@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import random
+import time
 import json
 import logging
 import logging.config
@@ -47,7 +48,7 @@ def auto_reply():
         conn = db_connect()
 
         cursor_get_accounts = conn.cursor()
-        cursor_get_accounts.execute('select username,password,site_sign from account where site_sign="凯迪"')
+        cursor_get_accounts.execute('select username,password,site_sign from account where site_sign="倍可亲"')
 
         cursor_get_contents = conn.cursor()
         cursor_get_contents.execute('select * from man_made_content')
@@ -92,6 +93,7 @@ def auto_reply():
                 }
                 logging.info(data)
                 bean.put(json.dumps(data))
+                time.sleep(10)
 
         cursor_get_accounts.close()
         cursor_get_contents.close()
