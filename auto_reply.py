@@ -93,7 +93,7 @@ def auto_reply():
                 }
                 logging.info(data)
                 bean.put(json.dumps(data))
-                time.sleep(10)
+                time.sleep(15)
 
         cursor_get_accounts.close()
         cursor_get_contents.close()

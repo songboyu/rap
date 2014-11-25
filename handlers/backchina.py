@@ -142,7 +142,6 @@ def get_account_info_backchina_forum(src):
     resp = sess.get('http://www.backchina.com/home.php?mod=space&uid='+str(id_count[0])+'&do=profile')
 
     head_image = 'http://backchina-member.com/ucenter/images/noavatar_middle.gif'
-    content = resp.content
     account_score = re.findall(r'<li><em>积分</em>(.*?)</li>', resp.content)[0]
     #print str(account_score[0])
     account_class = ''
@@ -152,8 +151,8 @@ def get_account_info_backchina_forum(src):
 
     login_count = ''
 
-    count_post = re.findall(r'回帖数 (.*?)<', resp.content)[0]
-    count_reply = re.findall(r'主题数 (.*?)<', resp.content)[0]
+    count_post = re.findall(r'主题数 (.*?)<', resp.content)[0]
+    count_reply = re.findall(r'回帖数 (.*?)<', resp.content)[0]
 
     account_info = {
         #########################################
