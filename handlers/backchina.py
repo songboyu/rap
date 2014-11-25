@@ -143,9 +143,9 @@ def get_account_info_backchina_forum(src):
 
     head_image = 'http://backchina-member.com/ucenter/images/noavatar_middle.gif'
     content = resp.content
-    acount_score = re.findall(r'<li><em>积分</em>(.*?)</li>', resp.content)[0]
-    #print str(acount_score[0])
-    acount_class = ''
+    account_score = re.findall(r'<li><em>积分</em>(.*?)</li>', resp.content)[0]
+    #print str(account_score[0])
+    account_class = ''
 
     time_register = re.findall(r'<li><em>注册时间</em>(.*?)</li>', resp.content)[0]
     time_last_login = re.findall(r'<li><em>上次活动时间</em>(.*?)</li>', resp.content)[0]
@@ -155,7 +155,7 @@ def get_account_info_backchina_forum(src):
     count_post = re.findall(r'回帖数 (.*?)<', resp.content)[0]
     count_reply = re.findall(r'主题数 (.*?)<', resp.content)[0]
 
-    acount_info = {
+    account_info = {
         #########################################
         # 用户名
         'username':src['username'],
@@ -165,9 +165,9 @@ def get_account_info_backchina_forum(src):
         'head_image':head_image,
         #########################################
         # 积分
-        'acount_score':acount_score,
+        'account_score':account_score,
         # 等级
-        'acount_class':acount_class,
+        'account_class':account_class,
         #########################################
         # 注册时间
         'time_register':time_register,
@@ -182,4 +182,4 @@ def get_account_info_backchina_forum(src):
         'count_reply':count_reply
         #########################################
     }
-    return (acount_info, str(logger))
+    return (account_info, str(logger))

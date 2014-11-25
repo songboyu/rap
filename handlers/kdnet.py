@@ -163,8 +163,8 @@ def get_account_info_kdnet(src):
     resp = sess.get('http://user.kdnet.net/index.asp')
     head_image = re.findall(r'<img id=\"userface_img_index\" onerror=\"this.src = duf_190_190;\" src=\"(.*?)\"', resp.content)[0]
 
-    acount_score = ''
-    acount_class = ''
+    account_score = ''
+    account_class = ''
 
     content = resp.content.decode(CHARSET).encode('utf8')
     # print content
@@ -187,7 +187,7 @@ def get_account_info_kdnet(src):
     else:
         count_reply = re.findall(ur'共(\d*)条记录'.encode(CHARSET), content)[0]
 
-    acount_info = {
+    account_info = {
         #########################################
         # 用户名
         'username':src['username'],
@@ -197,9 +197,9 @@ def get_account_info_kdnet(src):
         'head_image':head_image,
         #########################################
         # 积分
-        'account_score':acount_score,
+        'account_score':account_score,
         # 等级
-        'account_class':acount_class,
+        'account_class':account_class,
         #########################################
         # 注册时间
         'time_register':time_register,
@@ -214,4 +214,4 @@ def get_account_info_kdnet(src):
         'count_reply':count_reply
         #########################################
     }
-    return (acount_info, str(logger))
+    return (account_info, str(logger))

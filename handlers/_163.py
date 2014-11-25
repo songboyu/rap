@@ -383,8 +383,8 @@ def get_account_info_163_bbs(src):
     resp = sess.get('http://bbs.163.com/user/profile.do')
     head_image = re.findall(r'<img src=\"(.*?)\" alt="face"', resp.content)[0]
 
-    acount_score = re.findall(r'总积分：(\d*)', resp.content)[0]
-    acount_class = re.findall(r'等级：(\d*)', resp.content)[0]
+    account_score = re.findall(r'总积分：(\d*)', resp.content)[0]
+    account_class = re.findall(r'等级：(\d*)', resp.content)[0]
 
     time_register = re.findall(r'注册时间：(.*?)<', resp.content)[0]
     time_last_login = re.findall(r'最后登录：(.*?)<', resp.content)[0]
@@ -408,7 +408,7 @@ def get_account_info_163_bbs(src):
         count_reply = count_reply + count
         page = page + 1
 
-    acount_info = {
+    account_info = {
         #########################################
         # 用户名
         'username':src['username'],
@@ -418,9 +418,9 @@ def get_account_info_163_bbs(src):
         'head_image':head_image,
         #########################################
         # 积分
-        'acount_score':acount_score,
+        'account_score':account_score,
         # 等级
-        'acount_class':acount_class,
+        'account_class':account_class,
         #########################################
         # 注册时间
         'time_register':time_register,
@@ -435,4 +435,4 @@ def get_account_info_163_bbs(src):
         'count_reply':count_reply
         #########################################
     }
-    return (acount_info, str(logger))
+    return (account_info, str(logger))

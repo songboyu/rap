@@ -83,8 +83,8 @@ def reply(job_body):
     count = cursor.execute('update reply_job set '
                            'status = 1, '
                            'url_title = %s, '
-                           'update_time = now(),'
-                           'mode = %s where job_id = %s', (url_title, mode, job_id))
+                           'update_time = now() '
+                           'where job_id = %s', (url_title, job_id))
     logging.info('updated reply status 1: ' + str(count))
     # 将 "正在发送" 状态提交
     conn.commit()
