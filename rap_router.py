@@ -27,6 +27,8 @@ def rap_dispatcher(msg):
     """
 
     src = json.loads(msg)
+    if not src['post_url']:
+        return []
     for pattern, handler in config.dispatch_rule.items():
         if re.search(pattern, src['post_url']):
             logging.info(handler)
