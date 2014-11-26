@@ -77,8 +77,6 @@ def reply_backchina_forum(post_url, src):
     @rtype:            bool
 
     """
-
-
     # Returnable logger
     logger = utils.RAPLogger(post_url)
     host = utils.get_host(post_url)
@@ -115,6 +113,44 @@ def reply_backchina_forum(post_url, src):
         logger.error('Reply Error: Reply Error, please try again !')
         return (False, str(logger))
     return (True, str(logger))
+
+def post_backchina_forum(post_url, src):
+
+     # Returnable logger
+    logger = utils.RAPLogger(post_url)
+    host = utils.get_host(post_url)
+    sess = utils.RAPSession(src)
+
+    # Step 1: 登录
+    if not login_backchina(sess, src):
+        logger.error(' Login Error')
+        return (False, str(logger))
+    logger.info(' Login OK')
+
+    resp = sess.get('http://www.backchina.com/forum.php?mod=post&action=newthread&fid=37')
+    soup = BeautifulSoup(resp.content)
+    # 获得发帖form
+    form = soup.find('form', attrs={'id': 'postform'})
+    # 构造回复参数
+    payload = utils.get_datadic(form)
+    payload['subject'] = src['title'].decode('utf8').encode(CHARSET)
+    payload['message'] = src['content'].decode('utf8').encode(CHARSET)
+    #payload['font1'] = u'[原创]'.encode(CHARSET)
+    # 发送发帖post包
+    resp = sess.post('http://www.backchina.com/forum.php?mod=post&action=newthread&fid=37&extra=&topicsubmit=yes', data=payload)
+
+    # print resp.content.decode(CHARSET)
+    # 若指定字样出现在response中，表示发帖成功
+    if src['content'] not in resp.content:
+        logger.error(' Post Error')
+        return (False, '', str(logger))
+    logger.info(' Post OK')
+    url = re.findall(r'<link rel="canonical" href="(.*?)" />',resp.content)[0]
+    print url
+    logger.info(url)
+    return (True, url, str(logger))
+
+
 
 
 def get_account_info_backchina_forum(src):

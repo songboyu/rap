@@ -18,9 +18,12 @@ def post(post_url, src):
 
     return rap.post(post_url, src)
 if __name__ == '__main__':
-    r,url, log = post('http://blog.dwnews.com/',
-                   {'username': 'kulala1982@163.com',
-                    'password': '13936755635',
+    #r,url, log = post('http://blog.dwnews.com/',
+    #               {'username': 'kulala1982@163.com',
+    #                'password': '13936755635',
+     r,url, log = post('www.backchina.com/forum',
+                   {'username': 'like_test',
+                    'password': 'Like12345',
                     'title':'揭秘江泽民上台后中共高层一次秘密交锋',
                     'content': '近日，日本前首相野田佳彦，遭遇了一场巨大的尴尬。\
 　　这位日本民主党领袖，事先通过社交媒体发布公告，说要在某个地方演讲。结果当他演讲的时候，到场捧场的观众，竟然是零。\
