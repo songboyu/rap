@@ -18,11 +18,7 @@ def reply(post_url, src):
 
     return rap.reply(post_url, src)
 if __name__ == '__main__':
-    #r, log = reply('http://view.163.com/14/1030/09/A9Q0FD8J00012Q9L.html',
-    #               {'username': 'ajsdhsjdfoo@163.com',
-    #               'password': '13936755635',
-    #                'content': '大家中午好'})
-    r, log = reply('http://www.backchina.com/forum/20141122/info-1245817-1-1.html',
-                   {'username': 'like_test',
-                    'password': 'Like12345',
-                    'content': '看起来很不错的样子'})
+    r, log = reply('http://bbs.creaders.net/life/bbsviewer.php?trd_id=1009995',
+                   {'content': '这么晚了',
+                    'username':'shiduojiuo',
+                    'password':'1qazxsw2'})

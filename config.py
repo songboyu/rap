@@ -43,6 +43,8 @@ dispatch_rule = {
     # By sky
     # powerapple
     'news\.powerapple\.com': ('powerapple_news', 'OUT'),
+    # creaders
+    'bbs\.creaders\.net': ('creaders_forum', 'OUT'),
 
     # By sniper
     # dwnews
