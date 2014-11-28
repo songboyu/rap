@@ -13,7 +13,7 @@ def reply(post_url, src):
     Call site-specific functions to reply according to post_url.
     Src is a dict, may contain the following keys:
         nickname: optional for those sites accept anonymous comments
-        subject: optional
+        title: optional
         content: the content of comments
         username: only for those sites require login
         password: only for those sites require login 

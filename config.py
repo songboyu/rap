@@ -45,6 +45,8 @@ dispatch_rule = {
     'news\.powerapple\.com': ('powerapple_news', 'OUT'),
     # creaders
     'bbs\.creaders\.net': ('creaders_forum', 'OUT'),
+    # wenxuecity
+    'blog\.wenxuecity\.com': ('wenxuecity_blog', 'OUT'),
 
     # By sniper
     # dwnews
