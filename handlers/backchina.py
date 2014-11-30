@@ -133,7 +133,7 @@ def post_backchina_forum(post_url, src):
     form = soup.find('form', attrs={'id': 'postform'})
     # 构造回复参数
     payload = utils.get_datadic(form)
-    payload['subject'] = src['title'].decode('utf8').encode(CHARSET)
+    payload['subject'] = src['subject'].decode('utf8').encode(CHARSET)
     payload['message'] = src['content'].decode('utf8').encode(CHARSET)
     #payload['font1'] = u'[原创]'.encode(CHARSET)
     # 发送发帖post包

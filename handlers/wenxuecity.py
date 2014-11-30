@@ -29,9 +29,9 @@ def reply_wenxuecity_forum(post_url, src):
     host = get_host(post_url)
     s = RAPSession(src)
 
-    # Since subject is mandatory, we take first few words as default title.
-    if 'title' not in src:
-        src['title'] = src['content'].decode('utf8')[:15].encode('utf8')
+    # Since subject is mandatory, we take first few words as default subject.
+    if 'subject' not in src:
+        src['subject'] = src['content'].decode('utf8')[:15].encode('utf8')
 
     if not login_wenxuecity(s, src):
         logger.error('Login Error')
@@ -42,7 +42,7 @@ def reply_wenxuecity_forum(post_url, src):
     soup = BeautifulSoup(r.content)
     form = soup.find('form', attrs={'id': 'postform'})
     payload = get_datadic(form)
-    payload['title'] = src['title']
+    payload['title'] = src['subject']
     payload['msgbodytext'] = src['content']
     # How to confirm reply OK?
     # Terminate the endless redirection, reload the page instead to check success.
@@ -152,7 +152,7 @@ def post_wenxuecity_blog(post_url, src):
 
     # 构造回复参数
     payload = utils.get_datadic(form)
-    payload['title'] = src['title']
+    payload['title'] = src['subject']
     payload['content'] = src['content']
 
     #发送发主贴post包
@@ -162,11 +162,11 @@ def post_wenxuecity_blog(post_url, src):
     blog_url = re.findall(r'<a href="(.*?)">我的博客',resp.content)[0]
     resp = s.get(blog_url)
     # 若指定字样出现在response中，表示发帖成功
-    if src['title'] not in resp.content:
+    if src['subject'] not in resp.content:
         logger.error(' Post Error')
         return (False, '', str(logger))
     logger.info(' Post OK')
-    href = re.findall(r'<div class="menuCell_main">[\s|\S]*?<a href="(.*?)">[\s|\S]*?<span>'+src['title'], resp.content)[0]
+    href = re.findall(r'<div class="menuCell_main">[\s|\S]*?<a href="(.*?)">[\s|\S]*?<span>'+src['subject'], resp.content)[0]
     url = host + href
     return (True, url, str(logger))
     

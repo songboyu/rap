@@ -125,7 +125,7 @@ def post_kdnet(post_url, src):
     form = soup.find('form', attrs={'id': 'Dvform'})
     # 构造回复参数
     payload = utils.get_datadic(form)
-    payload['topic'] = src['title'].decode('utf8').encode(CHARSET)
+    payload['topic'] = src['subject'].decode('utf8').encode(CHARSET)
     payload['body'] = src['content'].decode('utf8').encode(CHARSET)
     payload['font1'] = u'[原创]'.encode(CHARSET)
     # 发送发帖post包

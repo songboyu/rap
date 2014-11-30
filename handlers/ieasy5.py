@@ -1,10 +1,44 @@
 # -*- coding: utf-8 -*- 
+"""凯迪回复模块
 
+@author: HSS
+@since: 2014-11-30
+@summary: 加拿大加以中文网
+
+"""
 import requests, re, random, logging
 from bs4 import BeautifulSoup
 
 import config
 from utils import *
+
+def login_ieasy5(sess, src):
+    """ 加易登录函数
+
+    @param sess:    requests.Session()
+    @type sess:     Session
+
+    @param src:        用户名，密码，回复内容，等等。
+    @type src:         dict
+
+    @return:           是否登录成功
+    @rtype:            bool
+
+    """
+    host = 'http://ieasy5.com/bbs/'
+    resp = sess.get('http://ieasy5.com/bbs/thread.php?fid=3')
+    soup = BeautifulSoup(resp.content)
+    form = soup.find('form', attrs={'name': 'login_FORM'})
+
+    payload = get_datadic(form, 'gbk')
+    payload['pwuser'] = src['username'].decode('utf8').encode('gbk')
+    payload['pwpwd'] = src['password'].decode('utf8').encode('gbk')
+    # 发送登录post包
+    resp = sess.post(host+form['action'], data=payload)
+    # 若指定字样出现在response中，表示登录成功
+    if u'您已经顺利登录' not in resp.content.decode('gbk'):
+        return False
+    return True
 
 # Coding: gb2312
 # Captcha: required
@@ -102,3 +136,59 @@ def reply_ieasy5_forum(post_url, src):
         return (False, str(logger))
     logger.info('Reply OK')
     return (True, str(logger))
+
+def post_ieasy5_forum(post_url, src):
+    """文学城博客发主贴模块
+
+    @author: HSS
+    @since: 2014-11-30
+
+    @param sess:    requests.Session()
+    @type sess:     Session
+
+    @param post_url:   板块地址 http://blog.wenxuecity.com
+    @type post_url:    str
+
+    @param src:        用户名，密码，标题，帖子内容等等。
+    @type src:         dict
+
+    @return:           是否发帖成功
+    @rtype:            bool
+
+    """
+    host = 'http://ieasy5.com/bbs/'
+    logger = RAPLogger(post_url)
+    sess = RAPSession(src)
+    # Step 1: 登录
+    if not login_ieasy5(sess, src):
+        logger.error(' Login Error')
+        return (False, '', str(logger))
+    logger.info(' Login OK')
+
+    fid = re.findall(r'fid=(\d*)', post_url)[0]
+    resp = sess.get('http://ieasy5.com/bbs/post.php?fid='+fid)
+    soup = BeautifulSoup(resp.content)
+    form = soup.find('form', attrs={'id': 'mainForm'})
+    payload = get_datadic(form)
+    payload['atc_title'] = src['subject'].decode('utf8').encode('gbk')
+    payload['atc_content'] = src['content'].decode('utf8').encode('gbk')
+    payload['step'] = '2'
+    payload['pid'] = ''
+    payload['action'] = 'new'
+    payload['fid'] = fid
+    payload['tid'] = '0'
+    payload['article'] = '0'
+    payload['special'] = '0'
+    payload['_hexie'] = 'cn0zz'
+    payload['atc_hide'] = '0'
+
+    resp = sess.post(host + form['action'], data=payload)
+    soup = BeautifulSoup(resp.content)
+    tag = soup.find('div', attrs={'class': 'cc'})
+    if u'跳转' not in tag.find('a').text:
+        logger.error('Post Error')
+        return (False, '', str(logger))
+    logger.info('Post OK')
+    url = host + tag.find('a')['href']
+    print url
+    return (True, url, str(logger))

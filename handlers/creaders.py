@@ -151,17 +151,17 @@ def post_creaders_forum(post_url, src):
         'user_name2':src['username'].decode('utf8').encode(CHARSET),
         'user_password2':src['password'].decode('utf8').encode(CHARSET),
         'captcha':'',
-        'trd_subject':src['title'].decode('utf8').encode(CHARSET),
+        'trd_subject':src['subject'].decode('utf8').encode(CHARSET),
         'trd_content':src['content'].decode('utf8').encode(CHARSET)
     }
     # 发送发主贴post包
     resp = sess.post(url+'post.php?', data=payload)
     # 若指定字样出现在response中，表示发帖成功
     content = resp.content.decode(CHARSET).encode('utf8')
-    if src['title'] not in content:
+    if src['subject'] not in content:
         logger.error('Post Error')
         return (False, '', str(logger))
-    href = re.findall(r'<a href=\'(.*?)\' class=\'thread_title\'>'+src['title'], content)[0]
+    href = re.findall(r'<a href=\'(.*?)\' class=\'thread_title\'>'+src['subject'], content)[0]
     url = post_url + href
     logger.error('Post OK')
     return (True, url, str(logger))

@@ -18,7 +18,7 @@ def reply(post_url, src):
 
     return rap.reply(post_url, src)
 if __name__ == '__main__':
-    r, log = reply('http://bbs.creaders.net/life/bbsviewer.php?trd_id=1009995',
+    r, log = reply('http://ieasy5.com/bbs/read.php?tid=2136',
                    {'content': '这么晚了',
-                    'username':'shiduojiuo',
-                    'password':'1qazxsw2'})
+                    'username':'amtlogg2',
+                    'password':'blueshit'})

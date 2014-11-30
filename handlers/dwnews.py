@@ -152,7 +152,7 @@ def post_dwnews_blog(post_url, src):
 
     # 回复
     payload = {
-        'title':src['title'],
+        'title':src['subject'],
         'content':'<p>'+src['content']+'</p>',
         'tag':'时事',
         'catid':'5',
