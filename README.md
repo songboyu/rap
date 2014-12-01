@@ -41,6 +41,9 @@ Post website list:
     倍可亲论坛      www.backchina.com/forum
     多维博客        blog.dwnews.com
     凯迪社区        club.kdnet.net
+    加易论坛        ieasy5.com/bbs/
+    明镜博客        www.mirrorbooks.com/MIB/blog
+    消息树论坛      enewstree.com/discuz/forum
     
 python library  (pip install ---)
 
