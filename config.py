@@ -33,7 +33,7 @@ dispatch_rule = {
     '^http://[^(c|f)].*\.sina\.com\.cn/': ('sina_news', 'IN'),
     # sohu
     'news\.sohu\.com/':('sohu_news','IN'),
-
+    'enewstree\.com/discuz/forum':('enewstree_forum','OUT'),
     # By kerry
     # backchina
     'www\.backchina\.com/forum': ('backchina_forum', 'OUT'),
@@ -53,8 +53,8 @@ dispatch_rule = {
     'dwnews\.com/news': ('dwnews_news', 'OUT'),
     'blog\.dwnews\.com': ('dwnews_blog', 'OUT'),
     # mirrorbooks
-    'www\.mirrorbooks\.com': ('mirrorbooks_news', 'OUT'),
-    'www\.mingjingnews\.com': ('mirrorbooks_news', 'OUT'),
+    'www\.(mirrorbooks|mingjingnews)\.com/MIB/news': ('mirrorbooks_news', 'OUT'),
+    'www\.(mirrorbooks|mingjingnews)\.com/MIB/blog': ('mirrorbooks_blog', 'OUT'),
     # ieasy5
     'ieasy5\.com/htm': ('ieasy5_news', 'OUT'),
     'ieasy5\.com/bbs': ('ieasy5_forum', 'OUT'),
