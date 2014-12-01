@@ -16,7 +16,7 @@ from bs4 import BeautifulSoup
 
 import utils
 
-CHARSET = 'utf-8'
+CHARSET = 'utf8'
 
 # Coding: utf8
 # Captcha: arithmetic
@@ -103,8 +103,6 @@ def reply_backchina_forum(post_url, src):
 
     #发送post包
     resp = sess.post(host + form['action'], data=payload)
-    #获取回帖页面content的HTML
-    soup = BeautifulSoup(resp.content)
 
     #判断回帖后页面是否含有回帖内容，若存在则证明回帖成功，否则失败
     if src['content'] in resp.content:
@@ -115,10 +113,20 @@ def reply_backchina_forum(post_url, src):
     return (True, str(logger))
 
 def post_backchina_forum(post_url, src):
+    """ 倍可亲论坛发主贴函数
 
-     # Returnable logger
+    @param post_url:   板块地址 如：http://www.backchina.com/forum.php?mod=post&action=newthread&fid=37
+    @type post_url:    str
+
+    @param src:        用户名，密码，标题，主帖内容，等等。
+    @type src:         dict
+
+    @return:           是否发帖成功，帖子URL
+    @rtype:            bool,str
+
+    """
+    # Returnable logger
     logger = utils.RAPLogger(post_url)
-    host = utils.get_host(post_url)
     sess = utils.RAPSession(src)
 
     # Step 1: 登录
@@ -127,19 +135,18 @@ def post_backchina_forum(post_url, src):
         return (False, str(logger))
     logger.info(' Login OK')
 
-    resp = sess.get('http://www.backchina.com/forum.php?mod=post&action=newthread&fid=37')
+    fid = re.findall(r'fid=(\d*)', post_url)[0]
+    resp = sess.get(post_url)
     soup = BeautifulSoup(resp.content)
     # 获得发帖form
     form = soup.find('form', attrs={'id': 'postform'})
     # 构造回复参数
     payload = utils.get_datadic(form)
-    payload['subject'] = src['subject'].decode('utf8').encode(CHARSET)
-    payload['message'] = src['content'].decode('utf8').encode(CHARSET)
-    #payload['font1'] = u'[原创]'.encode(CHARSET)
+    payload['subject'] = src['subject']
+    payload['message'] = src['content']
     # 发送发帖post包
-    resp = sess.post('http://www.backchina.com/forum.php?mod=post&action=newthread&fid=37&extra=&topicsubmit=yes', data=payload)
+    resp = sess.post('http://www.backchina.com/forum.php?mod=post&action=newthread&fid='+fid+'&extra=&topicsubmit=yes', data=payload)
 
-    # print resp.content.decode(CHARSET)
     # 若指定字样出现在response中，表示发帖成功
     if src['content'] not in resp.content:
         logger.error(' Post Error')
@@ -149,8 +156,6 @@ def post_backchina_forum(post_url, src):
     print url
     logger.info(url)
     return (True, url, str(logger))
-
-
 
 
 def get_account_info_backchina_forum(src):
@@ -179,7 +184,6 @@ def get_account_info_backchina_forum(src):
 
     head_image = 'http://backchina-member.com/ucenter/images/noavatar_middle.gif'
     account_score = re.findall(r'<li><em>积分</em>(.*?)</li>', resp.content)[0]
-    #print str(account_score[0])
     account_class = ''
 
     time_register = re.findall(r'<li><em>注册时间</em>(.*?)</li>', resp.content)[0]
