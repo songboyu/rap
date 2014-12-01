@@ -146,7 +146,7 @@ def post_ieasy5_forum(post_url, src):
     @param sess:    requests.Session()
     @type sess:     Session
 
-    @param post_url:   板块地址 http://blog.wenxuecity.com
+    @param post_url:   板块地址 http://ieasy5.com/bbs/thread.php?fid=3
     @type post_url:    str
 
     @param src:        用户名，密码，标题，帖子内容等等。

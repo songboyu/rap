@@ -66,7 +66,7 @@ dispatch_rule = {
     # wolfax
     'bbs\.wolfax\.com': ('wolfax_forum', 'OUT'),
     # vanhi
-    'forum\.vanhi\.com': ('vanhi_forum', 'OUT'),
+    'forum\.vanhi\.com': ('vanhi_forum', 'OUT') ,
     # secretchina
     'www\.secretchina\.com': ('secretchina_news', 'OUT'),
     # creaders
