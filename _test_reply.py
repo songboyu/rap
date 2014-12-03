@@ -18,7 +18,11 @@ def reply(post_url, src):
 
     return rap.reply(post_url, src)
 if __name__ == '__main__':
-    r, log = reply('http://www.mirrorbooks.com/MIB/news/news.aspx?ID=N000063205',
+    # r, log = reply('http://www.mirrorbooks.com/MIB/news/news.aspx?ID=N000063205',
+    #                {'content': '多读书',
+    #                 'username':'kulala1982',
+    #                 'password':'13936755635'})
+    r, log = reply('http://news.netbirds.com/53/136313.html',
                    {'content': '多读书',
                     'username':'kulala1982',
                     'password':'13936755635'})

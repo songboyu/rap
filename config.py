@@ -39,6 +39,11 @@ dispatch_rule = {
     'www\.backchina\.com/forum': ('backchina_forum', 'OUT'),
     # powerapple
     'bbs\.powerapple\.com': ('powerapple_forum', 'OUT'),
+    #netbirds
+    'www\.netbirds\.com': ('netbirds_forum', 'OUT'),
+    #wailaike
+    'www\.wailaike\.net': ('wailaike_forum', 'OUT'),
+
 
     # By sky
     # powerapple
