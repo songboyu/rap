@@ -34,16 +34,14 @@ dispatch_rule = {
     # sohu
     'news\.sohu\.com/':('sohu_news','IN'),
     'enewstree\.com/discuz/forum':('enewstree_forum','OUT'),
+    # 1dpw
+    'bbs\.1dpw\.com':('1dpw_forum','OUT'),
+
     # By kerry
     # backchina
     'www\.backchina\.com/forum': ('backchina_forum', 'OUT'),
     # powerapple
     'bbs\.powerapple\.com': ('powerapple_forum', 'OUT'),
-    #netbirds
-    'www\.netbirds\.com': ('netbirds_forum', 'OUT'),
-    #wailaike
-    'www\.wailaike\.net': ('wailaike_forum', 'OUT'),
-
 
     # By sky
     # powerapple

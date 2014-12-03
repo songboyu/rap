@@ -131,14 +131,13 @@ def post_kdnet(post_url, src):
     # 发送发帖post包
     resp = sess.post('http://upfile1.kdnet.net/SavePost_ubb.asp?Action=snew&boardid=' + boardid, data=payload)
 
-    # print resp.content.decode(CHARSET)
     # 若指定字样出现在response中，表示发帖成功
     if u'发帖成功'.encode(CHARSET) not in resp.content:
         logger.error(' Post Error')
         return (False, '', str(logger))
     logger.info(' Post OK')
     url = re.findall(r'var url="(.*?)"',resp.content)[0]
-    logger.info(url)
+    print url
     return (True, url, str(logger))
 
 def get_account_info_kdnet(src):

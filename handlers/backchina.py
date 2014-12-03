@@ -222,4 +222,3 @@ def get_account_info_backchina_forum(src):
         #########################################
     }
     return (account_info, str(logger))
-
