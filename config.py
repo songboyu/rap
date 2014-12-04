@@ -36,6 +36,8 @@ dispatch_rule = {
     'enewstree\.com/discuz/forum':('enewstree_forum','OUT'),
     # 1dpw
     'bbs\.1dpw\.com':('1dpw_forum','OUT'),
+    # iask
+    'forum\.iask\.ca':('iask_forum','OUT'),
 
     # By kerry
     # backchina

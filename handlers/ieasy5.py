@@ -3,7 +3,7 @@
 
 @author: HSS
 @since: 2014-11-30
-@summary: 加拿大加以中文网
+@summary: 加拿大加易中文网
 
 """
 import requests, re, random, logging

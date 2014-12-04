@@ -18,8 +18,8 @@ def post(post_url, src):
 
     return rap.post(post_url, src)
 if __name__ == '__main__':
-    r, url, log = post('http://bbs.1dpw.com/forum-71-1.html',
-                   {'username': 'kulala1982',
+    r, url, log = post('http://forum.iask.ca/forums/14/',
+                   {'username': 'kuyet',
                     'password': '13936755635',
                     'subject':'多读书，可以让你觉得有许多的写作灵感',
                     'content': '多读书，可以让你觉得有许多的写作灵感。可以让你在写 作文的方法上用的更好。'
