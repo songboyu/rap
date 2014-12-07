@@ -38,6 +38,8 @@ dispatch_rule = {
     'bbs\.1dpw\.com':('1dpw_forum','OUT'),
     # iask
     'forum\.iask\.ca':('iask_forum','OUT'),
+    # penchinese
+    'penchinese\.org/blog':('penchinese_blog','OUT'),
 
     # By kerry
     # backchina
