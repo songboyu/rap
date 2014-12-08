@@ -54,6 +54,8 @@ dispatch_rule = {
     'bbs\.creaders\.net': ('creaders_forum', 'OUT'),
     # wenxuecity
     'blog\.wenxuecity\.com': ('wenxuecity_blog', 'OUT'),
+    # onmoon
+    'www\.onmoon\.com':('onmoon_news','OUT'),
 
     # By sniper
     # dwnews
