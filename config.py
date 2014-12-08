@@ -38,14 +38,14 @@ dispatch_rule = {
     'bbs\.1dpw\.com':('1dpw_forum','OUT'),
     # iask
     'forum\.iask\.ca':('iask_forum','OUT'),
-    # penchinese
-    'penchinese\.org/blog':('penchinese_blog','OUT'),
 
     # By kerry
     # backchina
     'www\.backchina\.com/forum': ('backchina_forum', 'OUT'),
     # powerapple
     'bbs\.powerapple\.com': ('powerapple_forum', 'OUT'),
+    # wailaike
+    'www\.wailaike\.net': ('wailaike_forum', 'OUT'),
 
     # By sky
     # powerapple
@@ -54,9 +54,6 @@ dispatch_rule = {
     'bbs\.creaders\.net': ('creaders_forum', 'OUT'),
     # wenxuecity
     'blog\.wenxuecity\.com': ('wenxuecity_blog', 'OUT'),
-    # myca168
-    'www\.myca168\.com': ('myca168_forum', 'OUT'),
-
 
     # By sniper
     # dwnews

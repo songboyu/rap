@@ -73,7 +73,7 @@ def post_wailaike_forum(post_url, src):
     @param post_url:   板块地址 如：http://www.wailaike.net/newpost?gid=1
     @type post_url:    str
 
-    @param src:        用户名，密码，标题，主帖内容，等等。
+    @param src:        用户名，密码，标题，主帖内容，等等。用户名：cangchedaobo3@163.com 密码：wenshen4921119
     @type src:         dict
 
     @return:           是否发帖成功，帖子URL

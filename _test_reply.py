@@ -18,7 +18,7 @@ def reply(post_url, src):
 
     return rap.reply(post_url, src)
 if __name__ == '__main__':
-    r, log = reply('http://www.penchinese.org/blog/archives/16161',
-                   {'content': '一时心焦如焚，语无伦次，还祈',
-                    'username':'kulala1982',
-                    'password':'kulala1982@163.com'})
+    r, log = reply('http://www.canyu.org/n93953c10.aspx',
+                   {'content': '多读书，可以让你觉得有许多的写作灵感',
+                    'username':'小肖肖',
+                    'password':''})
