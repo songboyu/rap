@@ -12,6 +12,10 @@ import yaml
 def db_connect():
     """数据库连接
 
+    @return:            connection
+    @rtype:             MySQLdb.connections.Connection
+    """
+    return MySQLdb.connect(CONFIG['db']['ip'],
                            CONFIG['db']['username'],
                            CONFIG['db']['password'],
                            CONFIG['db']['dbname'],
