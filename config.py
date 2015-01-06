@@ -60,6 +60,8 @@ dispatch_rule = {
     'www\.onmoon\.com':('onmoon_news','OUT'),
     # canyu
     'www\.canyu\.org/':('canyu','OUT'),
+    # cenews
+    'www\.cenews\.eu/':('cenews','OUT'),
 
     # By sniper
     # dwnews
