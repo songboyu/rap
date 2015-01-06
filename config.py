@@ -58,6 +58,8 @@ dispatch_rule = {
     'www\.myca168\.com': ('myca168_forum', 'OUT'),
     # onmoon
     'www\.onmoon\.com':('onmoon_news','OUT'),
+    # canyu
+    'www\.canyu\.org/':('canyu','OUT'),
 
     # By sniper
     # dwnews
