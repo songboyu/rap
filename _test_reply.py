@@ -18,7 +18,7 @@ def reply(post_url, src):
 
     return rap.reply(post_url, src)
 if __name__ == '__main__':
-    r, log = reply('http://www.cenews.eu/?p=42517',
-                   {'content': 'dsasd',
-                    'username':'ttt',
-                    'password':''})
+    r, log = reply('http://www.myca168.com/bbs/index/view/id/1033',
+                    {'content': 'dsasd',
+                     'username':'753abc',
+                     'password':'753abc'})

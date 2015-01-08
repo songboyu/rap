@@ -82,10 +82,6 @@ def post_myca168_forum(post_url, src):
         'submit':(None,u'提交'),
         'image':('a.png','','application/octet-stream')
     }
-    # payload['MAX_FILE_SIZE']='134217728'
-    # payload['title'] = src['subject']
-    # payload['editor1'] = '<p>'+src['content']+'</p>'
-    # payload['submit'] = u'提交'
 
     # 发送发主贴post包
     resp = s.post(post_url, files=payload)
@@ -100,3 +96,77 @@ def post_myca168_forum(post_url, src):
     url = host + href
     logger.info(url)
     return (True, '', str(logger))
+
+# Coding: utf8
+# Captcha: required
+# Login: required
+def reply_myca168_forum(post_url, src):
+    """天涯信息论坛回贴模块
+
+    @author: sky
+    @since: 2015-01-08
+
+    @param sess:    requests.Session()
+    @type sess:     Session
+
+    @param post_url:   帖子地址 
+    @type post_url:    str
+
+    @param src:        用户名，密码，回复内容，等等。tyui,tyui
+    @type src:         dict
+
+    @return:           是否登录成功
+    @rtype:            bool
+    """
+    if src['TTL'] == 0:
+        raise RAPMaxTryException('captcha')
+
+    logger = utils.RAPLogger(post_url)
+
+    host = utils.get_host(post_url)
+    s = utils.RAPSession(src)
+
+    # 登录
+    if not login_myca168(post_url, s, src):
+        logger.error(' Login Error')
+        return (False, str(logger))
+    logger.info(' Login OK')
+    
+    r = s.get(post_url)
+    title = re.findall(r'<div class="details">[\s|\S]*?<b>(.*?)</b>', r.content)[0]
+    # print title.decode('utf8').encode('gbk')
+
+    rid = re.findall(r'id/(\d*)', post_url)[0]
+    reply_url = 'http://www.myca168.com/bbs/index/reply/type/reply/order/1/id/'+rid+'/rid/'+rid
+
+    # 验证码
+    r = s.get('http://www.myca168.com/image.php',
+        headers={
+            'Accept': config.accept_image,
+            'Referer': reply_url,
+        })
+
+    f = open('2.txt','w')
+    f.write(r.content)
+
+    seccode = crack_captcha(r.content)
+    print seccode
+    payload ={
+        'MAX_FILE_SIZE':(None,'134217728'),
+        'title':(None, '回复 (#1) :'+title),
+        'editor1':(None, '<p>'+src['content']+'</p>'),
+        'submit':(None, '提交'),
+        'image':('a.png','','application/octet-stream'),
+        'chkcode': (None, seccode)
+    }
+
+    # 发送回帖post包 
+    r = s.post(reply_url, files=payload)
+    r = s.get(post_url)
+    #判断回帖后页面是否含有回帖内容，若存在则证明回帖成功，否则失败
+    if src['content'] in r.content:
+        logger.info('Reply OK')
+    else:
+        logger.error('Reply Error, please try again !')
+        return (False, str(logger))
+    return (True, str(logger))
