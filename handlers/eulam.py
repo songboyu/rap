@@ -27,7 +27,7 @@ def reply_eulam_forum(post_url, src):
     payload = get_datadic(form, 'gb2312')
     payload['Body'] = src['content'].decode('utf8').encode('gb2312')
     payload['BBSXPCodeForm'] = ''
-    r = s.post(host + 'ReTopic.asp', data=payload)
+    r = s.post(host + 'ReTopic.asp', data=payload, headers={'Referer': post_url})
     if u'操作成功'.encode('gb2312') not in r.content:
         logger.error('Reply Error')
         return (False, str(logger))
