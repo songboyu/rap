@@ -79,6 +79,8 @@ def reply_wenxuecity_news(post_url, src):
     payload = get_datadic(form)
     payload['msgbody'] = src['content']
     r = s.post(host + 'news' + form['action'].strip('.'), data=payload)
+    # Reload the page to check success.
+    r = s.get(post_url)
     if src['content'] not in r.content:
         logger.error('Reply Error')
         return (False, str(logger))
