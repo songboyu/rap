@@ -72,7 +72,7 @@ def reply_mirrorbooks_news(post_url, src):
     # Step 1: 登录
     if not login_mirrorbooks(sess, src):
         logger.error(' Login Error')
-        return (False, '', str(logger))
+        return (False, str(logger))
     logger.info(' Login OK')
 
     resp = sess.get(post_url)
