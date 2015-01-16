@@ -2,6 +2,7 @@
 # Utils.py provides some util functions for Reply & Post
 
 import requests
+import requesocks
 import logging, unittest
 from datetime import datetime
 
@@ -74,7 +75,12 @@ def strip_cdata(xml):
 def get_datadic(form, code='utf8'):
     datadic = {}
     for tag in form.findAll(attrs={'name': True}):
-        datadic[tag['name'].encode(code)] = tag['value'].encode(code) if 'value' in tag.attrs else ''
+        try:
+            datadic[tag['name'].encode(code)] = tag['value'].encode(code) if 'value' in tag.attrs else ''
+        except:
+            # Encode error is fairly rare.
+            # But when it happens, use the origin value without encoding.
+            datadic[tag['name']] = tag['value'] if 'value' in tag.attrs else ''
     return datadic
 
 # Get host from url
@@ -105,7 +111,7 @@ def cli(cmd_prefix):
                 # Not implemented
                 # TODO: Convert the encoding if necessary on Linux.
                 pass
-
+            
             import subprocess
             try:
                 # Also capture standard error in the result.
@@ -124,7 +130,11 @@ def cli(cmd_prefix):
 # RAP Session
 class RAPSession():
     def __init__(self, src):
-        self.s = requests.Session()
+        # Enable requesocks when socks proxies provided.
+        if 'socks' in ''.join(src['proxies'].values()):
+            self.s = requesocks.Session()
+        else:
+            self.s = requests.Session()
         # Fake user agent.
         self.s.headers['User-Agent'] = config.user_agent
         # Use proxies if have one.
