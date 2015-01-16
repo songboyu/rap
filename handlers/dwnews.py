@@ -61,7 +61,7 @@ def reply_dwnews_news(post_url, src):
     # Step 1: 登录
     if not login_dwnews(s, src):
         logger.error(' Login Error')
-        return (False, '', str(logger))
+        return (False, str(logger))
     logger.info(' Login OK')
     r = s.get(post_url)
     ikey = re.findall('ikey = "(\w*)"', r.content)[0]
@@ -78,7 +78,7 @@ def reply_dwnews_news(post_url, src):
             'facebook': 0,
             'twitter': 0,
             '_': str(random.random()),
-        })
+        }, headers={'Referer': post_url})
 
     if 'success' not in r.content:
         logger.info('Reply Error')
@@ -96,7 +96,7 @@ def reply_dwnews_blog(post_url, src):
     # Step 1: 登录
     if not login_dwnews(s, src):
         logger.error(' Login Error')
-        return (False, '', str(logger))
+        return (False, str(logger))
     logger.info(' Login OK')
     r = s.get(post_url)
     ikey = re.findall('ikey = "(\w*)"', r.content)[0]
@@ -112,7 +112,7 @@ def reply_dwnews_blog(post_url, src):
             'club_id': club_id,
             'facebook': 0,
             'twitter': 0,
-        })
+        }, headers={'Referer': post_url})
 
     if 'success' not in r.content:
         logger.info('Reply Error')
