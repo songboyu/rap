@@ -39,7 +39,7 @@ def reply(post_url, src):
     if 'TTL' not in src:
         src['TTL'] = config.max_try
     if 'proxies' not in src:
-        src['proxies'] = ''
+        src['proxies'] = {}
     # Log the username and password if necessary
     if src['username'] and src['password']:
         logger.info('Account: ' + src['username'] + '/' + src['password'])
