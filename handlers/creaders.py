@@ -62,9 +62,10 @@ def reply_creaders_news(post_url, src):
     host = utils.get_host(post_url)
     s = utils.RAPSession(src)
 
+    r = s.get(post_url)
     payload = {
-    	'news_id': re.findall('news_id=(\d*)', post_url)[0],
-    	'r_nid': re.findall('r_nid=(\d*)', post_url)[0],
+    	'news_id': re.findall('news_id=(\d+)', r.content)[0],
+    	'r_nid': re.findall('r_nid=(\d+)', r.content)[0],
     	'username': src['username'],
     	'password': src['password'],
     	'replyid': 0,
@@ -165,3 +166,4 @@ def post_creaders_forum(post_url, src):
     url = post_url + href
     logger.error('Post OK')
     return (True, url, str(logger))
+    
