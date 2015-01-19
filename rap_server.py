@@ -7,6 +7,7 @@
 
 """
 import re
+import sys
 import json
 import logging
 import logging.config
@@ -146,12 +147,18 @@ def _decode_dict(data):
 
 def main():
     """Main eventloop."""
+
+    if len(sys.argv) != 2 or sys.argv[1] not in ['in', 'out']:
+        logging.critical('Usage: rap_server.py in|out')
+        sys.exit(1)
+
     try:
         # 连接beanstalkc服务器
         bean = beanstalkc.Connection(CONFIG['beanstalk']['ip'],
                                      CONFIG['beanstalk']['port'])
         # 监听rap_server
-        bean.watch('rap_in')
+        queue = 'rap_in' if sys.argv[1] == 'in' else 'rap_out'
+        bean.watch(queue)
         bean.ignore('default')
     except:
         logging.critical('Cann\'t connect to beanstalk server')
