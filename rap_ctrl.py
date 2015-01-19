@@ -1,10 +1,14 @@
+"""Control script.
+
+@author: sniper
+@since: 2015-1-19
+"""
 
 import os
 import re
 import sys
+import signal
 import subprocess
-
-import yaml
 
 
 class Logger:
@@ -31,17 +35,13 @@ class Logger:
 
 
 def install():
-    if not os.path.exists('env'):
+    try:
         # Make virtualenv.
-        try:
-            subprocess.check_call(['virtualenv', 'env'])
-            Logger.info('Virtualenv OK')
-        except:
-            Logger.error('Virtualenv Error')
-            sys.exit(1)
-
-    # Virtualenv already exists.
-    Logger.info('Virtualenv OK')
+        subprocess.check_call(['virtualenv', 'env'])
+        Logger.info('Virtualenv OK')
+    except:
+        Logger.error('Virtualenv Error')
+        sys.exit(1)
 
     try:
         # Install required python packages via pip.
@@ -80,7 +80,7 @@ def stop():
         if 'rap_router.py' in line or 'rap_server.py' in line:
             pid = int(line.split()[1])
             os.kill(pid, signal.SIGKILL)
-    Logger.info('RAP Stoped at ' + host)
+    Logger.info('RAP Stoped')
 
 
 def restart():
