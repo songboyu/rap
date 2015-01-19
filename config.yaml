@@ -27,9 +27,11 @@ handlers:
     formatter: simple
     filename: 'log/log'
     when: D
+    interval: 1
+    backupCount: 10
 
 root:
   level: DEBUG
   handlers:
-    - console
-#    - file
+    # - console
+    - file
