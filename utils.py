@@ -131,7 +131,7 @@ def cli(cmd_prefix):
 class RAPSession():
     def __init__(self, src):
         # Enable requesocks when socks proxies provided.
-        if 'socks' in ''.join(src['proxies'].values()):
+        if 'socks' in str(src['proxies']):
             self.s = requesocks.Session()
         else:
             self.s = requests.Session()
