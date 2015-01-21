@@ -83,7 +83,7 @@ dispatch_rule = {
     # vanhi
     'forum\.vanhi\.com': ('vanhi_forum', 'OUT') ,
     # secretchina
-    'www\.secretchina\.com': ('secretchina_news', 'OUT'),
+    '(www|m)\.secretchina\.com': ('secretchina_news', 'OUT'),
     # creaders
     'news\.creaders\.net': ('creaders_news', 'OUT'),
 

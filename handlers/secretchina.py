@@ -12,6 +12,8 @@ from utils import *
 def reply_secretchina_news(post_url, src):
     if src['TTL'] == 0:
         raise RAPMaxTryException('captcha')
+
+    post_url = post_url.replace('m.secretchina', 'www.secretchina')
     logger = RAPLogger(post_url)
 
     host = get_host(post_url)
