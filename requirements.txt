@@ -5,3 +5,4 @@ MySQL-python
 beanstalkc
 PyYAML
 chardet
+tldextract

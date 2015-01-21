@@ -1,4 +1,7 @@
 # Basic configs.
+max_worker: 16
+
+# Server configs.
 db:
   ip: 125.211.198.185
   username: bluetech

@@ -62,12 +62,15 @@ def start(mode):
     if mode == 'router':
         subprocess.Popen(['setsid', 'env/bin/python', 'rap_router.py'])
         Logger.info('RAP Router Running')
-    elif mode == 'in':
-        subprocess.Popen(['setsid', 'env/bin/python', 'rap_server.py', 'in'])
-        Logger.info('RAP IN Server Running')
-    elif mode == 'out':
-        subprocess.Popen(['setsid', 'env/bin/python', 'rap_server.py', 'out'])
-        Logger.info('RAP OUT Server Running')
+        return
+
+    for i in range(10):
+        if mode == 'in':
+            subprocess.Popen(['setsid', 'env/bin/python', 'rap_server.py', 'in'])
+            Logger.info('RAP IN Server Running ' + str(i))
+        elif mode == 'out':
+            subprocess.Popen(['setsid', 'env/bin/python', 'rap_server.py', 'out'])
+            Logger.info('RAP OUT Server Running ' + str(i))
 
 
 def stop():

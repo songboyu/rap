@@ -9,6 +9,7 @@
 import re
 import sys
 import json
+import threading
 import logging
 import logging.config
 
@@ -17,9 +18,9 @@ import MySQLdb
 import yaml
 import chardet
 import requests
+import tldextract
 
 import rap
-import account_info
 
 def get_url_title(post_url):
     """Get url title with utf8 encoding format.
@@ -31,7 +32,7 @@ def get_url_title(post_url):
     @rtype：            str
     """
     resp = requests.get(post_url)
-    title = re.findall('<title>(.*?)</title>',resp.content)[0]
+    title = re.findall('<title>(.*?)</title>', resp.content, re.I)[0]
     result = chardet.detect(title)  
     return title.decode(result['encoding'])
 
@@ -50,26 +51,33 @@ def db_connect():
 def get_site_sign(post_url):
     """获取URL特征
 
+    参考https://github.com/john-kurkowski/tldextract
+    >>> tldextract.extract('http://forums.bbc.co.uk/') # United Kingdom
+    ExtractResult(subdomain='forums', domain='bbc', suffix='co.uk')
+    我们关注的site_sign实际上就是domain
+
     @param post_url:    帖子地址
     @type post_url:     str
 
     @return:            URL特征
     @rtype:             str
     """
-    domain = post_url.split('/')[2]
-    return domain.split('.')[-2]
 
-def reply(job_body):
+    return tldextract.extract(post_url).domain
+
+def reply(self, job_body):
     """回复帖子，并将信息记录到数据库中
 
     @param job_body:    beanstalk获取的内容
     @type job_body:     json
-
     """
-    src = job_body['src']
+
     job_id = job_body['job_id']
-    post_url = job_body['post_url']
     mode = job_body['mode']
+    src = job_body['src']
+    post_url = job_body['post_url']
+
+    logger = logging.getLogger(post_url)
 
     # 获取帖子标题
     url_title = get_url_title(post_url)
@@ -80,13 +88,12 @@ def reply(job_body):
 
     # 将beanstalkc队列中获取到的信息记录到数据库中
     # 将初始状态（status）置为 1 --- 正在发送
-    cursor.execute('set character set "utf8"')
     count = cursor.execute('update reply_job set '
                            'status = 1, '
                            'url_title = %s, '
                            'update_time = now() '
                            'where job_id = %s', (url_title, job_id))
-    logging.info('updated reply status 1: ' + str(count))
+    logger.info('updated reply status 1: ' + str(count))
     # 将 "正在发送" 状态提交
     conn.commit()
     
@@ -101,35 +108,34 @@ def reply(job_body):
                    (status, log, job_id))
     # 将 "发送成功" 或 "发送失败" 状态提交
     conn.commit()
-    logging.info('updated reply status '+ str(status) + ': ' + str(count))
+    logger.info('updated reply status '+ str(status) + ': ' + str(count))
+
     # 更新账户信息
-    account_is_invalid = 1 if 'Login Error' in log else 0
-    info,log = account_info.get_account_info(post_url,
-                                             {'username':src['username'],
-                                              'password':src['password']})
-    info['is_invalid'] = account_is_invalid
+    info, log = rap.get_account_info(post_url, {'username': src['username'], 'password': src['password']})
+    info['is_invalid'] = 1 if 'Login Error' in log else 0
     info['site_url'] = '%' + get_site_sign(post_url) + '%'
 
-    logging.info(info)
+    logger.info(info)
 
-    sql_str = 'update account set ' \
-           'head_image = %(head_image)s, '\
-           'account_score = %(account_score)s, '\
-           'account_class = %(account_class)s, '\
-           'time_register = %(time_register)s, '\
-           'time_last_login = now(), '\
-           'login_count = %(login_count)s, '\
-           'count_post = %(count_post)s, '\
-           'count_reply = %(count_reply)s, '\
-           'is_invalid = %(is_invalid)s ' \
-           'where username = %(username)s and site_sign in '\
-           '(select site_sign from site where site_url like %(site_url)s)'
-    count = cursor.execute(sql_str,(info))
-    logging.info('updated account: ' + str(count))
+    sql_str = ('update account set '
+           'head_image = %(head_image)s, '
+           'account_score = %(account_score)s, '
+           'account_class = %(account_class)s, '
+           'time_register = %(time_register)s, '
+           'time_last_login = now(), '
+           'login_count = %(login_count)s, '
+           'count_post = %(count_post)s, '
+           'count_reply = %(count_reply)s, '
+           'is_invalid = %(is_invalid)s '
+           'where username = %(username)s and site_sign in '
+           '(select site_sign from site where site_url like %(site_url)s)')
+    count = cursor.execute(sql_str, info)
+    logger.info('updated account: ' + str(count))
     # 提交账号状态
     conn.commit()
 
     conn.close()
+
 
 def _decode_dict(data):
     rv = {}
@@ -163,6 +169,7 @@ def main():
     except:
         logging.critical('Cann\'t connect to beanstalk server')
         return
+
     while True:
         # 开启守护进程，持续接收信息
         job = bean.reserve()
@@ -177,9 +184,9 @@ def main():
             reply(job_body)
         except:
             logging.exception('reply exception')
-            job.release()
         finally:
             job.delete()
+
 
 if __name__ == '__main__':
     # Load local configurations.
