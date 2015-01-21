@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 # Utils.py provides some util functions for Reply & Post
 
+import logging
+import unittest
+import StringIO
+import traceback
+from datetime import datetime
+
 import requests
 import requesocks
-import logging, unittest
-from datetime import datetime
 
 import config
 
@@ -123,6 +127,12 @@ def cli(cmd_prefix):
         return wrapper
     return real_decorator
 
+def get_traceback():
+    """Return the traceback information."""
+
+    buf = StringIO.StringIO()
+    traceback.print_exc(file=buf)
+    return buf.getvalue()
 
 ################################################################################
 # Helper classes
@@ -169,7 +179,7 @@ class RAPLogger():
     def error(self, msg):
         if isinstance(msg, unicode):
             msg = msg.encode('utf8')
-        self.logger.exception(msg)
+        self.logger.error(msg)
         self.buf += ' - '.join([datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'ERROR', msg]) + '\n'
 
 ################################################################################
