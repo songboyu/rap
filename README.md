@@ -1,10 +1,9 @@
-RAP
-====
+# RAP
 
-RAP is an automated system for reply and post on various websites including news, blogs and forums.
+> RAP is an automated system for reply and post on various websites including news, blogs and forums.
 
-Reply website list: 38
-IN:
+## Reply website list: 38
+
     网易博客          163_blog
     网易新闻          163_news
     网易论坛          163_bbs
@@ -12,7 +11,7 @@ IN:
     新浪新闻          sina_news
     新浪论坛          sina_forum
     搜狐新闻          sohu_news
-OUT:
+
     加国华人网论坛    1dpw_forum
     加国无忧论坛      51_forum
     阿波罗新闻        aboluowang_news
@@ -45,10 +44,10 @@ OUT:
     文学城论坛        wenxuecity_forum
     天易论坛          wolfax_forum
 
-Post website list: 13
-IN:
+## Post website list: 13
+
     凯迪社区          kdnet_forum
-OUT:
+
     加国华人网论坛    1dpw_forum
     加国无忧论坛      51_forum
     倍可亲论坛        backchina_forum
@@ -62,9 +61,9 @@ OUT:
     文学城博客        wenxuecity_blog
     外来客论坛        wailaike_forum
 
-Get account info website list: 3
-IN:
+## Get account info website list: 3
+
     网易              163
     凯迪社区          kdnet_forum
-OUT:
+
     倍可亲            backchina
