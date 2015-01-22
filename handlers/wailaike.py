@@ -88,7 +88,7 @@ def post_wailaike_forum(post_url, src):
     # Step 1: 登录
     if not login_wailaike(sess, src):
         logger.error(' Login Error')
-        return (False, str(logger))
+        return ('', str(logger))
     logger.info(' Login OK')
     gid = re.findall(r'gid=(\d*)', post_url)[0]
     resp = sess.get('http://www.wailaike.net/newpost?gid='+gid)
@@ -110,12 +110,12 @@ def post_wailaike_forum(post_url, src):
     # 若指定字样出现在response中，表示发帖成功
     if src['subject'] not in resp.content:
         logger.error(' Post Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info(' Post OK')
     resp = sess.get('http://www.wailaike.net/group_post?gid='+gid)
     url1 = re.findall(r'<h3 class="titles-txt"><a href=\"(.*?)\" target="_blank">'+src['subject']+'</a></h3>',resp.content)[0]
     url = "http://www.wailaike.net"+url1
     logger.info(url)
-    return (True, url, str(logger))
+    return (url, str(logger))
 
 

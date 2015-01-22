@@ -124,7 +124,7 @@ def post_mirrorbooks_blog(post_url, src):
     # Step 1: 登录
     if not login_mirrorbooks(sess, src):
         logger.error(' Login Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info(' Login OK')
 
     post_new_url = 'http://www.mirrorbooks.com/MIB/blog/manager_add.aspx'
@@ -159,10 +159,11 @@ def post_mirrorbooks_blog(post_url, src):
     resp = sess.post(post_new_url, data=payload)
     if 'updatePanel' not in resp.content:
         logger.error('Post Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info('Post OK')
     resp = sess.get('http://www.mirrorbooks.com/MIB/blog/manager.aspx')
     href = re.findall(r'<a href=\'(.*?)\' target="_blank" > ' + src['subject'] + '</a>', resp.content)[0]
     url = 'http://www.mirrorbooks.com/MIB/blog/'+href
     print url
-    return (True, url, str(logger))
+    return (url, str(logger))
+    

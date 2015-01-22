@@ -102,7 +102,7 @@ def post_1dpw_forum(post_url, src):
     # Step 1: 登录
     if not login_1dpw(post_url, sess, src):
         logger.error(' Login Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info(' Login OK')
 
     resp = sess.get(post_url)
@@ -119,8 +119,9 @@ def post_1dpw_forum(post_url, src):
     # 若指定字样出现在response中，表示发帖成功
     if '主题已发布' not in resp.content:
         logger.error(' Post Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info(' Post OK')
     url = host + re.findall(r'succeedhandle_fastnewpost\(\'(.*?)\'', resp.content)[0]
     print url
-    return (True, url, str(logger))
+    return (url, str(logger))
+    

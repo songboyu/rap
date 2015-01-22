@@ -161,9 +161,9 @@ def post_creaders_forum(post_url, src):
     content = resp.content.decode(CHARSET).encode('utf8')
     if src['subject'] not in content:
         logger.error('Post Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     href = re.findall(r'<a href=\'(.*?)\' class=\'thread_title\'>'+src['subject'], content)[0]
     url = post_url + href
     logger.error('Post OK')
-    return (True, url, str(logger))
+    return (url, str(logger))
     

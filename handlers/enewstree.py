@@ -65,7 +65,7 @@ def post_enewstree_forum(post_url, src):
     # Step 1: 登录
     if not login_enewstree(post_url, sess, src):
         logger.error(' Login Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info(' Login OK')
 
     fid = re.findall(r'fid=(\d*)', post_url)[0]
@@ -99,8 +99,8 @@ def post_enewstree_forum(post_url, src):
     # 若指定字样出现在response中，表示回复成功
     if src['content'].decode('utf8') not in resp.content.decode(CHARSET):
         logger.error(' Post Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info(' Post OK')
     url = resp.url
     print url
-    return (True, url, str(logger))
+    return (url, str(logger))

@@ -58,7 +58,7 @@ def post_iask_forum(post_url, src):
     # Step 1: 登录
     if not login_iask(sess, src):
         logger.error(' Login Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info(' Login OK')
 
     host = 'http://forum.iask.ca/'
@@ -90,8 +90,9 @@ def post_iask_forum(post_url, src):
     print resp.content
     if src['subject'] not in resp.content:
         logger.error(' Post Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info(' Post OK')
     url = resp.url
     print url
-    return (True, url, str(logger))
+    return (url, str(logger))
+    

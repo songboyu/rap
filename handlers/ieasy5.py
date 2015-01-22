@@ -162,7 +162,7 @@ def post_ieasy5_forum(post_url, src):
     # Step 1: 登录
     if not login_ieasy5(sess, src):
         logger.error(' Login Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info(' Login OK')
 
     fid = re.findall(r'fid=(\d*)', post_url)[0]
@@ -187,8 +187,9 @@ def post_ieasy5_forum(post_url, src):
     tag = soup.find('div', attrs={'class': 'cc'})
     if u'跳转' not in tag.find('a').text:
         logger.error('Post Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info('Post OK')
     url = host + tag.find('a')['href']
     print url
-    return (True, url, str(logger))
+    return (url, str(logger))
+    

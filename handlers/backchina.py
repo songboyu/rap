@@ -132,7 +132,7 @@ def post_backchina_forum(post_url, src):
     # Step 1: 登录
     if not login_backchina(sess, src):
         logger.error(' Login Error')
-        return (False, str(logger))
+        return ('', str(logger))
     logger.info(' Login OK')
 
     fid = re.findall(r'fid=(\d*)', post_url)[0]
@@ -150,12 +150,12 @@ def post_backchina_forum(post_url, src):
     # 若指定字样出现在response中，表示发帖成功
     if src['content'] not in resp.content:
         logger.error(' Post Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info(' Post OK')
     url = re.findall(r'<link rel="canonical" href="(.*?)" />',resp.content)[0]
     print url
     logger.info(url)
-    return (True, url, str(logger))
+    return (url, str(logger))
 
 
 def get_account_info_backchina_forum(src):

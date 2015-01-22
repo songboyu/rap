@@ -143,7 +143,7 @@ def post_dwnews_blog(post_url, src):
     # Step 1: 登录
     if not login_dwnews(sess, src):
         logger.error(' Login Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info(' Login OK')
     # Step 2: 验证用户，取得Token
     resp = sess.get('http://blog.dwnews.com/index.php?r=user/checkMember&callback=?')
@@ -167,13 +167,14 @@ def post_dwnews_blog(post_url, src):
     if 'success' not in resp.content:
         logger.info(resp.content)
         logger.error(' Post Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     resp = sess.get('http://blog.dwnews.com/index.php?r=club/makehtml&catid=5')
     if 'ok' not in resp.content:
         logger.info(resp.content)
         logger.error(' Post Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info(' Post OK')
     url = 'http://blog.dwnews.com/mytopic'
     logger.info(url)
-    return (True, url, str(logger))
+    return (url, str(logger))
+    

@@ -114,7 +114,7 @@ def post_kdnet(post_url, src):
     # Step 1: 登录
     if not login_kdnet(sess, src):
         logger.error(' Login Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info(' Login OK')
 
     # 获得boardid，作为post参数
@@ -134,11 +134,11 @@ def post_kdnet(post_url, src):
     # 若指定字样出现在response中，表示发帖成功
     if u'发帖成功'.encode(CHARSET) not in resp.content:
         logger.error(' Post Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info(' Post OK')
     url = re.findall(r'var url="(.*?)"',resp.content)[0]
     print url
-    return (True, url, str(logger))
+    return (url, str(logger))
 
 def get_account_info_kdnet(src):
     """ 凯迪社区账户信息获取函数

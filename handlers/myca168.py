@@ -72,7 +72,7 @@ def post_myca168_forum(post_url, src):
     # 登录
     if not login_myca168(post_url, s, src):
         logger.error(' Login Error')
-        return (False, str(logger))
+        return ('', str(logger))
     logger.info(' Login OK')
    
     payload ={
@@ -90,12 +90,12 @@ def post_myca168_forum(post_url, src):
     if src['subject'] not in resp.content:
         # logger.info(resp.content)
         logger.error(' Post Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info(' Post OK')
     href = re.findall(r'<td><a href="(.*?)">', resp.content)[1]
     url = host + href
     logger.info(url)
-    return (True, '', str(logger))
+    return (url, str(logger))
 
 # Coding: utf8
 # Captcha: required

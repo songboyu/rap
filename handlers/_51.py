@@ -91,7 +91,7 @@ def post_51_forum(post_url, src):
     # 登录
     if not login_51_forum(post_url, s, src):
         logger.error(' Login Error')
-        return (False, str(logger))
+        return ('', str(logger))
     logger.info(' Login OK')
 
     fid = re.findall(r'fid=(\d*)', post_url)[0]
@@ -112,8 +112,9 @@ def post_51_forum(post_url, src):
     # 若指定字样出现在response中，表示发帖成功
     if src['subject'] not in resp.content:
         logger.error(' Post Error')
-        return (False, '', str(logger))
+        return ('', str(logger))
     logger.info(' Post OK')
     url = resp.url
     print url
-    return (True, url, str(logger))
+    return (url, str(logger))
+    
