@@ -377,7 +377,7 @@ def get_account_info_163_bbs(src):
     # Step 1: 登录
     if not login_163(sess, src):
         logger.error(' Login Error')
-        return (faild_info, str(logger))
+        return ({}, str(logger))
     logger.info(' Login OK')
 
     resp = sess.get('http://bbs.163.com/user/profile.do')

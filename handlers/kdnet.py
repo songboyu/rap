@@ -156,7 +156,7 @@ def get_account_info_kdnet(src):
     # Step 1: 登录
     if not login_kdnet(sess, src):
         logger.error(' Login Error')
-        return (faild_info, str(logger))
+        return ({}, str(logger))
     logger.info(' Login OK')
 
     resp = sess.get('http://user.kdnet.net/index.asp')
