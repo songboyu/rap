@@ -1,3 +1,4 @@
+#!/usr/bin/python
 """Control script.
 
 @author: sniper
@@ -5,9 +6,9 @@
 """
 
 import os
-import re
 import sys
 import signal
+import argparse
 import subprocess
 
 
@@ -34,7 +35,7 @@ class Logger:
         print '[' + __file__ + '] ' + Logger.FAIL + msg + Logger.ENDC
 
 
-def install():
+def install(args):
     try:
         # Make virtualenv.
         subprocess.check_call(['virtualenv', 'env'])
@@ -58,58 +59,85 @@ def install():
     Logger.info('Install OK')
 
 
-def start(mode):
-    if mode == 'router':
+def start(args):
+    if args.router:
         subprocess.Popen(['setsid', 'env/bin/python', 'rap_router.py'])
         Logger.info('RAP Router Running')
-        return
-
-    for i in range(10):
-        if mode == 'in':
-            subprocess.Popen(['setsid', 'env/bin/python', 'rap_server.py', 'in'])
-            Logger.info('RAP IN Server Running ' + str(i))
-        elif mode == 'out':
+    elif args._out:
+        for i in range(args.number):
             subprocess.Popen(['setsid', 'env/bin/python', 'rap_server.py', 'out'])
-            Logger.info('RAP OUT Server Running ' + str(i))
+            if args.verbose:
+                Logger.info('RAP OUT Server Running ' + str(i))
+        Logger.info('%d RAP OUT Server Running' % args.number)
+    else:
+        # args.in
+        for i in range(args.number):
+            subprocess.Popen(['setsid', 'env/bin/python', 'rap_server.py', 'in'])
+            if args.verbose:
+                Logger.info('RAP IN Server Running ' + str(i))
+        Logger.info('%d RAP IN Server Running' % args.number)
 
 
-def stop():
+def stop(args):
     # Sample output of `ps -ef`
     # UID        PID  PPID  C STIME TTY          TIME CMD
     # root      3410     1  0 12:57 ?        00:00:00 env/bin/python rap_router.py
     # root      3416  3378  0 12:57 pts/2    00:00:00 grep --color=auto rap
     output = subprocess.check_output(['ps', '-ef'])
     for line in output.splitlines():
-        if 'rap_router.py' in line or 'rap_server.py' in line:
+        if args.router:
+            kill = 'rap_router.py' in line
+        elif args._out:
+            kill = 'rap_server.py out' in line
+        elif args._in:
+            kill = 'rap_server.py in' in line
+        else:
+            # Kill all
+            kill = 'rap_router.py' in line or 'rap_server.py' in line
+
+        if kill:
             pid = int(line.split()[1])
             os.kill(pid, signal.SIGKILL)
+            if args.verbose:
+                Logger.info(' '.join(line.split()[7:]) + ' Stoped')
     Logger.info('RAP Stoped')
 
 
-def restart():
-    stop()
-    start()
+def show(args):
+    output = subprocess.check_output(['ps', '-ef'])
+    for line in output.splitlines():
+        if ('rap_router.py' in line or 'rap_server.py' in line) and 'grep' not in line:
+            print line
 
 
-def main():
-    if len(sys.argv) != 2 or sys.argv[1] not in ['install', 'start-in', 'start-out', 'start-router', 'stop']:
-        Logger.warning('Usage: rap_ctrl.py install|start-in|start-out|start-router|stop')
-        sys.exit(1)
+def main(): 
+
+    parser = argparse.ArgumentParser()
+    # Action and the concurrent limit.
+    parser.add_argument('action', choices=['install', 'start', 'stop', 'show'])
+    parser.add_argument('-n', '--number', type=int, default=8, help='start rap server in n processes')
+    # Start mode.
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-r', '--router', action='store_true', help='start or stop rap router')
+    group.add_argument('-i', '--in', dest='_in', action='store_true', help='start or stop rap server in IN mode.')
+    group.add_argument('-o', '--out', dest='_out', action='store_true', help='start or stop rap server in OUT mode.')
+    # Extra flags.
+    parser.add_argument('-v', '--verbose', action='store_true', help='turn verbose mode on')
+    args = parser.parse_args()
 
     # Change work directory to the rap root. That is the directory containing
     # rap_ctrl.py. Then this script can be executed anywhere.
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-    if sys.argv[1] == 'install':
-        install()
-    elif sys.argv[1] == 'start-in':
-        start('in')
-    elif sys.argv[1] == 'start-out':
-        start('out')
-    elif sys.argv[1] == 'start-router':
-        start('router')
-    elif sys.argv[1] == 'stop':
-        stop()
+    # Dispatch
+    if args.action == 'install':
+        install(args)
+    elif args.action == 'start':
+        start(args)
+    elif args.action == 'stop':
+        stop(args)
+    elif args.action == 'show':
+        show(args)
 
 
 if __name__ == '__main__':
