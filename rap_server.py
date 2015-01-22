@@ -22,6 +22,7 @@ import tldextract
 
 import rap
 
+
 def get_url_title(post_url):
     """Get url title with utf8 encoding format.
 
@@ -36,6 +37,7 @@ def get_url_title(post_url):
     result = chardet.detect(title)  
     return title.decode(result['encoding'])
 
+
 def db_connect():
     """数据库连接
 
@@ -47,6 +49,7 @@ def db_connect():
                            CONFIG['db']['password'],
                            CONFIG['db']['dbname'],
                            charset='utf8')
+
 
 def get_site_sign(post_url):
     """获取URL特征
@@ -65,7 +68,8 @@ def get_site_sign(post_url):
 
     return tldextract.extract(post_url).domain
 
-def reply(self, job_body):
+
+def reply(job_body):
     """回复帖子，并将信息记录到数据库中
 
     @param job_body:    beanstalk获取的内容
@@ -73,11 +77,8 @@ def reply(self, job_body):
     """
 
     job_id = job_body['job_id']
-    mode = job_body['mode']
-    src = job_body['src']
     post_url = job_body['post_url']
-
-    logger = logging.getLogger(post_url)
+    src = job_body['src']
 
     # 获取帖子标题
     url_title = get_url_title(post_url)
@@ -93,7 +94,6 @@ def reply(self, job_body):
                            'url_title = %s, '
                            'update_time = now() '
                            'where job_id = %s', (url_title, job_id))
-    logger.info('updated reply status 1: ' + str(count))
     # 将 "正在发送" 状态提交
     conn.commit()
     
@@ -108,32 +108,106 @@ def reply(self, job_body):
                    (status, log, job_id))
     # 将 "发送成功" 或 "发送失败" 状态提交
     conn.commit()
-    logger.info('updated reply status '+ str(status) + ': ' + str(count))
+
+    if 'username' not in src:
+        # 匿名情况，不需要更新账户信息
+        return
 
     # 更新账户信息
+    params = {
+        'username': src['username'],
+        'is_invalid': 1 if 'Login Error' in log else 0, 
+        'site_url': '%' + get_site_sign(post_url) + '%',
+    }
     info, log = rap.get_account_info(post_url, {'username': src['username'], 'password': src['password']})
-    info['is_invalid'] = 1 if 'Login Error' in log else 0
-    info['site_url'] = '%' + get_site_sign(post_url) + '%'
+    if info == {}:
+        # 获取账户信息未实现或者错误
+        count = cursor.execute('update account set is_invalid = %(is_invalid)s where username = %(username)s and site_sign in (select site_sign from site where site_url like %(site_url)s)', params)
+    else:
+        # 更新账户信息
+        params.update(info)
+        sql_str = ('update account set '
+                   'head_image = %(head_image)s, '
+                   'account_score = %(account_score)s, '
+                   'account_class = %(account_class)s, '
+                   'time_register = %(time_register)s, '
+                   'time_last_login = now(), '
+                   'login_count = %(login_count)s, '
+                   'count_post = %(count_post)s, '
+                   'count_reply = %(count_reply)s, '
+                   'is_invalid = %(is_invalid)s '
+                   'where username = %(username)s and site_sign in '
+                   '(select site_sign from site where site_url like %(site_url)s)')
+        count = cursor.execute(sql_str, params)
 
-    logger.info(info)
+    conn.commit()
+    conn.close()
 
-    sql_str = ('update account set '
-           'head_image = %(head_image)s, '
-           'account_score = %(account_score)s, '
-           'account_class = %(account_class)s, '
-           'time_register = %(time_register)s, '
-           'time_last_login = now(), '
-           'login_count = %(login_count)s, '
-           'count_post = %(count_post)s, '
-           'count_reply = %(count_reply)s, '
-           'is_invalid = %(is_invalid)s '
-           'where username = %(username)s and site_sign in '
-           '(select site_sign from site where site_url like %(site_url)s)')
-    count = cursor.execute(sql_str, info)
-    logger.info('updated account: ' + str(count))
-    # 提交账号状态
+
+def post(job_body):
+    """发表主帖，并将信息记录到数据库中
+
+    @param job_body:    beanstalk获取的内容
+    @type job_body:     json
+    """
+
+    job_id = job_body['job_id']
+    post_url = job_body['post_url']
+    src = job_body['src']
+
+    # 连接数据库
+    conn = db_connect()
+    cursor = conn.cursor()
+
+    # 将beanstalkc队列中获取到的信息记录到数据库中
+    # 将初始状态（status）置为 1 --- 正在发送
+    count = cursor.execute('update post_job set '
+                           'status = 1, '
+                           'update_time = now() '
+                           'where id = %s', (job_id,))
+    # 将 "正在发送" 状态提交
+    conn.commit()
+    
+    # 调用发帖函数
+    url, log = rap.post(post_url, src)
+
+    # 判断发帖状态
+    # 2 --- OK
+    # 3 --- Error.
+    status = 2 if url != '' else 3
+    count = cursor.execute('update post_job set status = %s, error = %s, update_time = now(), article_url = %s where id = %s',
+                   (status, log, url, job_id))
+    # 将 "发送成功" 或 "发送失败" 状态提交
     conn.commit()
 
+    # 更新账户信息
+    params = {
+        'username': src['username'],
+        'is_invalid': 1 if 'Login Error' in log else 0, 
+        'site_url': '%' + get_site_sign(post_url) + '%',
+    }
+    info, log = rap.get_account_info(post_url, {'username': src['username'], 'password': src['password']})
+    if info == {}:
+        # 获取账户信息未实现或者错误
+        count = cursor.execute('update account set is_invalid = %(is_invalid)s where username = %(username)s and site_sign in (select site_sign from site where site_url like %(site_url)s)', params)
+    else:
+        # 更新账户信息
+        params.update(info)
+        sql_str = ('update account set '
+                   'head_image = %(head_image)s, '
+                   'account_score = %(account_score)s, '
+                   'account_class = %(account_class)s, '
+                   'time_register = %(time_register)s, '
+                   'time_last_login = now(), '
+                   'login_count = %(login_count)s, '
+                   'count_post = %(count_post)s, '
+                   'count_reply = %(count_reply)s, '
+                   'is_invalid = %(is_invalid)s '
+                   'where username = %(username)s and site_sign in '
+                   '(select site_sign from site where site_url like %(site_url)s)')
+        count = cursor.execute(sql_str, params)
+
+    conn.commit()
     conn.close()
 
 
@@ -150,6 +224,7 @@ def _decode_dict(data):
             value = _decode_dict(value)
         rv[key] = value
     return rv
+
 
 def main():
     """Main eventloop."""
@@ -173,17 +248,18 @@ def main():
     while True:
         # 开启守护进程，持续接收信息
         job = bean.reserve()
-        logging.info(job.body)
         try:
-            # job_body转为json格式
             job_body = json.loads(job.body, object_hook=_decode_dict)
-
-            logging.info(job_body)
-            logging.info('load json ok')
-
-            reply(job_body)
+            if 'method' not in job_body:
+                logging.error('Abort message without method')
+            elif job_body['method'] == 'post':
+                post(job_body)
+            elif job_body['method'] == 'reply':
+                reply(job_body)
+            else:
+                logging.error('Abort message with method = ' + job_body['method'])
         except:
-            logging.exception('reply exception')
+            logging.exception('Exception in queue')
         finally:
             job.delete()
 

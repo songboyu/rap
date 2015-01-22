@@ -82,7 +82,11 @@ def post(post_url, src):
     # Get specific handler
     for pattern, handler in config.dispatch_rule.items():
         if re.search(pattern, post_url):
-            real_post = getattr(handlers, 'post_' + handler[0])
+            try:
+                real_post = getattr(handlers, 'post_' + handler[0])
+            except AttributeError:
+                logger.error('Post handler not implemented')
+                return ('', str(logger))
             break
     else:
         logger.error('No post handler')
@@ -128,7 +132,11 @@ def get_account_info(website, src):
     # Get specific handler
     for pattern, handler in config.dispatch_rule.items():
         if re.search(pattern, website):
-            real_get_account_info = getattr(handlers, 'get_account_info_' + handler[0])
+            try:
+                real_get_account_info = getattr(handlers, 'get_account_info_' + handler[0])
+            except AttributeError:
+                logger.error('Account handler not implemented')
+                return ({}, str(logger))
             break
     else:
         logger.error('No account handler')
