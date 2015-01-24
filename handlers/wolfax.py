@@ -7,6 +7,24 @@ from hashlib import md5
 import config
 from utils import *
 
+
+def login_wolfax(sess, src):
+    host = 'http://bbs.wolfax.com/'
+    resp = sess.get(host)
+    soup = BeautifulSoup(resp.content)
+    form = soup.find('form', attrs={'id': 'lsform'})
+    payload = get_datadic(form)
+    payload['username'] = src['username']
+    payload['password'] = md5(src['password']).hexdigest()
+
+    resp = sess.post(host + form['action'], data=payload)
+    soup = BeautifulSoup(resp.content)
+    tag = soup.find('div', attrs={'id': 'messagetext'})
+    if tag:
+        return False
+    return True
+
+
 # Coding: utf8
 # Captcha: arithmetic
 # Login: required
@@ -16,32 +34,22 @@ def reply_wolfax_forum(post_url, src):
     logger = RAPLogger(post_url)
 
     host = get_host(post_url)
-    s = RAPSession(src)
+    sess = RAPSession(src)
 
-    # Step 1: Login
-    r = s.get(host)
-    soup = BeautifulSoup(r.content)
-    form = soup.find('form', attrs={'id': 'lsform'})
-    payload = get_datadic(form)
-    payload['username'] = src['username']
-    payload['password'] = md5(src['password']).hexdigest()
-
-    r = s.post(host + form['action'], data=payload)
-    soup = BeautifulSoup(r.content)
-    tag = soup.find('div', attrs={'id': 'messagetext'})
-    if tag:
-        logger.error('Login Error: ' + tag.find('p').text)
+    if not login_wolfax(sess, src):
+        logger.error('Login Error')
         return (False, str(logger))
     logger.info('Login OK')
+    return (True, str(logger))
 
     # Step 2: Load post page
-    r = s.get(post_url)
-    soup = BeautifulSoup(r.content)
+    resp = sess.get(post_url)
+    soup = BeautifulSoup(resp.content)
     form = soup.find('form', attrs={'id':'fastpostform'})
     idhash = re.findall('secqaa_(\w*)', str(form))[0]
 
     # Step 3: Retrieve captcha question and crack
-    r = s.get(host + 'misc.php',
+    resp = sess.get(host + 'misc.php',
         params={
             'mod': 'secqaa',
             'action': 'update',
@@ -54,7 +62,7 @@ def reply_wolfax_forum(post_url, src):
     # '77 + 5 = ?'
     # '26 - 5 = ?'
     # ...
-    a, op, b = re.findall("'(\d+) (.) (\d+)", r.content)[0]
+    a, op, b = re.findall("'(\d+) (.) (\d+)", resp.content)[0]
     seccode = int(a) + int(b) if op == '+' else int(a) - int(b)
     logger.info('%s %s %s = %d' % (a, op, b, seccode))
 
@@ -66,8 +74,8 @@ def reply_wolfax_forum(post_url, src):
     payload['secanswer'] = seccode
     payload['message'] = src['content']
 
-    r = s.post(host + form['action'], data=payload)
-    soup = BeautifulSoup(r.content)
+    resp = sess.post(host + form['action'], data=payload)
+    soup = BeautifulSoup(resp.content)
     tag = soup.find('div', attrs={'id': 'messagetext'})
     if tag:
         logger.error('Reply Error: ' + tag.find('p').text)
