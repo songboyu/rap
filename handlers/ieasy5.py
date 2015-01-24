@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 import config
 from utils import *
 
+
 def login_ieasy5(sess, src):
     """ 加易登录函数
 
@@ -39,6 +40,7 @@ def login_ieasy5(sess, src):
     if u'您已经顺利登录' not in resp.content.decode('gbk'):
         return False
     return True
+
 
 # Coding: gb2312
 # Captcha: required
@@ -89,37 +91,23 @@ def reply_ieasy5_news(post_url, src):
     logger.info('Reply OK')
     return (True, str(logger))
 
+
 # Coding: gbk
 # Captcha: not required
 # Login: required
 def reply_ieasy5_forum(post_url, src):
     logger = RAPLogger(post_url)
     host = 'http://ieasy5.com/bbs/'
-    s = RAPSession(src)
+    sess = RAPSession(src)
 
-    # Step 1: Login
-    r = s.get(host)
-    soup = BeautifulSoup(r.content)
-    form = soup.find('form', attrs={'name': 'login_FORM'})
-    payload = {
-        'jumpurl': host + 'index.php',
-        'step': 2,
-        'pwuser': src['username'],
-        'pwpwd': src['password'],
-        'lgt': 0,
-    }
-
-    r = s.post(host + form['action'], data=payload)
-    soup = BeautifulSoup(r.content)
-    tag = soup.find('span')
-    if u'顺利登录' not in tag.text:
-        logger.error('Login Error: ' + tag.text)
+    if not login_ieasy5(sess, src):
+        logger.error('Login Error')
         return (False, str(logger))
     logger.info('Login OK')
 
     # Step 2: Load post page
-    r = s.get(post_url)
-    soup = BeautifulSoup(r.content)
+    resp = sess.get(post_url)
+    soup = BeautifulSoup(resp.content)
     form = soup.find('form', attrs={'id': 'anchor'})
 
     # Step 3: Submit
@@ -128,14 +116,15 @@ def reply_ieasy5_forum(post_url, src):
         payload['atc_title'] = src['subject'].decode('utf8').encode('gbk')
     payload['atc_content'] = src['content'].decode('utf8').encode('gbk')
 
-    r = s.post(host + form['action'], data=payload)
-    soup = BeautifulSoup(r.content)
+    resp = sess.post(host + form['action'], data=payload)
+    soup = BeautifulSoup(resp.content)
     tag = soup.find('div', attrs={'class': 'cc'})
     if u'跳转' not in tag.find('a').text:
         logger.error('Reply Error')
         return (False, str(logger))
     logger.info('Reply OK')
     return (True, str(logger))
+
 
 def post_ieasy5_forum(post_url, src):
     """文学城博客发主贴模块
