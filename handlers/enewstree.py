@@ -13,6 +13,7 @@ import re
 
 from bs4 import BeautifulSoup
 
+import time
 import utils
 
 CHARSET = 'gbk'
@@ -74,7 +75,7 @@ def post_enewstree_forum(post_url, src):
     print formhash
     payload = {
         'formhash':formhash,
-        'posttime':'1417366974',
+        'posttime':int(time.time()),
         'wysiwyg':'1',
         'subject':src['subject'].decode('utf8').encode(CHARSET),
         'message':src['content'].decode('utf8').encode(CHARSET),

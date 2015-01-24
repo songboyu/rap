@@ -70,7 +70,7 @@ def login_wailaike(sess, src):
 def post_wailaike_forum(post_url, src):
     """ 外来客论坛发主贴函数
 
-    @param post_url:   板块地址 如：http://www.wailaike.net/newpost?gid=1
+    @param post_url:   板块地址 如：http://www.wailaike.net/group_post?gid=1
     @type post_url:    str
 
     @param src:        用户名，密码，标题，主帖内容，等等。用户名：cangchedaobo3@163.com 密码：wenshen4921119
@@ -115,7 +115,6 @@ def post_wailaike_forum(post_url, src):
     resp = sess.get('http://www.wailaike.net/group_post?gid='+gid)
     url1 = re.findall(r'<h3 class="titles-txt"><a href=\"(.*?)\" target="_blank">'+src['subject']+'</a></h3>',resp.content)[0]
     url = "http://www.wailaike.net"+url1
-    logger.info(url)
     return (url, str(logger))
 
 

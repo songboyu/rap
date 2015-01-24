@@ -141,7 +141,7 @@ def post_ieasy5_forum(post_url, src):
     """文学城博客发主贴模块
 
     @author: HSS
-    @since: 2014-11-30
+    @since: 2015-1-24
 
     @param sess:    requests.Session()
     @type sess:     Session

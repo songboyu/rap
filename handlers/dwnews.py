@@ -4,6 +4,7 @@ import re, random
 
 import utils
 import config
+from bs4 import BeautifulSoup
 uid = ''
 def login_dwnews(sess, src):
     """ 多维社区登录函数
@@ -162,7 +163,12 @@ def post_dwnews_blog(post_url, src):
         'google':'0',
         'CsrfToken':csrf_token
     }
-    resp = sess.post('http://blog.dwnews.com/index.php?r=club/post', data=payload)
+    resp = sess.post('http://blog.dwnews.com/index.php?r=club/post', data=payload,
+                     headers={
+                         'Accept':'application/json, text/javascript, */*; q=0.01',
+                         'Referer':'http://blog.dwnews.com/mytopic',
+                         'X-Requested-With': 'XMLHttpRequest',
+                     })
     # 若指定字样出现在response中，表示发帖成功
     if 'success' not in resp.content:
         logger.info(resp.content)
@@ -174,7 +180,8 @@ def post_dwnews_blog(post_url, src):
         logger.error(' Post Error')
         return ('', str(logger))
     logger.info(' Post OK')
-    url = 'http://blog.dwnews.com/mytopic'
-    logger.info(url)
+    resp = sess.get('http://blog.dwnews.com/mytopic')
+    soup = BeautifulSoup(resp.content)
+    url = soup.select('div.loadMore li a[href^="http"]')[0]['href']
     return (url, str(logger))
     
