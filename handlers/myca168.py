@@ -56,7 +56,7 @@ def post_myca168_forum(post_url, src):
     @param sess:    requests.Session()
     @type sess:     Session
 
-    @param post_url:   帖子地址 http://www.myca168.com/bbs/index/post/id/9
+    @param post_url:   帖子地址 http://www.myca168.com/bbs/index/thread/id/9
     @type post_url:    str
 
     @param src:        用户名，密码，回复内容，等等。tyui,tyui
@@ -74,18 +74,26 @@ def post_myca168_forum(post_url, src):
         logger.error(' Login Error')
         return ('', str(logger))
     logger.info(' Login OK')
-   
+
+   # 验证码
+    r = s.get('http://www.myca168.com/image.php',
+        headers={
+            'Accept': config.accept_image
+        })
+    seccode = crack_captcha(r.content)
+    print seccode
+
     payload ={
         'MAX_FILE_SIZE':(None,'134217728'),
         'title':(None,src['subject']),
         'editor1':(None,'<p>'+src['content']+'</p>'),
         'submit':(None,u'提交'),
-        'image':('a.png','','application/octet-stream')
+        'image':('a.png','','application/octet-stream'),
+        'chkcode': (None, seccode)
     }
 
     # 发送发主贴post包
-    resp = s.post(post_url, files=payload)
-    print resp.url
+    resp = s.post(post_url.replace('thread','post'), files=payload)
     # 若指定字样出现在response中，表示发帖成功
     if src['subject'] not in resp.content:
         # logger.info(resp.content)
@@ -94,7 +102,6 @@ def post_myca168_forum(post_url, src):
     logger.info(' Post OK')
     href = re.findall(r'<td><a href="(.*?)">', resp.content)[1]
     url = host + href
-    logger.info(url)
     return (url, str(logger))
 
 # Coding: utf8
@@ -123,7 +130,6 @@ def reply_myca168_forum(post_url, src):
 
     logger = utils.RAPLogger(post_url)
 
-    host = utils.get_host(post_url)
     s = utils.RAPSession(src)
 
     # 登录
@@ -145,9 +151,6 @@ def reply_myca168_forum(post_url, src):
             'Accept': config.accept_image,
             'Referer': reply_url,
         })
-
-    f = open('2.txt','w')
-    f.write(r.content)
 
     seccode = crack_captcha(r.content)
     print seccode

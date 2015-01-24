@@ -52,12 +52,12 @@ def login_backchina(sess, src):
 
     #发送post包
     resp = sess.post(login_page + form['action'], data=payload)
-    soup = BeautifulSoup(resp.content)
 
     #判断登录后页面是否含有用户字段，若存在则证明登录成功，否则失败
     if src['username'] in resp.content:
-        #id_count = re.findall(r'a class="eis_ttbat" href=\"http://www.backchina.com/u/(.*?)\">', resp.content)
-        #print id_count
+        soup = BeautifulSoup(resp.content)
+        user_id = soup.select('a.eis_ttbat')[0]['href']
+        print user_id
         return True
     return False
 
@@ -115,7 +115,7 @@ def reply_backchina_forum(post_url, src):
 def post_backchina_forum(post_url, src):
     """ 倍可亲论坛发主贴函数
 
-    @param post_url:   板块地址 如：http://www.backchina.com/forum.php?mod=post&action=newthread&fid=37
+    @param post_url:   板块地址 如：http://www.backchina.com/forum/37/index-1.html
     @type post_url:    str
 
     @param src:        用户名，密码，标题，主帖内容，等等。
@@ -135,8 +135,8 @@ def post_backchina_forum(post_url, src):
         return ('', str(logger))
     logger.info(' Login OK')
 
-    fid = re.findall(r'fid=(\d*)', post_url)[0]
-    resp = sess.get(post_url)
+    fid = re.findall(r'forum/(\d+)/', post_url)[0]
+    resp = sess.get('http://www.backchina.com/forum.php?mod=post&action=newthread&fid='+fid)
     soup = BeautifulSoup(resp.content)
     # 获得发帖form
     form = soup.find('form', attrs={'id': 'postform'})
@@ -153,8 +153,6 @@ def post_backchina_forum(post_url, src):
         return ('', str(logger))
     logger.info(' Post OK')
     url = re.findall(r'<link rel="canonical" href="(.*?)" />',resp.content)[0]
-    print url
-    logger.info(url)
     return (url, str(logger))
 
 
