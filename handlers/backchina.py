@@ -152,7 +152,7 @@ def post_backchina_forum(post_url, src):
         logger.error(' Post Error')
         return ('', str(logger))
     logger.info(' Post OK')
-    url = re.findall(r'<link rel="canonical" href="(.*?)" />',resp.content)[0]
+    url = resp.url
     return (url, str(logger))
 
 
