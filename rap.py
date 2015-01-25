@@ -58,7 +58,7 @@ def reply(post_url, src):
         r, log = real_reply(post_url, src)
         return (r, str(logger) + log)
     except:
-        logger.error(get_traceback())
+        logger.exception(get_traceback())
         return (False, str(logger))
 
 
@@ -111,7 +111,7 @@ def post(post_url, src):
         url, log = real_post(post_url, src)
         return (url, str(logger) + log)
     except:
-        logger.error(get_traceback())
+        logger.exception(get_traceback())
         return ('', str(logger))
 
 
@@ -158,5 +158,5 @@ def get_account_info(website, src):
         info, log = real_get_account_info(src)
         return (info, str(logger) + log)
     except:
-        logger.error(get_traceback())
+        logger.exception(get_traceback())
         return ({}, str(logger))
