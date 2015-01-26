@@ -148,7 +148,7 @@ def post_backchina_forum(post_url, src):
     resp = sess.post('http://www.backchina.com/forum.php?mod=post&action=newthread&fid='+fid+'&extra=&topicsubmit=yes', data=payload)
 
     # 若指定字样出现在response中，表示发帖成功
-    if src['content'] not in resp.content:
+    if src['subject'] not in resp.content:
         logger.error(' Post Error')
         return ('', str(logger))
     logger.info(' Post OK')
