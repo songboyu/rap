@@ -75,9 +75,9 @@ def reply_kdnet(post_url, src):
     boardid = re.findall(r'boardid=(.*\d)', post_url)[0]
     # 构造回复参数
     payload = utils.get_datadic(form)
-    payload['UserName'] = src['username'].decode('utf8').encode(CHARSET)
-    payload['password'] = src['password'].decode('utf8').encode(CHARSET)
-    payload['body'] = src['content'].decode('utf8').encode(CHARSET)
+    payload['UserName'] = src['username'].decode('utf8').encode(CHARSET,'ignore')
+    payload['password'] = src['password'].decode('utf8').encode(CHARSET,'ignore')
+    payload['body'] = src['content'].decode('utf8').encode(CHARSET,'ignore')
     # 回复地址
     reply_url = 'http://upfile1.kdnet.net/do_lu_shuiyin.asp?'\
         + 'action=sre&method=fastreply&BoardID='
@@ -85,7 +85,7 @@ def reply_kdnet(post_url, src):
     resp = sess.post(reply_url + boardid, data=payload)
     print resp.content.decode(CHARSET)
     # 若指定字样出现在response中，表示回复成功
-    if u'成功回复'.encode(CHARSET) not in resp.content:
+    if u'成功回复'.encode(CHARSET,'ignore') not in resp.content:
         logger.error(' Reply Error')
         return (False, str(logger))
     logger.info(' Reply OK')
@@ -125,14 +125,14 @@ def post_kdnet(post_url, src):
     form = soup.find('form', attrs={'id': 'Dvform'})
     # 构造回复参数
     payload = utils.get_datadic(form)
-    payload['topic'] = src['subject'].decode('utf8').encode(CHARSET)
-    payload['body'] = src['content'].decode('utf8').encode(CHARSET)
-    payload['font1'] = u'[原创]'.encode(CHARSET)
+    payload['topic'] = src['subject'].decode('utf8').encode(CHARSET,'ignore')
+    payload['body'] = src['content'].decode('utf8').encode(CHARSET,'ignore')
+    payload['font1'] = u'[原创]'.encode(CHARSET,'ignore')
     # 发送发帖post包
     resp = sess.post('http://upfile1.kdnet.net/SavePost_ubb.asp?Action=snew&boardid=' + boardid, data=payload)
 
     # 若指定字样出现在response中，表示发帖成功
-    if u'发帖成功'.encode(CHARSET) not in resp.content:
+    if u'发帖成功'.encode(CHARSET,'ignore') not in resp.content:
         logger.error(' Post Error')
         return ('', str(logger))
     logger.info(' Post OK')
@@ -173,18 +173,18 @@ def get_account_info_kdnet(src):
 
     resp = sess.get('http://user.kdnet.net/posts.asp')
     content = resp.content
-    if u'还未发表内容'.encode(CHARSET) in content:
+    if u'还未发表内容'.encode(CHARSET,'ignore') in content:
         count_post = 0
     else:
-        count_post = re.findall(ur'共(\d*)条记录'.encode(CHARSET), content)[0]
+        count_post = re.findall(ur'共(\d*)条记录'.encode(CHARSET,'ignore'), content)[0]
 
 
     resp = sess.get('http://user.kdnet.net/reply.asp')
     content = resp.content
-    if u'还未发表内容'.encode(CHARSET) in content:
+    if u'还未发表内容'.encode(CHARSET,'ignore') in content:
         count_reply = 0
     else:
-        count_reply = re.findall(ur'共(\d*)条记录'.encode(CHARSET), content)[0]
+        count_reply = re.findall(ur'共(\d*)条记录'.encode(CHARSET,'ignore'), content)[0]
 
     account_info = {
         #########################################

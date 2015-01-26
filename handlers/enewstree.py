@@ -72,7 +72,7 @@ def post_enewstree_forum(post_url, src):
     fid = re.findall(r'fid=(\d*)', post_url)[0]
     resp = sess.get('http://enewstree.com/discuz/forum.php?mod=post&action=newthread&fid='+fid)
     formhash = re.findall(r'formhash=(.*?)"', resp.content)[0]
-    print formhash
+    logger.info('formhash:'+ formhash)
     payload = {
         'formhash':formhash,
         'posttime':int(time.time()),
@@ -98,7 +98,7 @@ def post_enewstree_forum(post_url, src):
                          'Referer':post_url
                      })
     # 若指定字样出现在response中，表示回复成功
-    if src['content'].decode('utf8') not in resp.content.decode(CHARSET):
+    if src['subject'].decode('utf8') not in resp.content.decode(CHARSET):
         logger.error(' Post Error')
         return ('', str(logger))
     logger.info(' Post OK')
