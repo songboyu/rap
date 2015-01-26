@@ -4,6 +4,11 @@ import rap
 import logging, logging.handlers
 import sys
 
+import socks
+import socket
+socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1080)
+socket.socket = socks.socksocket
+
 def reply(post_url, src):
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
     handler = logging.handlers.TimedRotatingFileHandler('log/log', 'D', 1, 0)
@@ -56,9 +61,7 @@ if __name__ == '__main__':
 
     # http://boxun.com/news/gb/china/2015/01/201501142221.shtml fail
 
-    r, log = reply('http://boxun.com/forum/201501/boxun2013/18895.shtml',
-                    {'content': '墙里墙外 男默女泪',
-                     'username': 'shiduojiuo',
-                     'password': '1qazxsw2',
-                     'proxies': {'http': 'socks5://127.0.0.1:1080', 'https': 'socks5://127.0.0.1:1080'},
-                    })
+    r, log = reply('http://www.wailaike.net/news-1242881-0.html',
+                    {'content': '墙里墙外 男默女泪。',
+                     'username': 'cangchedaobo3@163.com',
+                     'password': 'wenshen4921119'})

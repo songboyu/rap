@@ -48,6 +48,51 @@ def login_enewstree(post_url, sess, src):
         return False
     return True
 
+def reply_enewstree_forum(post_url, src):
+    """ 消息树回复函数
+
+        - Name:     凯迪社区
+        - Feature:  club.kdnet.net
+        - Captcha:  NO
+        - Login:    NO
+
+    @param post_url:   帖子地址
+    @type post_url:    str
+
+    @param src:        用户名，密码，回复内容，等等。
+    @type src:         dict
+
+    @return:           是否回复成功
+    @rtype:            bool
+
+    """
+    logger = utils.RAPLogger(post_url)
+    sess = utils.RAPSession(src)
+    # Step 1: 登录
+    if not login_enewstree(post_url, sess, src):
+        logger.error(' Login Error')
+        return ('', str(logger))
+    logger.info(' Login OK')
+
+    resp = sess.get(post_url)
+    soup = BeautifulSoup(resp.content)
+    # 获得回复form
+    form = soup.find('form', attrs={'id': 'fastpostform'})
+    # 构造回复参数
+    payload = utils.get_datadic(form)
+    payload['message'] = src['content'].decode('utf8').encode(CHARSET),
+
+    resp = sess.post('http://enewstree.com/discuz/'+form['action'],
+                     data=payload,
+                     headers = {
+                         'Referer':post_url
+                     })
+    if src['content'].decode('utf8') not in resp.content.decode(CHARSET):
+        logger.error(' Reply Error')
+        return (False, str(logger))
+    logger.info(' Reply OK')
+    return (True, str(logger))
+
 def post_enewstree_forum(post_url, src):
     """ 消息树发主贴函数
 
