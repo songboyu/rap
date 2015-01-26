@@ -128,8 +128,7 @@ def post_wolfax_forum(post_url, src):
 
     # Step 4: Submit and check
     payload = get_datadic(form)
-    if 'subject' in src:
-        payload['subject'] = src['subject']
+    payload['subject'] = src['subject']
     payload['secqaahash'] = idhash
     payload['secanswer'] = seccode
     payload['message'] = src['content']
