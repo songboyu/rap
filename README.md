@@ -44,7 +44,7 @@
     文学城论坛        wenxuecity_forum
     天易论坛          wolfax_forum
 
-## Post website list: 13
+## Post website list: 17
 
     凯迪社区          kdnet_forum
 
@@ -56,10 +56,14 @@
     消息树论坛        enewstree_forum
     加拿大家园论坛    iask_forum
     加拿大加易论坛    ieasy5_forum
-    明镜新闻          mirrorbooks_news
+    明镜新闻          mirrorbooks_blog
     天涯信息论坛      myca168_forum
     文学城博客        wenxuecity_blog
     外来客论坛        wailaike_forum
+    天易论坛          wolfax_forum
+    温哥华巅峰论坛    vanhi_forum
+    謎米香港论坛      memehk_forum
+    阿波罗论坛        aboluowang_forum
 
 ## Get account info website list: 3
 
