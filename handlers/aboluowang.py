@@ -216,7 +216,7 @@ def post_aboluowang_forum(post_url, src):
         # But it is necessary now...
         if u'验证问答' in tag.find('p').text:
             src['TTL'] -= 1
-            return reply_aboluowang_forum(post_url, src)
+            return post_aboluowang_forum(post_url, src)
         return ('', str(logger))
     logger.info('Post OK')
     return (resp.url, str(logger))
