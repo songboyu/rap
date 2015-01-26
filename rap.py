@@ -58,7 +58,7 @@ def reply(post_url, src):
         r, log = real_reply(post_url, src)
         return (r, str(logger) + log)
     except:
-        logger.exception(get_traceback())
+        logger.exception('Reply Error')
         return (False, str(logger))
 
 
@@ -85,7 +85,7 @@ def post(post_url, src):
             try:
                 real_post = getattr(handlers, 'post_' + handler[0])
             except AttributeError:
-                logger.error('Post handler not implemented')
+                logger.warning('Post handler not implemented')
                 return ('', str(logger))
             break
     else:
@@ -111,7 +111,7 @@ def post(post_url, src):
         url, log = real_post(post_url, src)
         return (url, str(logger) + log)
     except:
-        logger.exception(get_traceback())
+        logger.exception('Post Error')
         return ('', str(logger))
 
 
@@ -135,7 +135,7 @@ def get_account_info(website, src):
             try:
                 real_get_account_info = getattr(handlers, 'get_account_info_' + handler[0])
             except AttributeError:
-                logger.error('Account handler not implemented')
+                logger.warning('Account handler not implemented')
                 return ({}, str(logger))
             break
     else:
@@ -158,5 +158,5 @@ def get_account_info(website, src):
         info, log = real_get_account_info(src)
         return (info, str(logger) + log)
     except:
-        logger.exception(get_traceback())
+        logger.exception('Get account info Error')
         return ({}, str(logger))
