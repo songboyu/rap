@@ -40,7 +40,6 @@ def reply_wolfax_forum(post_url, src):
         logger.error('Login Error')
         return (False, str(logger))
     logger.info('Login OK')
-    return (True, str(logger))
 
     # Step 2: Load post page
     resp = sess.get(post_url)
@@ -88,3 +87,64 @@ def reply_wolfax_forum(post_url, src):
         return (False, str(logger))
     logger.info('Reply OK')
     return (True, str(logger))
+
+
+def post_wolfax_forum(post_url, src):
+    if src['TTL'] == 0:
+        raise RAPMaxTryException('captcha')
+    logger = RAPLogger(post_url)
+
+    host = get_host(post_url)
+    sess = RAPSession(src)
+
+    if not login_wolfax(sess, src):
+        logger.error('Login Error')
+        return ('', str(logger))
+    logger.info('Login OK')
+
+    # Step 2: Load post page
+    resp = sess.get(post_url)
+    soup = BeautifulSoup(resp.content)
+    form = soup.find('form', attrs={'id':'fastpostform'})
+    idhash = re.findall('secqaa_(\w*)', str(form))[0]
+
+    # Step 3: Retrieve captcha question and crack
+    resp = sess.get(host + 'misc.php',
+        params={
+            'mod': 'secqaa',
+            'action': 'update',
+            'idhash': idhash,
+        },
+        headers={'Referer': post_url})
+
+    # Crack the silly captcha question
+    # Server responses are as follows: 
+    # '77 + 5 = ?'
+    # '26 - 5 = ?'
+    # ...
+    a, op, b = re.findall("'(\d+) (.) (\d+)", resp.content)[0]
+    seccode = int(a) + int(b) if op == '+' else int(a) - int(b)
+    logger.info('%s %s %s = %d' % (a, op, b, seccode))
+
+    # Step 4: Submit and check
+    payload = get_datadic(form)
+    if 'subject' in src:
+        payload['subject'] = src['subject']
+    payload['secqaahash'] = idhash
+    payload['secanswer'] = seccode
+    payload['message'] = src['content']
+
+    resp = sess.post(host + form['action'], data=payload)
+    soup = BeautifulSoup(resp.content)
+    tag = soup.find('div', attrs={'id': 'messagetext'})
+    if tag:
+        logger.error('Post Error: ' + tag.find('p').text)
+        # Captcha cracking is absolutely right, unless the schema has changed
+        # It's not necessary to retry for captcha error
+        # But it is necessary now...
+        if u'验证问答' in tag.find('p').text:
+            src['TTL'] -= 1
+            return post_wolfax_forum(post_url, src)
+        return ('', str(logger))
+    logger.info('Post OK')
+    return (resp.url, str(logger))
