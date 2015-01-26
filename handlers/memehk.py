@@ -47,3 +47,29 @@ def reply_memehk_forum(post_url, src):
         return (False, str(logger))
     logger.info('Reply OK')
     return (True, str(logger))
+
+
+def post_memehk_forum(post_url, src):
+    logger = RAPLogger(post_url)
+    host = get_host(post_url)
+    sess = RAPSession(src)
+
+    if not login_memehk(sess, src):
+        logger.error('Login Error')
+        return ('', str(logger))
+    logger.info('Login OK')
+
+    resp = sess.get(post_url)
+    soup = BeautifulSoup(resp.content)
+    form = soup.find('form', attrs={'id': 'fastpostform'})
+    payload = get_datadic(form)
+    payload['subject'] = src['subject']
+    payload['message'] = src['content']
+
+    resp = sess.post(host + form['action'] + '&inajax=1', data=payload)
+    if '主題已發佈' not in resp.content:
+        logger.error('Post Error')
+        return ('', str(logger))
+    logger.info('Post OK')
+    url = 'http://forum.memehk.com/forum.php?mod=viewthread&tid=' + re.findall("'tid':'(\d+)'", resp.content)[0]
+    return (url, str(logger))

@@ -15,7 +15,8 @@ from utils import *
 
 def login_vanhi(sess, src):
     # Load login page.
-    resp = sess.get('http://forum.vanhi.com/member.php?mod=logging&action=login&referer=&infloat=yes&handlekey=login&inajax=1&ajaxtarget=fwin_content_login')
+    host = 'http://forum.vanhi.com/'
+    resp = sess.get(host + 'member.php?mod=logging&action=login&referer=&infloat=yes&handlekey=login&inajax=1&ajaxtarget=fwin_content_login')
     soup = BeautifulSoup(resp.content)
 
     form = soup.find('form', attrs={'name': 'login'})
@@ -23,7 +24,7 @@ def login_vanhi(sess, src):
     payload['username'] = src['username']
     payload['password'] = src['password']
 
-    resp = sess.post('http://forum.vanhi.com/member.php?mod=logging&action=login&loginsubmit=yes&handlekey=login&loginhash=La06S&inajax=1', data=payload)
+    resp = sess.post(host + form['action'] + '&inajax=1', data=payload)
     if u'欢迎'.encode('gbk') not in resp.content:
         return False
     return True
@@ -31,6 +32,7 @@ def login_vanhi(sess, src):
 
 def reply_vanhi_forum(post_url, src):
     logger = RAPLogger(post_url)
+    host = get_host(post_url)
     sess = RAPSession(src)
 
     # Login
@@ -42,13 +44,11 @@ def reply_vanhi_forum(post_url, src):
     # Reply
     resp = sess.get(post_url)
     soup = BeautifulSoup(resp.content)
-    fid = re.findall('fid="(\d+)"', resp.content)[0]
-    tid = re.findall('tid=(\d+)', post_url)[0]
     form = soup.find('form', attrs={'id':'fastpostform'})
     payload = get_datadic(form, 'gbk')
     payload['message'] = src['content'].decode('utf8').encode('gbk')
 
-    resp = sess.post('http://forum.vanhi.com/forum.php?mod=post&action=reply&fid=%s&tid=%s&extra=&replysubmit=yes&infloat=yes&handlekey=fastpost&inajax=1' % (fid, tid), data=payload)
+    resp = sess.post(host + form['action'] + '&inajax=1', data=payload)
     if u'成功'.encode('gbk') not in resp.content:
         logger.error('Reply Error')
         return (False, str(logger))
@@ -58,24 +58,24 @@ def reply_vanhi_forum(post_url, src):
 
 def post_vanhi_forum(post_url, src):
     logger = RAPLogger(post_url)
+    host = get_host(post_url)
     sess = RAPSession(src)
 
     # Login
     if not login_vanhi(sess, src):
         logger.error('Login Error')
-        return (False, str(logger))
+        return ('', str(logger))
     logger.info('Login OK')
 
     # Post
     resp = sess.get(post_url)
     soup = BeautifulSoup(resp.content)
-    fid = re.findall('fid="(\d+)"', resp.content)[0]
     form = soup.find('form', attrs={'id':'fastpostform'})
     payload = get_datadic(form, 'gbk')
     payload['subject'] = src['subject'].decode('utf8').encode('gbk')
     payload['message'] = src['content'].decode('utf8').encode('gbk')
 
-    resp = sess.post('http://forum.vanhi.com/forum.php?mod=post&action=newthread&fid=%s&replysubmit=yes&infloat=yes&handlekey=fastnewpost&inajax=1' % fid, data=payload)
+    resp = sess.post(host + form['action'] + '&inajax=1', data=payload)
     if u'主题已发布'.encode('gbk') not in resp.content:
         logger.error('Post Error')
         return ('', str(logger))
