@@ -2,7 +2,7 @@
 
 > RAP is an automated system for reply and post on various websites including news, blogs and forums.
 
-## Reply website list: 38
+## Reply website list: 41
 
     网易博客          163_blog
     网易新闻          163_news
@@ -37,12 +37,16 @@
     超级苹果新闻      powerapple_news
     超级苹果论坛      powerapple_forum
     看中国新闻        secretchina_news
+    m看中国新闻       m_secretchina_news
     澳洲联合网新闻    unitedtimes_news
     温哥华巅峰论坛    vanhi_forum
     文学城新闻        wenxuecity_news
     文学城博客        wenxuecity_blog
     文学城论坛        wenxuecity_forum
     天易论坛          wolfax_forum
+    天易博客          wolfax_blog
+    消息树论坛        enewstree_forum
+
 
 ## Post website list: 17
 

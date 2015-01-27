@@ -192,8 +192,13 @@ class RAPLogger():
             # Convert unicode to utf8 if necessary.
             if isinstance(msg, unicode):
                 msg = msg.encode('utf8')
+            # Call the real_method
+            getattr(self.logger, method)(msg, *args, **kwargs)
+             
+            # Append traceback to msg.
+            if method == 'exception':
+                msg += '\n' + get_traceback()
             self.buf += ' - '.join([datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), method.upper(), msg]) + '\n'
-            return getattr(self.logger, method)(msg, *args, **kwargs)
 
         # Just like a decorator.
         return real_method 

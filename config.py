@@ -74,12 +74,11 @@ dispatch_rule = {
     'ieasy5\.com/htm': ('ieasy5_news', 'OUT'),
     'ieasy5\.com/bbs': ('ieasy5_forum', 'OUT'),
     # aboluowang
-    'bbs\.aboluowang\.com': ('aboluowang_forum', 'OUT'),
-    'space\.aboluowang\.com': ('aboluowang_forum', 'OUT'),
-    'www\.aboluowang\.com': ('aboluowang_news', 'OUT'),
-    'tw\.aboluowang\.com': ('aboluowang_news', 'OUT'),
+    '(bbs|space)\.aboluowang\.com': ('aboluowang_forum', 'OUT'),
+    '(www|tw)\.aboluowang\.com': ('aboluowang_news', 'OUT'),
     # wolfax
-    'bbs\.wolfax\.com': ('wolfax_forum', 'OUT'),
+    '(wolfax\.com/forum|bbs\.wolfax\.com)': ('wolfax_forum', 'OUT'),
+    'wolfax\.com/home': ('wolfax_blog', 'OUT'),
     # vanhi
     'forum\.vanhi\.com': ('vanhi_forum', 'OUT') ,
     # secretchina
