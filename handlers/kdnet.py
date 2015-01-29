@@ -65,6 +65,7 @@ def reply_kdnet(post_url, src):
     sess = utils.RAPSession(src)
     resp = sess.get(post_url)
 
+    post_url = resp.url
     # 获得回复iframe
     iframe = re.findall('<iframe src=\"(.*?)\"', resp.content)[0]
     resp = sess.get(iframe.decode(CHARSET))
