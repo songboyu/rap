@@ -81,8 +81,16 @@ def reply(job_body):
     src = job_body['src']
 
     # 获取帖子标题
-    url_title = get_url_title(post_url)
-
+    if 'url_title' in src:
+        # 标题已知则直接使用
+        url_title = src['url_title']
+    else:
+        # 标题未知则立即获取
+        try:
+            url_title = get_url_title(post_url)
+        except:
+            url_title = '获取标题失败'
+            
     # 连接数据库
     conn = db_connect()
     cursor = conn.cursor()
