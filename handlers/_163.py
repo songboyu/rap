@@ -370,10 +370,9 @@ def get_account_info_163_bbs(src):
     @return:           账户信息
     @rtype:            dict
     """
-    logger = utils.RAPLogger(src['username'])
+    logger = utils.RAPLogger('163=>' + src['username'])
     sess = utils.RAPSession(src)
 
-    faild_info = {'Error':'Failed to get account info'}
     # Step 1: 登录
     if not login_163(sess, src):
         logger.error(' Login Error')
@@ -435,4 +434,6 @@ def get_account_info_163_bbs(src):
         'count_reply':count_reply
         #########################################
     }
+    logger.info('Get account info OK')
     return (account_info, str(logger))
+    

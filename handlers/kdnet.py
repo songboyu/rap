@@ -152,7 +152,6 @@ def get_account_info_kdnet(src):
     logger = utils.RAPLogger(src['username'])
     sess = utils.RAPSession(src)
 
-    faild_info = {'Error':'Failed to get account info'}
     # Step 1: 登录
     if not login_kdnet(sess, src):
         logger.error(' Login Error')
@@ -213,4 +212,5 @@ def get_account_info_kdnet(src):
         'count_reply':count_reply
         #########################################
     }
+    logger.info('Get account info OK')
     return (account_info, str(logger))
