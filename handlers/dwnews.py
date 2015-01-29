@@ -54,7 +54,7 @@ def login_dwnews(sess, src):
     return True
 # Coding: utf8
 # Captcha: not required
-# Login: not required
+# Login: required
 def reply_dwnews_news(post_url, src):
     s = utils.RAPSession(src)
     logger = utils.RAPLogger(post_url)
@@ -89,7 +89,7 @@ def reply_dwnews_news(post_url, src):
 
 # Coding: utf8
 # Captcha: not required
-# Login: not required
+# Login: required
 def reply_dwnews_blog(post_url, src):
     s = utils.RAPSession(src)
     logger = utils.RAPLogger(post_url)

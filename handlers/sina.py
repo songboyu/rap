@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """新浪回复模块（新浪论坛、新浪新闻）
 
-@author: HSS
+@author: SONG
 @since: 2014-10-20
 @summary: 新浪论坛、新浪新闻
 

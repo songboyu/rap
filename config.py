@@ -33,11 +33,16 @@ dispatch_rule = {
     '^http://[^(c|f)].*\.sina\.com\.cn/': ('sina_news', 'IN'),
     # sohu
     'news\.sohu\.com/':('sohu_news','IN'),
+    # enewstree
     'enewstree\.com/discuz/forum':('enewstree_forum','OUT'),
     # 1dpw
     'bbs\.1dpw\.com':('1dpw_forum','OUT'),
     # iask
     'forum\.iask\.ca':('iask_forum','OUT'),
+    # mirrorbooks
+    'www\.(mirrorbooks|mingjingnews)\.com/MIB/blog': ('mirrorbooks_blog', 'OUT'),
+    # penchinese
+    'www\.penchinese\.org/blog':('penchinese_blog','OUT'),
 
     # By kerry
     # backchina
@@ -69,7 +74,6 @@ dispatch_rule = {
     'blog\.dwnews\.com': ('dwnews_blog', 'OUT'),
     # mirrorbooks
     'www\.(mirrorbooks|mingjingnews)\.com/MIB/news': ('mirrorbooks_news', 'OUT'),
-    'www\.(mirrorbooks|mingjingnews)\.com/MIB/blog': ('mirrorbooks_blog', 'OUT'),
     # ieasy5
     'ieasy5\.com/htm': ('ieasy5_news', 'OUT'),
     'ieasy5\.com/bbs': ('ieasy5_forum', 'OUT'),
@@ -91,7 +95,6 @@ dispatch_rule = {
     # wenxuecity
     'bbs\.wenxuecity\.com': ('wenxuecity_forum', 'OUT'),
     'wenxuecity\.com/news': ('wenxuecity_news', 'OUT'),
-    'wenxuecity\.com/myblog': ('wenxuecity_blog', 'OUT'),
     # memehk
     'forum\.memehk\.com': ('memehk_forum', 'OUT'),
     # 51

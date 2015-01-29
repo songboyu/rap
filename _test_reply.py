@@ -61,7 +61,7 @@ if __name__ == '__main__':
 
     # http://boxun.com/news/gb/china/2015/01/201501142221.shtml fail
 
-    r, log = reply('http://m.secretchina.com/node/565753',
+    r, log = reply('http://bbs.eulam.com/ShowPost.asp?ThreadID=173129',
                     {'content': '墙里墙外 男默女泪。',
-                     'username': 'cangchedaobo3@163.com',
-                     'password': 'wenshen4921119'})
+                     'username': 'shiduojiuo',
+                     'password': '1qazxsw2'})

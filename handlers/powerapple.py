@@ -17,7 +17,7 @@ from utils import RAPLogger
 # Captcha: arithmetic
 # Login: required
 def reply_powerapple_forum(post_url, src):
-    """超级苹果回复模块
+    """超级苹果论坛回复模块
     @author: kerry
     @since: 2014-10-25
 
@@ -131,8 +131,8 @@ def reply_powerapple_news(post_url, src):
     # 获取验证码图片
     resp = sess.get(host + 'captcha',
     headers={
-    'Accept': config.accept_image,
-    'Referer': post_url
+        'Accept': config.accept_image,
+        'Referer': post_url
     },
     params={'type': '', 'time': time.time()*1000})
     # 获取验证码字符串              

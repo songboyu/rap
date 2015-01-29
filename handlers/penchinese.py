@@ -18,12 +18,12 @@ import utils
 CHARSET = 'utf8'
 
 def reply_penchinese_blog(post_url, src):
-    """ 凯迪社区回复函数
+    """ 独立中文笔会博客回复函数
 
         - Name:     独立中文笔会
         - Feature:  club.kdnet.net
         - Captcha:  NO
-        - Login:    NO
+        - Login:    YES
 
     @param post_url:   帖子地址
     @type post_url:    str
