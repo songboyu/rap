@@ -119,7 +119,7 @@ def post_wailaike_forum(post_url, src):
 
 
 def get_account_info_wailaike_forum(src):
-    """ 网易论坛账户信息获取函数
+    """ 外来客账户信息获取函数
 
     @param src:        用户名，密码
     @type src:         dict
