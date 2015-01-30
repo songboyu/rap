@@ -48,6 +48,10 @@ class RAPMaxTryException(RAPException):
 ################################################################################
 # Helper functions
 
+def print_to_file(content):
+    f = open('debug.html','w')
+    f.write(content)
+    f.close()
 
 # HTTP interface of chaoren dama
 def crack_captcha(raw_captcha):
