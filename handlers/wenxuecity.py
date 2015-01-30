@@ -185,16 +185,44 @@ def get_account_info_wenxuecity_blog(src):
 
     resp = sess.get('http://bbs.wenxuecity.com/members/')
     soup = BeautifulSoup(resp.content)
-    head_image = soup.select('img#preview')[0]['src']
+    head_image = 'http://www.wenxuecity.com' + soup.select('img#preview')[0]['src']
     time_last_login = re.findall('最后登录：(.+?)<', resp.content)[0]
     login_count = re.findall('登录次数 : </strong>(\d+?)<', resp.content)[0]
 
-    resp = sess.get('http://blog.wenxuecity.com/myoverview/' + re.findall('myoverview/(\d+)', resp.content)[0])
-    result = re.findall('我的文章.*?\((\d+?)\)', resp.content, re.S)
+    uid = re.findall('myoverview/(\d+)', resp.content)[0]
+    resp = sess.get('http://blog.wenxuecity.com/myoverview/' + uid)
+    html = resp.content
+    result = re.findall('我的文章.*?\((\d+?)\)', html, re.S)
     if len(result) == 0:
         count_post = 0
     else:
         count_post = int(result[0])
+
+    # 被回复数 代替 回复数
+    page = -1
+    count_reply = 0
+    while True:
+        page += 1
+        resp = sess.get('http://blog.wenxuecity.com/blog/frontend.php?page=%d&act=articleHome&blogId=%s' % (page, uid))
+        result = re.findall('评论</a>.*?<em>\((\d+)\)', resp.content, re.S)
+        count_per_page = sum([int(x) for x in result])
+        if count_per_page == 0: break
+        count_reply += count_per_page
+
+    # 博客访问量 代替 积分
+    count_js = re.findall('(http://count.wenxuecity.com.*?true)"', html)[0]
+    resp = sess.get(count_js)
+    result = re.findall("'(.*)'", resp.content)
+    if len(result) == 0:
+        account_score = 0
+    else:
+        txt = result[0]
+        account_score = int(txt.replace(',', ''))
+    # 无等级
+    account_class = '无'
+    # 无注册时间
+    time_register = ''
+
 
     account_info = {
         #########################################
@@ -206,12 +234,12 @@ def get_account_info_wenxuecity_blog(src):
         'head_image': head_image,
         #########################################
         # 积分
-        'account_score': 0,
+        'account_score': account_score,
         # 等级
-        'account_class': '',
+        'account_class': account_class,
         #########################################
         # 注册时间
-        'time_register': '',
+        'time_register': time_register,
         # 最近登录时间
         'time_last_login': time_last_login,
         # 登录次数
@@ -220,7 +248,7 @@ def get_account_info_wenxuecity_blog(src):
         # 主帖数
         'count_post': count_post,
         # 回复数
-        'count_reply': 0,
+        'count_reply': count_reply,
         #########################################
     }
     logger.info('Get account info OK')

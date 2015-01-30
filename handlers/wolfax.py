@@ -290,7 +290,8 @@ def get_account_info_wolfax_forum(src):
     account_class = re.findall('用户组.*_blank">(.*?)<', resp.content)[0]
     time_register = re.findall('注册时间</em>(.*?)<', resp.content)[0]
     time_last_login = re.findall('最后访问</em>(.*?)<', resp.content)[0]
-    login_count = 0
+    # 铜板 代替 登录次数
+    login_count = int(re.findall('铜板</em>(\d+)', resp.content)[0])
     count_post = int(re.findall('主题数 (\d+)', resp.content)[0])
     count_reply = int(re.findall('回帖数 (\d+)', resp.content)[0])
 
