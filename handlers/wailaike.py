@@ -118,3 +118,87 @@ def post_wailaike_forum(post_url, src):
     return (url, str(logger))
 
 
+def get_account_info_wailaike_forum(src):
+    """ 网易论坛账户信息获取函数
+
+    @param src:        用户名，密码
+    @type src:         dict
+
+    @return:           账户信息
+    @rtype:            dict
+    """
+    logger = utils.RAPLogger(src['username'])
+    sess = utils.RAPSession(src)
+
+    # Step 1: 登录
+    if not login_wailaike(sess, src):
+        logger.error(' Login Error')
+        return ({}, str(logger))
+    logger.info(' Login OK')
+
+    resp = sess.get('http://www.wailaike.net/index.php')
+    # f = open('1.html','w')
+    # f.write(resp.content)
+    # f.close()
+    id_count = re.findall(r'/user_page\?i=(\d+)', resp.content)
+    # id_count = re.findall(r'<a href="/user_page?i=(.*?)" class="s_menu-title-hover">', resp.content)
+    print id_count[0]
+
+    #resp = sess.get('http://www.wailaike.net/user_page?i='+str(id_count[0]))
+
+    head_image = ''
+
+    account_score = ''
+    account_class = ''
+
+    time_register = ''
+    time_last_login = ''
+    login_count = ''
+    count_reply = ''
+
+    count = -1
+    count_post = 0
+    resp = sess.get('http://www.wailaike.net/user_page?i='+id_count[0])
+    count = len(re.findall(r'index-brief-main', resp.content))
+    count_post = count_post + count
+    print count_post
+    #  page = page + 1
+
+    # count = -1
+    # page = 1
+    # count_reply = 0
+    # while count != 0:
+    #     resp = sess.get('http://bbs.163.com/user/reply.do?page='+str(page))
+    #     count = len(re.findall(r'my_bbs_title', resp.content))
+    #     count_reply = count_reply + count
+    #     page = page + 1
+
+    account_info = {
+        #########################################
+        # 用户名
+        'username':src['username'],
+        # 密码
+        'password':src['password'],
+        # 头像图片
+        'head_image':head_image,
+        #########################################
+        # 积分
+        'account_score':account_score,
+        # 等级
+        'account_class':account_class,
+        #########################################
+        # 注册时间
+        'time_register':time_register,
+        # 最近登录时间
+        'time_last_login':time_last_login,
+        # 登录次数
+        'login_count':login_count,
+        #########################################
+        # 主帖数
+        'count_post':count_post,
+        # 回复数
+        'count_reply':count_reply
+        #########################################
+    }
+    logger.info('Get account info OK')
+    return (account_info, str(logger))
