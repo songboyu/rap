@@ -174,14 +174,13 @@ def get_account_info_backchina_forum(src):
         return ({}, str(logger))
     logger.info(' Login OK')
 
-    resp = sess.get('http://www.backchina.com/special/bbs/')
-    id_count = re.findall(r'<a href="http://www.backchina.com/u/(.*?)" class="eis_ttbat">', resp.content)
+    resp = sess.get('http://www.backchina.com/home.php?mod=space&do=profile')
 
-    resp = sess.get('http://www.backchina.com/home.php?mod=space&uid='+str(id_count[0])+'&do=profile')
+    soup = BeautifulSoup(resp.content)
+    head_image = soup.select('a.avtm img')[0]['src']
 
-    head_image = 'http://backchina-member.com/ucenter/images/noavatar_middle.gif'
     account_score = re.findall(r'<li><em>积分</em>(.*?)</li>', resp.content)[0]
-    account_class = ''
+    account_class = re.findall(r'ac=usergroup.*>(.*?)</a>', resp.content)[0]
 
     time_register = re.findall(r'<li><em>注册时间</em>(.*?)</li>', resp.content)[0]
     time_last_login = re.findall(r'<li><em>上次活动时间</em>(.*?)</li>', resp.content)[0]

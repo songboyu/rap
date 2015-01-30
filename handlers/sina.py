@@ -9,8 +9,13 @@
 @type CHARSET: str
 
 """
+import base64
 import re
+import urllib
+import json
+import binascii
 
+import rsa
 from bs4 import BeautifulSoup
 
 import config
@@ -19,7 +24,7 @@ import utils
 CHARSET = 'gbk'
 
 
-def login_sina(sess, post_url, src):
+def login_sina(sess,src):
     """ 新浪登录函数
 
     @param sess:    requests.Session()
@@ -35,73 +40,72 @@ def login_sina(sess, post_url, src):
     @rtype:            bool
 
     """
-    logger = utils.RAPLogger(post_url)
-    resp = sess.get('http://club.mil.news.sina.com.cn/')
-    soup = BeautifulSoup(resp.content)
-    # 获取登录form
-    form = soup.find('form', attrs={'name': 'login'})
-    # 构造登录函数
-    payload = utils.get_datadic(form)
-    payload['username'] = src['username']
-    payload['password'] = src['password']
-    # 登录地址
-    login_url = 'https://login.sina.com.cn/sso/login.php'
-    # 发送登录post包
-    resp = sess.post(login_url, data=payload)
+    url_prelogin = 'http://login.sina.com.cn/sso/prelogin.php?entry=weibo&callback=sinaSSOController.preloginCallBack&su=&rsakt=mod&client=ssologin.js(v1.4.18)&_=1422354483642'
+    url_login = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
 
-    post_times = 0
-    # 验证是否成功，如果失败再次发送
-    # 失败可能原因：验证码错误
-    while u'正在登录' not in resp.content.decode(CHARSET) \
-            and post_times < src['TTL']:
-        # 限制最大发送次数
-        post_times = post_times + 1
-        # 获取页面跳转地址
-        redirects = re.findall(r'location.replace\(\"(.*?)\"\)',
-                               resp.content)
-        resp = sess.post(redirects[0])
-        # 获取页面跳转地址
-        redirects = re.findall(r'href=\"(.*?)\">如果',
-                               resp.content
-                               .decode(CHARSET).encode('utf-8'))
-        if len(redirects)>0:
-            logger.info(' login need captcha')
-            resp = sess.post(redirects[0])
-            # 验证码地址
-            captcha_url = re.findall(r'id=\"capcha\" src=\"(.*?)\"',
-                                     resp.content)[0]
-            # 获取验证码图片
-            captcha = sess.get(captcha_url,
-                                  headers={
-                                      'Accept': config.accept_image,
-                                      'Referer': post_url
-                                  })
-            # 获取验证码字符串
-            seccode = utils.crack_captcha(captcha.content)
-            logger.info(' seccode:' + seccode)
+    # 获取prelogin中各项参数：servertime, nonce, pubkey, rsakv, pcid
+    resp = sess.get(url_prelogin)
+    json_data  = re.findall(r'\((.*?)\)', resp.content)[0]
 
-            soup = BeautifulSoup(resp.content)
-            # 获取登录form
-            form = soup.find('form', attrs={'name': 'login'})
-            # 构造登录参数
-            payload = utils.get_datadic(form)
-            payload['username'] = src['username']
-            payload['password'] = src['password']
-            # 验证码
-            payload['door'] = seccode
-            # 发送登录post包
-            resp = sess.post(login_url, data=payload)
-            # 获取页面跳转地址
-            redirects = re.findall(r'location.replace\(\"(.*?)\"\)',
-                                   resp.content)
-            # 获取登录结果
-            resp = sess.post(redirects[0])
-    # 若指定字样出现在response中，表示登录成功
-    if u'正在登录' not in resp.content.decode(CHARSET):
-        message = re.findall(r'<p>(.*?)</p>', resp.content)[0]
-        logger.info(message.decode(CHARSET).encode('utf-8'))
+    data       = json.loads(json_data)
+    servertime = data['servertime']
+    nonce      = data['nonce']
+    pubkey     = data['pubkey']
+    rsakv      = data['rsakv']
+    pcid       = data['pcid']
+
+    # 用户名：采用base64加密
+    su = base64.b64encode(urllib.quote(src['username']))
+    # 密码：采用rsa加密
+    rsaPublickey= int(pubkey,16)
+    key = rsa.PublicKey(rsaPublickey,65537)
+    message = str(servertime) +'\t' + str(nonce) + '\n' + str(src['password'])
+    sp = binascii.b2a_hex(rsa.encrypt(message,key))
+
+    # 获取验证码图片
+    captcha_URI = sess.get('http://login.sina.com.cn/cgi/pin.php?r=39011430&s=0&p='+pcid,
+        headers={'Accept': config.accept_image})
+    # 获取验证码字符串
+    captcha = utils.crack_captcha(captcha_URI.content)
+    print 'captcha:' + captcha
+
+    payload = {
+        'entry': 'weibo',
+        'gateway': '1',
+        'from': '',
+        'savestate': '7',
+        'userticket': '1',
+        'pagerefer' : 'http://www.baidu.com/',
+        'ssosimplelogin': '1',
+        'vsnf': '1',
+        'pcid':pcid,
+        'door':captcha,
+        'su': su,
+        'service': 'miniblog',
+        'servertime': servertime,
+        'nonce': nonce,
+        'pwencode': 'rsa2',
+        'rsakv' : rsakv,
+        'sp': sp,
+        'sr':'1366*768',
+        'prelt': '168',
+        'encoding': 'UTF-8',
+        'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack',
+        'returntype': 'META'
+    }
+    resp = sess.post(url_login, data=payload,
+        headers={
+            'Referer':'http://weibo.com',
+            'User-Agent':'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.124 Safari/537.36'
+    })
+    retcode = re.findall(r'retcode=(\d+)',resp.content)[0]
+    print 'retcode: '+ retcode
+    if retcode == '0':
+        return True
+    else:
+        reason = re.findall(r'reason=(.+)&',resp.content)[0]
+        print 'reason: '+ urllib.unquote(reason).decode('GBK')
         return False
-    return True
 
 
 def reply_sina_club(post_url, src):
@@ -126,7 +130,7 @@ def reply_sina_club(post_url, src):
     sess = utils.RAPSession(src)
 
     # Step 1: 登录
-    if not login_sina(sess, post_url, src):
+    if not login_sina(sess, src):
         logger.error(' Login Error')
         return (False, str(logger))
     logger.info(' Login OK')
@@ -207,7 +211,7 @@ def reply_sina_news(post_url, src):
     resp = sess.get(post_url)
 
     # Step 1: 登录
-    if not login_sina(sess, post_url, src):
+    if not login_sina(sess, src):
         logger.error(' Login Error')
         return (False, str(logger))
     logger.info(' Login OK')
@@ -245,3 +249,68 @@ def reply_sina_news(post_url, src):
         return (False, str(logger))
     logger.info(' Reply OK')
     return (True, str(logger))
+
+def get_account_info_sina_club(src):
+    """ 新浪账户信息获取函数
+
+    @param src:        用户名，密码
+    @type src:         dict
+
+    @return:           账户信息
+    @rtype:            dict
+    """
+    logger = utils.RAPLogger(src['username'])
+    sess = utils.RAPSession(src)
+
+    # Step 1: 登录
+    if not login_sina(sess, src):
+        logger.error(' Login Error')
+        return ({}, str(logger))
+    logger.info(' Login OK')
+
+    resp = sess.get('http://club.mil.news.sina.com.cn/memcp.php')
+
+    soup = BeautifulSoup(resp.content)
+    head_image = soup.select('div.avatar img')[0]['src']
+
+    html = resp.content.decode(CHARSET).encode('utf8')
+    account_score = re.findall(r'<li>积分: (\d+)</li>', html)[0]
+    account_class = re.findall(r'<label>用户组:</label> <font color="green">(.*?)</font>', html)[0]
+
+    time_register = re.findall(r'<label>注册日期:</label>(.*?)</li>', html)[0]
+    time_last_login = re.findall(r'<label>上次访问:</label>(.*?)</li>', html)[0]
+
+    login_count = ''
+
+    count_post = re.findall(r'<li>帖子: (\d+)', html)[0]
+    count_reply = re.findall(r'<li>精华: (\d+)', html)[0]
+
+    account_info = {
+        #########################################
+        # 用户名
+        'username':src['username'],
+        # 密码
+        'password':src['password'],
+        # 头像图片
+        'head_image':head_image,
+        #########################################
+        # 积分
+        'account_score':account_score,
+        # 等级
+        'account_class':account_class,
+        #########################################
+        # 注册时间
+        'time_register':time_register,
+        # 最近登录时间
+        'time_last_login':time_last_login,
+        # 登录次数
+        'login_count':login_count,
+        #########################################
+        # 主帖数
+        'count_post':count_post,
+        # 回复数
+        'count_reply':count_reply
+        #########################################
+    }
+    logger.info('Get account info OK')
+    return (account_info, str(logger))
