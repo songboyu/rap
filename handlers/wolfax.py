@@ -270,4 +270,56 @@ def post_wolfax_blog(post_url, src):
         return (False, str(logger))
     logger.info('Reply OK')
     return (True, str(logger))
-    
+
+
+def get_account_info_wolfax_forum(src):
+    logger = RAPLogger('wolfax=>' + src['username'])
+    sess = RAPSession(src)
+
+    if not login_wolfax(sess, src):
+        logger.error('Login Error')
+        return ({}, str(logger))
+    logger.info('Login OK')
+
+    resp = sess.get('http://bbs.wolfax.com')
+    uid = re.findall('http://home.wolfax.com/s-uid-(\d+)', resp.content)[0]
+    resp = sess.get('http://home.wolfax.com/home.php?mod=space&uid=%s&do=profile' % uid)
+
+    head_image = re.findall('avtm"><img src="(.*?)"', resp.content)[0]
+    account_score = int(re.findall('积分</em>(\d+)', resp.content)[0])
+    account_class = re.findall('用户组.*_blank">(.*?)<', resp.content)[0]
+    time_register = re.findall('注册时间</em>(.*?)<', resp.content)[0]
+    time_last_login = re.findall('最后访问</em>(.*?)<', resp.content)[0]
+    login_count = 0
+    count_post = int(re.findall('主题数 (\d+)', resp.content)[0])
+    count_reply = int(re.findall('回帖数 (\d+)', resp.content)[0])
+
+    account_info = {
+        #########################################
+        # 用户名
+        'username':src['username'],
+        # 密码
+        'password':src['password'],
+        # 头像图片
+        'head_image':head_image,
+        #########################################
+        # 积分
+        'account_score':account_score,
+        # 等级
+        'account_class':account_class,
+        #########################################
+        # 注册时间
+        'time_register':time_register,
+        # 最近登录时间
+        'time_last_login':time_last_login,
+        # 登录次数
+        'login_count':login_count,
+        #########################################
+        # 主帖数
+        'count_post':count_post,
+        # 回复数
+        'count_reply':count_reply
+        #########################################
+    }
+    logger.info('Get account info OK')
+    return (account_info, str(logger))

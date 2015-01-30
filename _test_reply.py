@@ -4,10 +4,10 @@ import rap
 import logging, logging.handlers
 import sys
 
-# import socks
-# import socket
-# socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1080)
-# socket.socket = socks.socksocket
+import socks
+import socket
+socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1080)
+socket.socket = socks.socksocket
 
 def reply(post_url, src):
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
@@ -61,7 +61,7 @@ if __name__ == '__main__':
 
     # http://boxun.com/news/gb/china/2015/01/201501142221.shtml fail
 
-    r, log = reply('http://m.secretchina.com/node/565753',
+    r, log = reply('http://bbs.powerapple.com',
                     {'content': '墙里墙外 男默女泪。',
-                     'username': 'cangchedaobo3@163.com',
-                     'password': 'wenshen4921119'})
+                     'username': 'like_test',
+                     'password': 'Like12345'})

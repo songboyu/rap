@@ -118,3 +118,56 @@ def post_51_forum(post_url, src):
     print url
     return (url, str(logger))
     
+
+def get_account_info_51_forum(src):
+    logger = utils.RAPLogger('51=>' + src['username'])
+    sess = utils.RAPSession(src)
+
+    # Step 1: 登录
+    if not login_51_forum('http://bbs.51.ca/', sess, src):
+        logger.error(' Login Error')
+        return ({}, str(logger))
+    logger.info(' Login OK')
+
+    resp = sess.get('http://bbs.51.ca/')
+    info_url = re.findall('(space-uid-\d+\.html)', resp.content)[0]
+    resp = sess.get('http://bbs.51.ca/' + info_url)
+
+    head_image = re.findall('avatar"><img src="(.*?)"', resp.content)[0]
+    account_score = int(re.findall('积分: (\d+?)<', resp.content)[0])
+    account_class = re.findall('color="#33C">(.*?)<', resp.content)[0]
+    time_register = re.findall('注册日期: (.*?)<', resp.content)[0]
+    time_last_login = re.findall('上次访问: <span title="(.*?)"', resp.content)[0]
+    login_count = 0
+    count_post = int(re.findall('帖子: (\d+?) 篇', resp.content)[0])
+    count_reply = 0
+
+    account_info = {
+        #########################################
+        # 用户名
+        'username':src['username'],
+        # 密码
+        'password':src['password'],
+        # 头像图片
+        'head_image':head_image,
+        #########################################
+        # 积分
+        'account_score':account_score,
+        # 等级
+        'account_class':account_class,
+        #########################################
+        # 注册时间
+        'time_register':time_register,
+        # 最近登录时间
+        'time_last_login':time_last_login,
+        # 登录次数
+        'login_count':login_count,
+        #########################################
+        # 主帖数
+        'count_post':count_post,
+        # 回复数
+        'count_reply':count_reply
+        #########################################
+    }
+    logger.info('Get account info OK')
+    return (account_info, str(logger))

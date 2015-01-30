@@ -181,4 +181,57 @@ def post_ieasy5_forum(post_url, src):
     url = host + tag.find('a')['href']
     print url
     return (url, str(logger))
-    
+
+
+def get_account_info_ieasy5_forum(src):
+    logger = RAPLogger('ieasy5=>' + src['username'])
+    sess = RAPSession(src)
+
+    # Step 1: 登录
+    if not login_ieasy5(sess, src):
+        logger.error(' Login Error')
+        return ({}, str(logger))
+    logger.info(' Login OK')
+
+    resp = sess.get('http://www.ieasy5.com/bbs/')
+    uid = re.findall("winduid = '(\d+)'", resp.content)[0]
+    head_image = re.findall('><i><img src="(.*?)', resp.content)[0]
+    account_class = re.findall(u'等级: (.*?)<'.encode('gbk'), resp.content)[0].decode('gbk').encode('utf8')
+    count_post = int(re.findall(u'帖子: (\d+)'.encode('gbk'), resp.content)[0])
+    count_reply = 0
+    login_count = 0
+
+    resp = sess.get('http://www.ieasy5.com/bbs/u.php?a=info&uid=' + uid)
+    account_score = int(re.findall(u'总积分：</span><span class="s2 b">(\d+)'.encode('gbk'), resp.content)[0])
+    time_register = re.findall(u'注册时间.*?(\d.*?)<'.encode('gbk'), resp.content, re.S)[0]
+    time_last_login = re.findall(u'最后登录.*?(\d.*?)<'.encode('gbk'), resp.content, re.S)[0]
+
+    account_info = {
+        #########################################
+        # 用户名
+        'username':src['username'],
+        # 密码
+        'password':src['password'],
+        # 头像图片
+        'head_image':head_image,
+        #########################################
+        # 积分
+        'account_score':account_score,
+        # 等级
+        'account_class':account_class,
+        #########################################
+        # 注册时间
+        'time_register':time_register,
+        # 最近登录时间
+        'time_last_login':time_last_login,
+        # 登录次数
+        'login_count':login_count,
+        #########################################
+        # 主帖数
+        'count_post':count_post,
+        # 回复数
+        'count_reply':count_reply
+        #########################################
+    }
+    logger.info('Get account info OK')
+    return (account_info, str(logger))
