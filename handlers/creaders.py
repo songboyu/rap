@@ -2,7 +2,7 @@
 """
 @author: sky
 @since: 2014-11-25
-@summary: 万维论坛
+@summary: 万维
 
 @var CHARSET: 万维网页编码
 @type CHARSET: str
@@ -80,9 +80,6 @@ def reply_creaders_news(post_url, src):
     logger.info('Reply OK')
     return (True, str(logger))
 
-# Coding: gb2312
-# Captcha: not required
-# Login: required
 def reply_creaders_forum(post_url, src):
     """万维论坛回复模块
     @author: sky

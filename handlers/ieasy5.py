@@ -127,7 +127,7 @@ def reply_ieasy5_forum(post_url, src):
 
 
 def post_ieasy5_forum(post_url, src):
-    """文学城博客发主贴模块
+    """加拿大加易论坛发主贴模块
 
     @author: HSS
     @since: 2015-1-24
@@ -235,3 +235,4 @@ def get_account_info_ieasy5_forum(src):
     }
     logger.info('Get account info OK')
     return (account_info, str(logger))
+    

@@ -49,7 +49,7 @@ def reply_kdnet(post_url, src):
         - Name:     凯迪社区
         - Feature:  club.kdnet.net
         - Captcha:  NO
-        - Login:    NO
+        - Login:    YES
 
     @param post_url:   帖子地址
     @type post_url:    str
