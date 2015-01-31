@@ -11,6 +11,9 @@
 
 import re
 from hashlib import md5
+import urllib
+import time
+import binascii
 
 from bs4 import BeautifulSoup
 
@@ -52,12 +55,8 @@ def login_backchina(sess, src):
 
     #发送post包
     resp = sess.post(login_page + form['action'], data=payload)
-
     #判断登录后页面是否含有用户字段，若存在则证明登录成功，否则失败
-    if src['username'] in resp.content:
-        soup = BeautifulSoup(resp.content)
-        user_id = soup.select('a.eis_ttbat')[0]['href']
-        print user_id
+    if u'自动跳转' in resp.content.decode('utf8'):
         return True
     return False
 
@@ -185,7 +184,7 @@ def get_account_info_backchina_forum(src):
     time_register = re.findall(r'<li><em>注册时间</em>(.*?)</li>', resp.content)[0]
     time_last_login = re.findall(r'<li><em>上次活动时间</em>(.*?)</li>', resp.content)[0]
 
-    login_count = ''
+    login_count = 0
 
     count_post = re.findall(r'主题数 (.*?)<', resp.content)[0]
     count_reply = re.findall(r'回帖数 (.*?)<', resp.content)[0]
@@ -219,4 +218,50 @@ def get_account_info_backchina_forum(src):
     }
     logger.info('Get account info OK')
     return (account_info, str(logger))
-    
+
+
+def upload_head_backchina_forum(src):
+    logger = utils.RAPLogger('Upload head 51_forum=>' + src['username'])
+    sess = utils.RAPSession(src)
+
+    # Step 1: 登录
+    if not login_backchina(sess, src):
+        logger.error('Login Error')
+        return ('', str(logger))
+    logger.info('Login OK')
+
+    resp = sess.get('http://www.backchina.com/home.php?mod=spacecp&ac=avatar')
+    input = urllib.unquote(re.findall(r'input=(.*?)&',resp.content)[0])
+    agent = re.findall(r'agent=(.*?)&',resp.content)[0]
+    print 'input:',input
+    print 'agent:',agent
+
+    avatar1 = binascii.hexlify(open(src['head'],'rb').read()).upper()
+    avatar2 = avatar1
+    avatar3 = avatar1
+
+    params = {
+        'm':'user',
+        'inajax':'1',
+        'a':'rectavatar',
+        'appid':'14',
+        'input':input,
+        'agent':agent,
+        'avatartype':'virtual'
+    }
+    payload = {
+        'avatar1':avatar1,
+        'avatar2':avatar2,
+        'avatar3':avatar3,
+        'urlReaderTS':str(time.time()*1000)
+    }
+    resp = sess.post('http://backchina-member.com/ucenter/index.php', data=payload, params=params)
+
+
+    print resp.content
+    if 'success="1"' in resp.content:
+        logger.info('uploadavatar OK')
+        return ('', str(logger))
+    else:
+        logger.info('uploadavatar Error')
+        return ('', str(logger))
