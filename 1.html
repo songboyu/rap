@@ -1,0 +1,470 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html>
+<head>
+<title>alanchen13 频道首页</title>
+<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="/members/css/common.css" media="all" />
+<link href="/members/css/global-gb2312.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" type="text/JavaScript" src="/members/js/func.js"></script>
+<link rel="stylesheet" type="text/css" href="/members/css/theme.css" />
+
+<!-- 表单验证 -->
+<script type="text/javascript">
+function validate_required(field,alerttxt)
+{
+with (field)
+  {
+  if (value==null||value=="")
+    {alert(alerttxt);return false}
+  else {return true}
+  }
+}
+
+function validate_search(thisform)
+{
+  with (thisform)
+  {
+  if (validate_required(search,"用户名不能为空")==false)
+	{search.focus();return false}
+  }
+}
+
+function validate_post(thisform)
+{
+  with (thisform)
+  {
+  if (validate_required(comments,"留言不能为空")==false)
+    {comments.focus();return false}
+  }
+}
+
+function validate_pic(thisform)
+{
+  with (thisform)
+  {
+  if (this.document.getElementById('pic').value=="")
+    {alert("请选择上传的图片");return false}
+  }
+}
+</script>
+</head>
+
+<body text="#000000">
+<div id="maincontainer">
+  <div id="header">
+    <div id="topnav"><div class="mobilelinks"><span><a href="/include/plugins/big5.php?translate=0"><img src="http://www.wenxuecity.com/images/simplified.gif"/></a></span><span>|</span><span><a href="/include/plugins/big5.php?translate=1"><img src="http://www.wenxuecity.com/images/traditional.gif"/></a></span><span>|</span><span><a href="http://www.wenxuecity.com/app/" target="_blank"><img src="/images/icon_apple.jpg" border="0"/><img src="/images/icon_android.jpg" border="0"/></a></span></div>
+<div class="sharelinks"><a href="https://twitter.com/wenxuecity_wxc" target="_blank"><img src="/images/icon_twitter.jpg" /></a><a href="https://www.facebook.com/chinagate.wxc" target="_blank"><img src="/images/icon_facebook.jpg" /></a></div>
+<div class="quicklinks">
+  <script type="text/javascript" src="http://passport.wenxuecity.com/members/script/members.php"></script>
+  <noscript><iframe id="topbar" src="http://passport.wenxuecity.com/members/script/members.php?iframe=true" width="700" height="30" frameborder="0" scrolling="no" allowTransparency="true"></iframe></noscript>
+</div>
+</div>
+  	<div class="wrapper">
+      <div class="logo"><span class="name">用户中心</span></div>
+  <script type="text/javascript" >
+  function search()
+  {
+  	 if (document.getElementById('search').value=="")
+  	 {
+	   alert('请输入查询用户名的关键字');
+	 }else
+  	{
+		var n = document.getElementById('search').value;
+		self.location='/members/index.php?act=search&search='+n;
+  	}
+  }
+  </script>
+  <div class="button">
+  	<a href="javascript:search();"><img src="/members/images/btn_search.jpg" /></a>
+  </div>
+  <div class="searchbox">
+  	<input type="text" value="" placeholder="请输入用户关键字" name="search" id="search" style="border:0">
+</div>
+
+    </div>
+    <div class="menubar" id="mainmenu" >
+      <ul>
+        <div class="menubar" id="mainmenu" >
+  <ul>
+    <li ><a href="http://www.wenxuecity.com/" >首页</a></li>
+    <li ><a href="http://www.wenxuecity.com/news/" >新闻</a></li>
+    <li ><a href="http://finance.wenxuecity.com/" >财经</a></li>
+    <li ><a href="http://immigration.wenxuecity.com/" >移民</a></li>
+    <li ><a href="http://www.wenxuecity.com/edu/" >教育</a></li>
+    <li ><a href="http://www.wenxuecity.com/home/" >家居</a></li>
+    <li ><a href="http://www.wenxuecity.com/health/" >健康</a></li>
+    <li ><a href="http://www.wenxuecity.com/cooking/" >美食</a></li>
+    <li ><a href="http://www.wenxuecity.com/style/" >时尚</a></li>
+    <li ><a href="http://www.wenxuecity.com/travel/" >旅游</a></li>
+    <li ><a href="http://www.wenxuecity.com/video/" >影视</a></li>
+    <li ><a href="http://classified.haiwai.com/classified/?utm_source=wxc&utm_medium=navigation&utm_content=launch&utm_campaign=navigationbar" target="_blank">分类</a></li>
+    <li ><a href="http://blog.wenxuecity.com/" >博客</a></li>
+    <li ><a href="http://groups.wenxuecity.com/" >群组</a></li>
+    <li ><a href="http://www.wenxuecity.com/topic/" >专题</a></li>
+    <li class="last"><a href="http://bbs.wenxuecity.com/" >论坛</a></li>
+      </ul>
+</div>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<table width="980" border="0" cellspacing="0" cellpadding="0" align="center">
+  <tr>
+    <td>
+    	<div align="left"><h2 style="font-size:24px">alanchen13</h2></div>
+    	<div align="center" style="margin:5px;"><h3></h3></div>
+    	<div align="right" style="margin:5px;"><h3>最后登录：2015-01-30 21:08:16</h3></div>
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+       <table width="100%" border="0" cellspacing="0" cellpadding="8" bgcolor="#FFFFFF">
+        <tr>
+          <td valign="top" width="50"><div style="margin:0 30px"><nobr><strong><u>alanchen13</u>的菜单：</strong></nobr></div></td>
+          <td valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td>
+              	<a href="/members/" class="link_b01"><strong><u>频道首页</u></strong></a> | 
+              	<a href="/members/index.php?act=profile&cid=alanchen13" class="linkhighlight">浏览我的档案</a> | 
+              	<a href="/members/index.php?act=editprofile" class="linkhighlight">编辑档案</a> |
+              	<a href="/members/index.php?act=guestbook&cid=alanchen13" class="linkhighlight">我的留言薄</a> |
+			    <a href="/members/index.php?act=friends&cid=alanchen13" class="linkhighlight">我的朋友圈</a> |
+			    <a href="/members/index.php?act=blacklist" class="linkhighlight">我的黑名单</a> |
+			    <a href="/members/index.php?act=changepw" class="linkhighlight">更改密码</a> |
+			    <a href="/members/index.php?act=changeemail" class="linkhighlight">更改邮箱地址</a>
+			  </td>
+            </tr>
+          </table></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<table width="980" border="0" cellspacing="0" cellpadding="0" align="center">
+  <tr>
+    <td><table width="100%" border="0" cellspacing="0" cellpadding="20" bgcolor="#FFFFFF">
+        <tr>
+          <td>
+            <table width="980" border="0" cellspacing="0" cellpadding="0" align="center">
+              <tr>
+                <td valign="top">
+                	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td><table width="100%" border="0" cellspacing="0" cellpadding="4" class="sectiontable">
+                          <tr>
+                            <td bgcolor="#EAEAEA" class="txtlarge"><strong><a href="/members/index.php?act=profile&cid=alanchen13" style="color:black;">我的个人资料</a></strong></td>
+                          </tr>
+                          <tr>
+                            <td class="btop01"><table width="100%" height="200"  border="0" align="center" cellpadding="4" cellspacing="0" class="sectiontable">
+                                <tr>
+                                  <td bgcolor="#f9f9f9" width="140" valign="top"><table cellspacing="0" cellpadding="0">
+                                      <tr>
+                                        <td width="140" valign='top'><table width="100%"cellspacing="0" cellpadding="4">
+                                            <tr>
+                                              <td align="center">
+                                              	<form action="/members/index.php?act=edit_pic" enctype="multipart/form-data" onSubmit="return validate_pic(this)" method="post">
+                                              	<input type="hidden" name="old_pic" value=913464.jpg>
+                                              	<a href="#">
+                                              	<div id="localImag">
+                                              	                                              		<img id="preview" src='/data/members/34/64/s_913464.jpg?rand=1422652100' alt="头像照片" border="0" />
+                                              	    											</div>
+    											</a>
+    											<br>
+    											<div><input type="button" value="更改图片" /></div>
+    											<br>
+    											<div><input type="submit" name="upload" value="保存图片" /></div>
+    											<input type="file" name="pic" id="pic" style="height: 34px;opacity: 0;position: relative;top: -71px;width: 74px;z-index: 10;" value="" onchange="javascript: setImagePreview(); filecheck();"/>
+    											<script type="text/javascript">
+    											 function filecheck()
+				                            	 {
+													var extensions='jpg, jpeg, png, gif';
+													var ext = fileExt(document.getElementById('pic').value);
+													if(extensions.toUpperCase().indexOf(ext.toUpperCase()) == -1)
+													{
+													    var msg = '当前文件类型: "'+ext+'" 不允许上传!\n只有以下类型的文件才被允许上传: ' + extensions + '\n请重新选择文件上传.';
+													    alert( msg );
+													    return false;
+													}
+													    return true;
+												  }
+													
+													function fileExt(filePath) 
+												  { 
+													fileName = ((filePath.indexOf('/') > -1) ? filePath.substring(filePath.lastIndexOf('/')+1,filePath.length) : filePath.substring(filePath.lastIndexOf('\\')+1,filePath.length));
+													return fileName.substring(fileName.lastIndexOf('.')+1,fileName.length);
+												  }
+    											
+											        function setImagePreview() 
+											        {
+											            var docObj = document.getElementById("pic");
+											            var imgObjPreview = document.getElementById("preview");
+											            if (docObj.files && docObj.files[0]) {
+											                //火狐下，直接设img属性       
+											                imgObjPreview.style.display = 'block';
+											                imgObjPreview.style.width = '100px';
+											                imgObjPreview.style.height = 'auto';
+											                //imgObjPreview.src = docObj.files[0].getAsDataURL();     
+											                //火狐7以上版本不能用上面的getAsDataURL()方式获取，需要一下方式     
+											                imgObjPreview.src = window.URL.createObjectURL(docObj.files[0]);
+											            } else {
+											                //IE下，使用滤镜                 
+											                docObj.select();
+											                var imgSrc = document.selection.createRange().text;
+											                var localImagId = document.getElementById("localImag");
+											                //必须设置初始大小                       
+											                localImagId.style.width = "320";
+											                localImagId.style.height = "200";
+											                //图片异常的捕捉，防止用户修改后缀来伪造图片
+											                try {
+											                    localImagId.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale)";
+											                    localImagId.filters.item("DXImageTransform.Microsoft.AlphaImageLoader").src = imgSrc;
+											                } catch (e) {
+											                    alert("您上传的图片格式不正确，请重新选择!");
+											                    return false;
+											                }
+											                imgObjPreview.style.display = 'none';
+											                document.selection.empty();
+											            }
+											            return true;
+											        } 
+										        </script>
+                                              	</a>
+                                              	</form>
+                                              </td>
+                                            </tr>
+                                        </table></td>
+                                      </tr>
+                                    </table></td>
+                                  <td bgcolor="#f9f9f9" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="2">
+                                      <tr>
+                                        <td colspan="4">                                          
+                                            <strong>登录笔名 : </strong>
+                                            	<img src="/members/images/icon/icon_girl.gif" width="14" height="17" align="absmiddle" />
+                                            	alanchen13
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                        <td colspan="4"><strong>登录次数 : </strong>17</td>
+                                      </tr>
+                                      <tr>
+                                        <td colspan="4"><strong>上次登录 : </strong>2015-01-30 21:08:16</td>
+                                      </tr>
+                                      <tr>
+                                      	  <td width="63" valign="top"><div style="float:left"><strong>个人描述：</strong></div></td>
+                                      	  <td  align="left"><div style="margin-left:-5px"></div></td>
+                                      </tr>
+                                      <tr>
+									  </tr>
+									  <tr>
+									  	<td>&nbsp;</td>
+									  </tr>
+									  <tr>
+	                                    <td colspan="4">
+                                    		<div style="float:left"><strong>悄悄话提示框 : </strong>打开</div>
+                                    		<div style="margin-left:180px"><strong>公开个人信息 : </strong>打开</div>
+	                                    </td>
+	                                  </tr>
+	                                  <tr>
+	                                    <td colspan="4">
+	                                    	<div style="float:left"><strong>&nbsp;&nbsp;&nbsp;留言簿状态 : </strong>打开</div>
+	                                    	<div style="margin-left:180px"><strong>照片留言状态 : </strong>打开</div>
+	                                    </td>
+	                                  </tr>
+                                    </table></td>
+                                </tr>
+                              </table></td>
+                          </tr>
+                        </table></td>
+                    </tr>
+                    <tr>
+                      <td>&nbsp;</td>
+                    </tr>
+                	<tr>
+                      <td><table width="100%" border="0" cellspacing="0" cellpadding="4" class="sectiontable">
+                          <tr>
+                            <td bgcolor="#EAEAEA" class="txtlarge"><strong><a href="/members/index.php?act=guestbook&cid=alanchen13" style="color:black;">我的留言薄 </a>(最近5条留言)</strong></td>
+                          </tr>
+                          <tr>
+                            <td class="btop01" align="right"><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="sectiontable">
+                                
+                                	                    			<tr bgcolor="#f9f9f9">
+				                      <td>&nbsp;</td>
+				                    </tr>
+                    				<tr bgcolor="#f9f9f9">
+	                    				<td><div style="margin:0 8px">您还没有留言</div></td>
+	                    			</tr>
+	                    			<tr bgcolor="#f9f9f9">
+				                      <td>&nbsp;</td>
+				                    </tr>
+	                    		                    			
+                    			<tr>
+									<td>
+										<table width="100%" border="0" cellspacing="0" cellpadding="4" class="sectiontable">
+										    <tr>
+										      <td bgcolor="" class="txtlarge"><strong>回复留言</strong></td>
+										    </tr>
+										</table>
+									</td>
+							    </tr>
+							    <tr>
+									<td>
+										<table width="100%" border="0" cellspacing="0" cellpadding="4" >
+									    <tr>
+									      <td width="300px" valign="top">
+									      	<form name="post" id='post' action="/members/index.php?act=post" method="post" onsubmit="return validate_post(this)">
+									      	<input type="hidden" name="userid" value="913464">
+										    <textarea id="comments" style="width:670px" rows="6" cols="84" name="comments"></textarea>
+										  </td>
+									    </tr>
+										</table>
+									</td>
+							    </tr>
+							    <tr>
+									<td>
+										<div style="margin:0 4px">
+											<input name="Submit" type="submit" value="发表留言" />
+											</form>
+										</div>
+									</td>
+							    </tr>
+							    <tr>
+									<td height="20"><img src="/members/images/pixel_trans.gif" width="1" height="1" /></td>
+							    </tr>
+							    <tr>
+									<td class="txtsmall"><div style="margin:0 8px">注意： 请不要在留言中留下不友好信息或者类似侮辱性的言辞。</div></td>
+							    </tr>
+							    <tr>
+									<td height="20"><img src="/members/images/pixel_trans.gif" width="1" height="1" /></td>
+							    </tr>
+			                </table></td>
+                		  </tr>
+                		</table></td>
+                	</tr>
+                	</table>
+                	
+	            	<td width="10">&nbsp;</td>
+	                <td width="280" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td><table width="100%" border="0" cellpadding="4" cellspacing="0" class="sectiontable">
+                          <tr>
+                            <td bgcolor="#EAEAEA" class="txtlarge"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                  <td width="110" class="txtlarge"><strong><a href="/members/index.php?act=friends&cid=alanchen13" style="color:black;">我的联系好友</a></strong></td>
+                                </tr>
+                              </table></td>
+                          </tr>
+                          <tr>
+                            <td bgcolor="#f9f9f9" id="buddylist" class="btop01">
+                            	
+                            	                            		<br>
+                            		<div style="margin:0 8px">您目前还没有任何好友</div>
+                            		<br>
+                            	                            </td>
+                          </tr>
+                        </table></td>
+                    </tr>
+                    <tr>
+                      <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td><table width="100%" border="0" cellpadding="4" cellspacing="0" class="sectiontable">
+                          <tr>
+                            <td bgcolor="#EAEAEA" class="txtlarge"><strong><a href="/myoverview/68222" style="color:black;">我的最新博客</a></strong></td>
+                          </tr>
+                          <tr>
+                    		<td bgcolor="#f9f9f9" height="50" align="left">
+                    			<script type="text/JavaScript" src="/blog/script/latest_blog.php?blogid=68222"></script>
+                    		</td>
+                    	  </tr>
+                        </table></td>
+                    </tr>
+                    <tr>
+                      <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td><table width="100%" border="0" cellpadding="4" cellspacing="0" class="sectiontable">
+                          <tr>
+                            <td bgcolor="#EAEAEA" class="txtlarge"><strong><a href="/myoverview/68222" style="color:black;">我的最新博客评论</a></strong></td>
+                          </tr>
+                          <tr>
+                    		<td bgcolor="#f9f9f9" height="50" align="left">
+                    			<script type="text/JavaScript" src="/blog/script/latest_blog.php?blogid=68222&type=comment"></script>
+                    		</td>
+                    	  </tr>
+                        </table></td>
+                    </tr>
+                    <tr>
+                      <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td><table width="100%" border="0" cellpadding="4" cellspacing="0" class="sectiontable">
+                          <tr>
+                            <td bgcolor="#EAEAEA" class="txtlarge"><strong><a href="/groups/index.php?act=createlist&uid=913464" style="color:black;">我创建的群组</a></strong></td>
+                          </tr>
+                          <tr>
+                            <td bgcolor="#f9f9f9" class="btop01" height="50" align="left">
+                    			<script src="/groups/script/mygroups_members.php?uid=913464" type="text/javascript"></script>
+                            </td>
+                          </tr>
+                        </table></td>
+                    </tr>
+                    <tr>
+                      <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td><table width="100%" border="0" cellpadding="4" cellspacing="0" class="sectiontable">
+                          <tr>
+                            <td bgcolor="#EAEAEA" class="txtlarge"><strong><a href="/qqh/index.php?act=unread" style="color:black;">我的未读悄悄话</a></strong></td>
+                          </tr>
+                          <tr>
+                            <td bgcolor="#f9f9f9" class="btop01" height="50" align="left">
+                    			<script src="/qqh/script/readmsg_members.php" type="text/javascript"></script>
+                    		</td>
+                          </tr>
+                        </table></td>
+                    </tr>
+                    <tr>
+                      <td>&nbsp;</td>
+                    </tr>
+                  	</table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+        </tr>
+      </table></td>
+  </tr>
+</table>
+<div id="footer" style="margin-left:300px">
+<div id="footnav">
+  <ul>
+    <li><a href="http://www.wenxuecity.com/aboutus/wenxuecity.shtml" target="_blank" >文学城简介</a></li>
+    <li><a href="http://ads.wenxuecity.com/" target="_blank" >广告服务</a></li>
+    <li><a href="http://www.wenxuecity.com/aboutus/contact.shtml" target="_blank" >联系我们</a></li>
+    <li><a href="http://career.wenxuecity.com/" target="_blank" >招聘信息</a></li>
+    <li><a href="http://passport.wenxuecity.com/register.php" target="_blank" >注册笔名</a></li>
+    <li><a href="/bbs/index.php?act=moderator" target="_blank" >申请版主</a></li>
+    <li class="last"><a href="#" target="_blank"  onclick="return favorite(window.location,document.title);">收藏文学城</a></li>
+      </ul>
+</div>
+<div class="info">
+  <p>WENXUECITY.COM does not represent or guarantee the truthfulness, accuracy, or reliability of any of communications posted by other users. </p>
+  <p><strong>Copyright ©1998-2015 <span class="url">wenxuecity.com</span> All right reserved.</strong> 
+  	<a href="http://www.wenxuecity.com/aboutus/privacy.shtml" target="_blank"><span>Privacy Statement</span></a> &
+  	<a href="http://www.wenxuecity.com/aboutus/tou.shtml" target="_blank"><span>Terms of Use</span></a>
+  </p>
+</div>
+<script language="JavaScript">function favorite(URL, title) {try {window.external.addFavorite(URL,title);}catch(e){try{window.sidebar.addPanel(title,URL,"");}catch(e){alert("加入收藏失败，请使用Ctrl+D进行添加");}}return false;}</script>
+<!--quantcast code-->
+<script type="text/javascript" src="http://edge.quantserve.com/quant.js"></script>
+<script type="text/javascript">_qacct="p-79ssY02WsBUJU";quantserve();</script>
+<noscript><img src="http://pixel.quantserve.com/pixel/p-79ssY02WsBUJU.gif" style="display: none" height="1" width="1" alt="Quantcast"/></noscript>
+</div>
+<!--quantcast code-->
+</body>
+</html>

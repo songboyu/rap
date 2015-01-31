@@ -28,7 +28,7 @@ if __name__ == '__main__':
     #info,log = get_account_info('bbs.163.com/bbs/',
     #                 {'username':'kulala1982',
     #                 'password':'13936755635'})
-    info,log = get_account_info('http://www.ieasy5.com/bbs',
-                     {'username':'vccrack22',
-                      'password':'niya1972'})
+    info,log = get_account_info('bbs.powerapple.com',
+                     {'username':'like_test',
+                      'password':'Like12345'})
     print info

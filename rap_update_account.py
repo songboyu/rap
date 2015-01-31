@@ -24,6 +24,7 @@ import handlers
 
 def get_account_handler(site_sign):
     site_sign_map = {
+        # '凯迪': handlers.get_account_info_kdnet,
         # '文学城': handlers.get_account_info_wenxuecity_blog,
         # '无忧': handlers.get_account_info_51_forum,
         # '加易': handlers.get_account_info_ieasy5_forum,
@@ -58,7 +59,6 @@ def get_account_handler(site_sign):
         # '阿波罗': handlers.get_account_info_aboluowang_forum,
         # '倍可亲': handlers.get_account_info_backchina_forum,
     }
-
     if site_sign in site_sign_map:
         return site_sign_map[site_sign]
     else:
@@ -123,12 +123,14 @@ def main():
     cursor.execute('select id, site_sign, username, password from account')
     for row in cursor.fetchall():
         uid, site_sign, username, password = row
-        print username, password
+
         site_sign = site_sign.encode('utf8')
         account_handler = get_account_handler(site_sign)
-        print site_sign.decode('utf8'), account_handler
         if not account_handler: continue
 
+        print site_sign.decode('utf8'), account_handler
+        print username, password
+        
         try:
             head_url, log = account_handler({'username': username,
                                              'password': password,

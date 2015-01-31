@@ -13,6 +13,7 @@ def login_aboluowang(sess, src):
     resp = sess.get(host)
     soup = BeautifulSoup(resp.content)
     form = soup.find('form', attrs={'id': 'lsform'})
+
     payload = get_datadic(form)
     payload['username'] = src['username']
     payload['password'] = md5(src['password']).hexdigest()
@@ -222,7 +223,7 @@ def post_aboluowang_forum(post_url, src):
     return (resp.url, str(logger))
 
 def get_account_info_aboluowang_forum(src):
-    """ 倍可亲账户信息获取函数
+    """ 阿波罗账户信息获取函数
 
     @param src:        用户名，密码
     @type src:         dict

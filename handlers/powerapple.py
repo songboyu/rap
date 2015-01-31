@@ -45,11 +45,7 @@ def login_powerapple(sess, src):
 
     #发送post包
     resp = sess.post(login_page + form['action'], data=payload)
-
-    f= open('1.html','w')
-    f.write(resp.content)
-    f.close()
-
+    utils.print_to_file(resp.content)
     #判断登录后页面是否含有用户字段，若存在则证明登录成功，否则失败
     if src['username'] in resp.content:
         return True
