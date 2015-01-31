@@ -134,13 +134,14 @@ def get_account_info_51_forum(src):
     resp = sess.get('http://bbs.51.ca/' + info_url)
 
     head_image = re.findall('avatar"><img src="(.*?)"', resp.content)[0]
-    account_score = int(re.findall('积分: (\d+?)<', resp.content)[0])
+    account_score = int(re.findall('积分: (\d+)<', resp.content)[0])
     account_class = re.findall('color="#33C">(.*?)<', resp.content)[0]
     time_register = re.findall('注册日期: (.*?)<', resp.content)[0]
     time_last_login = re.findall('上次访问: <span title="(.*?)"', resp.content)[0]
     login_count = 0
-    count_post = int(re.findall('帖子: (\d+?) 篇', resp.content)[0])
-    count_reply = 0
+    count_post = int(re.findall('帖子: (\d+) 篇', resp.content)[0])
+    # 经验 代替 回复
+    count_reply = int(re.findall('经验: (\d+) 点', resp.content)[0])
 
     account_info = {
         #########################################

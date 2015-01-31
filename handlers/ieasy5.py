@@ -195,11 +195,13 @@ def get_account_info_ieasy5_forum(src):
 
     resp = sess.get('http://www.ieasy5.com/bbs/')
     uid = re.findall("winduid = '(\d+)'", resp.content)[0]
-    head_image = re.findall('><i><img src="(.*?)', resp.content)[0]
+    head_image = 'http://www.ieasy5.com/bbs/' + re.findall('><i><img src="(.*?)"', resp.content)[0]
     account_class = re.findall(u'等级: (.*?)<'.encode('gbk'), resp.content)[0].decode('gbk').encode('utf8')
     count_post = int(re.findall(u'帖子: (\d+)'.encode('gbk'), resp.content)[0])
-    count_reply = 0
-    login_count = 0
+    # 威望 代替 回复
+    count_reply = int(re.findall(u'威望: (\d+)'.encode('gbk'), resp.content)[0])
+    # 铜币 代替 登录次数
+    login_count = int(re.findall(u'铜币: (\d+)'.encode('gbk'), resp.content)[0])
 
     resp = sess.get('http://www.ieasy5.com/bbs/u.php?a=info&uid=' + uid)
     account_score = int(re.findall(u'总积分：</span><span class="s2 b">(\d+)'.encode('gbk'), resp.content)[0])

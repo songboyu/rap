@@ -30,13 +30,14 @@ def get_account_handler(site_sign):
         # '温哥华': handlers.get_account_info_vanhi_forum,
         # '谜米': handlers.get_account_info_memehk_forum,
         # '消息树': handlers.get_account_info_enewstree_forum,
-        '超级苹果': handlers.get_account_info_powerapple_forum,
+        # '超级苹果': handlers.get_account_info_powerapple_forum,
         # '外来客': handlers.get_account_info_wailaike_forum,
         # '新浪': handlers.get_account_info_sina_club,
         # '欧浪': handlers.get_account_info_eulam_forum,
         # '加国华人网': handlers.get_account_info_1dpw_forum,
         # '多维': handlers.get_account_info_dwnews_blog,
-        # '阿波罗': handlers.get_account_info_aboluowang_forum
+        # '阿波罗': handlers.get_account_info_aboluowang_forum,
+        # '倍可亲': handlers.get_account_info_backchina_forum,
     }
     if site_sign in site_sign_map:
         return site_sign_map[site_sign]
@@ -71,7 +72,7 @@ def main():
 
         print site_sign.decode('utf8'), account_handler
         print username, password
-
+        
         try:
             info, log = account_handler({'username': username, 'password': password, 'TTL': 3, 'proxies': ''})
         except:
