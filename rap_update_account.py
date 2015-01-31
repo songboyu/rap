@@ -43,10 +43,10 @@ def get_account_handler(site_sign):
     }
 
     site_sign_map = {
-        '文学城': handlers.upload_head_wenxuecity_blog,
+        # '文学城': handlers.upload_head_wenxuecity_blog,
         # '无忧': handlers.get_account_info_51_forum,
         # '加易': handlers.get_account_info_ieasy5_forum,
-        # '天易': handlers.get_account_info_wolfax_forum,
+        '天易': handlers.upload_head_wolfax_forum,
         # '温哥华': handlers.get_account_info_vanhi_forum,
         # '谜米': handlers.get_account_info_memehk_forum,
         # '消息树': handlers.get_account_info_enewstree_forum,
@@ -142,8 +142,8 @@ def main():
             continue
         if head_url == '': continue
 
-        cursor.execute('update account set head_image=%s where id=%s', (head_url, uid))
-        conn.commit()
+        # cursor.execute('update account set head_image=%s where id=%s', (head_url, uid))
+        # conn.commit()
 
     cursor.close()
     conn.close()

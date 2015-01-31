@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*- 
+import urllib
+import time
+import StringIO
+# from PIL import Image
+import binascii
 
 import requests, re, random, logging
 from bs4 import BeautifulSoup
@@ -324,3 +329,86 @@ def get_account_info_wolfax_forum(src):
     }
     logger.info('Get account info OK')
     return (account_info, str(logger))
+
+def upload_head_wolfax_forum(src):
+    logger = RAPLogger('Upload head wolfax_forum=>' + src['username'])
+    sess = RAPSession(src)
+
+    # Step 1: 登录
+    if not login_wolfax(sess, src):
+        logger.error('Login Error')
+        return ('', str(logger))
+    logger.info('Login OK')
+
+    resp = sess.get('http://home.wolfax.com/home.php?mod=spacecp&ac=avatar')
+    input = urllib.unquote(re.findall(r'input=(.*?)&',resp.content)[0])
+    agent = re.findall(r'agent=(.*?)&',resp.content)[0]
+    print 'input:',input
+    print 'agent:',agent
+
+    # payload = {
+    #     'Filename': (None, src['head'].split('/')[-1]),
+    #     'Filedata': (src['head'].split('/')[-1], open(src['head'], 'rb'), 'application/octet-stream'),
+    #     'Upload': (None,'Submit Query')
+    # }
+    # params = {
+    #     'm':'user',
+    #     'inajax':'1',
+    #     'a':'uploadavatar',
+    #     'appid':'1',
+    #     'input':input,
+    #     'agent':agent,
+    #     'avatartype':'virtual'
+    # }
+    # resp = sess.post('http://uc.wolfax.com/index.php', files=payload, params=params)
+
+    # buff = StringIO.StringIO()
+    #
+    # img = Image.open(src['head'])
+    #
+    # img.thumbnail((200,200),Image.ANTIALIAS)
+    # img.save(buff, format='jpeg')
+    # avatar1 = buff.getvalue()
+    # avatar1 = binascii.hexlify(avatar1).upper()
+    #
+    # img.thumbnail((120,120),Image.ANTIALIAS)
+    # img.save(buff, format='jpeg')
+    # avatar2 = buff.getvalue()
+    # avatar2 = binascii.hexlify(avatar2).upper()
+    #
+    # img.thumbnail((48,48),Image.ANTIALIAS)
+    # img.save(buff, format='jpeg')
+    # avatar3 = buff.getvalue()
+    # avatar3 = binascii.hexlify(avatar3).upper()
+    #
+    # buff.close()
+
+    avatar1 = binascii.hexlify(open(src['head'],'rb').read()).upper()
+    avatar2 = avatar1
+    avatar3 = avatar1
+
+    params = {
+        'm':'user',
+        'inajax':'1',
+        'a':'rectavatar',
+        'appid':'1',
+        'input':input,
+        'agent':agent,
+        'avatartype':'virtual'
+    }
+    payload = {
+        'avatar1':avatar1,
+        'avatar2':avatar2,
+        'avatar3':avatar3,
+        'urlReaderTS':str(time.time()*1000)
+    }
+    resp = sess.post('http://uc.wolfax.com/index.php', data=payload, params=params)
+
+
+    print resp.content
+    if 'success="1"' in resp.content:
+        logger.info('uploadavatar OK')
+        return ('', str(logger))
+    else:
+        logger.info('uploadavatar Error')
+        return ('', str(logger))
