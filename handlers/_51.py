@@ -2,12 +2,12 @@
 
 import requests, re, random, logging
 from bs4 import BeautifulSoup
+import urllib
+import time
+import binascii
 
 import config
 from utils import *
-import utils
-from utils import get_datadic
-
 # Coding: utf8
 # Captcha: not required
 # Login: required
@@ -41,9 +41,9 @@ def login_51_forum(post_url, s, src):
 
 def reply_51_forum(post_url, src):
     
-    logger = utils.RAPLogger(post_url)
-    host = utils.get_host(post_url)
-    s = utils.RAPSession(src)
+    logger = RAPLogger(post_url)
+    host = get_host(post_url)
+    s = RAPSession(src)
 
     # 登录
     if not login_51_forum(post_url, s, src):
@@ -85,8 +85,8 @@ def post_51_forum(post_url, src):
     @rtype:            bool
 
     """
-    logger = utils.RAPLogger(post_url)
-    s = utils.RAPSession(src)
+    logger = RAPLogger(post_url)
+    s = RAPSession(src)
 
     # 登录
     if not login_51_forum(post_url, s, src):
@@ -120,8 +120,8 @@ def post_51_forum(post_url, src):
     
 
 def get_account_info_51_forum(src):
-    logger = utils.RAPLogger('51=>' + src['username'])
-    sess = utils.RAPSession(src)
+    logger = RAPLogger('51=>' + src['username'])
+    sess = RAPSession(src)
 
     # Step 1: 登录
     if not login_51_forum('http://bbs.51.ca/', sess, src):
@@ -172,3 +172,50 @@ def get_account_info_51_forum(src):
     }
     logger.info('Get account info OK')
     return (account_info, str(logger))
+
+def upload_head_51_forum(src):
+    logger = RAPLogger('Upload head 51_forum=>' + src['username'])
+    sess = RAPSession(src)
+
+    # Step 1: 登录
+    if not login_51_forum('http://bbs.51.ca/',sess, src):
+        logger.error('Login Error')
+        return ('', str(logger))
+    logger.info('Login OK')
+
+    resp = sess.get('http://bbs.51.ca/memcp.php?action=profile&typeid=3')
+    input = urllib.unquote(re.findall(r'input=(.*?)&',resp.content)[0])
+    agent = re.findall(r'agent=(.*?)&',resp.content)[0]
+    print 'input:',input
+    print 'agent:',agent
+
+    avatar1 = binascii.hexlify(open(src['head'],'rb').read()).upper()
+    avatar2 = avatar1
+    avatar3 = avatar1
+
+    params = {
+        'm':'user',
+        'inajax':'1',
+        'a':'rectavatar',
+        'appid':'1',
+        'input':input,
+        'agent':agent,
+        'avatartype':'virtual'
+    }
+    payload = {
+        'avatar1':avatar1,
+        'avatar2':avatar2,
+        'avatar3':avatar3,
+        'urlReaderTS':str(time.time()*1000)
+    }
+    resp = sess.post('http://uc.51.ca/index.php', data=payload, params=params)
+
+
+    print resp.content
+    if 'success="1"' in resp.content:
+        logger.info('uploadavatar OK')
+        return ('', str(logger))
+    else:
+        logger.info('uploadavatar Error')
+        return ('', str(logger))
+

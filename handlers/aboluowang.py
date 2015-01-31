@@ -3,6 +3,9 @@
 import requests, re, random, logging
 from bs4 import BeautifulSoup
 from hashlib import md5
+import urllib
+import time
+import binascii
 
 import config
 from utils import *
@@ -285,3 +288,50 @@ def get_account_info_aboluowang_forum(src):
     }
     logger.info('Get account info OK')
     return (account_info, str(logger))
+
+
+def upload_head_aboluowang_forum(src):
+    logger = RAPLogger('Upload head aboluowang_forum=>' + src['username'])
+    sess = RAPSession(src)
+
+    # Step 1: 登录
+    if not login_aboluowang(sess, src):
+        logger.error('Login Error')
+        return ('', str(logger))
+    logger.info('Login OK')
+
+    resp = sess.get('http://bbs.aboluowang.com/home.php?mod=spacecp&ac=avatar')
+    input = urllib.unquote(re.findall(r'input=(.*?)&',resp.content)[0])
+    agent = re.findall(r'agent=(.*?)&',resp.content)[0]
+    print 'input:',input
+    print 'agent:',agent
+
+    avatar1 = binascii.hexlify(open(src['head'],'rb').read()).upper()
+    avatar2 = avatar1
+    avatar3 = avatar1
+
+    params = {
+        'm':'user',
+        'inajax':'1',
+        'a':'rectavatar',
+        'appid':'3',
+        'input':input,
+        'agent':agent,
+        'avatartype':'virtual'
+    }
+    payload = {
+        'avatar1':avatar1,
+        'avatar2':avatar2,
+        'avatar3':avatar3,
+        'urlReaderTS':str(time.time()*1000)
+    }
+    resp = sess.post('http://uc.ablwang.com/index.php', data=payload, params=params)
+
+
+    print resp.content
+    if 'success="1"' in resp.content:
+        logger.info('uploadavatar OK')
+        return ('', str(logger))
+    else:
+        logger.info('uploadavatar Error')
+        return ('', str(logger))
