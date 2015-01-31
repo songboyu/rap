@@ -253,3 +253,26 @@ def get_account_info_wenxuecity_blog(src):
     }
     logger.info('Get account info OK')
     return (account_info, str(logger))
+
+
+def upload_head_wenxuecity_blog(src):
+    logger = utils.RAPLogger('Upload head wenxuecity=>' + src['username'])
+    sess = utils.RAPSession(src)
+
+    # Step 1: 登录
+    if not login_wenxuecity(sess, src):
+        logger.error('Login Error')
+        return ('', str(logger))
+    logger.info('Login OK')
+
+    resp = sess.get('http://bbs.wenxuecity.com/members/')
+    payload = {
+        'upload': (None, '保存图片'),
+        'pic': (src['head'].split('/')[-1], open(src['head'], 'rb'), 'image/jpeg')
+    }
+
+    resp = sess.post('http://bbs.wenxuecity.com/members/index.php?act=edit_pic', files=payload)
+    soup = BeautifulSoup(resp.content)
+    head_image = 'http://www.wenxuecity.com' + soup.select('img#preview')[0]['src']
+    logger.info('Head OK')
+    return (head_image, str(logger))
