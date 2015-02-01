@@ -163,13 +163,16 @@ def post_wenxuecity_blog(post_url, src):
     resp = s.get('http://passport.wenxuecity.com/members/script/members.php')
     blog_url = re.findall(r'<a href="(.*?)">我的博客',resp.content)[0]
     resp = s.get(blog_url)
-    # 若指定字样出现在response中，表示发帖成功
-    if src['subject'] not in resp.content:
-        logger.error(' Post Error')
-        return ('', str(logger))
-    logger.info(' Post OK')
-    href = re.findall(r'<div class="menuCell_main">[\s|\S]*?<a href="(.*?)">[\s|\S]*?<span>'+src['subject'], resp.content)[0]
+
+    # By sniper 2015-2-1
+    # 标题中的'('和')'等需要在正则表达式中转义
+    # 如：[转帖]ZT) 汉服是FQ闹的大笑话
+    subject = re.escape(src['subject'])
+    href = re.findall(r'<div class="menuCell_main">[\s|\S]*?<a href="(.*?)">[\s|\S]*?<span>'+subject, resp.content)[0]
     url = host + href
+    # 如果url未成功匹配，则抛出异常，Post Error
+    
+    logger.info(' Post OK')
     return (url, str(logger))
     
 
