@@ -106,15 +106,15 @@ def post_wailaike_forum(post_url, src):
     # 发送发帖post包
     resp = sess.post('http://www.wailaike.net/newpost?gid='+gid, data=payload)
 
-    # print resp.content.decode(CHARSET)
-    # 若指定字样出现在response中，表示发帖成功
-    if src['subject'] not in resp.content:
-        logger.error(' Post Error')
-        return ('', str(logger))
+    # By sniper 2015-2-1
+    # 标题中的'('和')'等需要在正则表达式中转义
+    # 如：[转帖]ZT) 汉服是FQ闹的大笑话
+    subject = re.escape(src['subject'])
+    url = re.findall(r'<h3 class="titles-txt"><a href=\"(.*?)\" target="_blank">' + subject + '</a></h3>',resp.content)[0]
+    url = "http://www.wailaike.net" + url
+    # 如果url未成功匹配，则抛出异常，Post Error
+
     logger.info(' Post OK')
-    resp = sess.get('http://www.wailaike.net/group_post?gid='+gid)
-    url1 = re.findall(r'<h3 class="titles-txt"><a href=\"(.*?)\" target="_blank">'+src['subject']+'</a></h3>',resp.content)[0]
-    url = "http://www.wailaike.net"+url1
     return (url, str(logger))
 
 
