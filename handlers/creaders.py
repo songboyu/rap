@@ -154,7 +154,8 @@ def post_creaders_forum(post_url, src):
     }
     # 发送发主贴post包
     resp = sess.post(url+'post.php?', data=payload)
-
+    content = resp.content.decode(CHARSET).encode('utf8')
+    
     # By sniper 2015-2-1
     # 标题中的'('和')'等需要在正则表达式中转义
     # 如：[转帖]ZT) 汉服是FQ闹的大笑话
