@@ -161,7 +161,7 @@ def post_creaders_forum(post_url, src):
     # 如：[转帖]ZT) 汉服是FQ闹的大笑话
     subject = re.escape(src['subject'])
     href = re.findall(r'<a href=\'(.*?)\' class=\'thread_title\'>'+subject, content)[0]
-    url = host + href
+    url = post_url + href
     # 如果url未成功匹配，则抛出异常，Post Error
     
     logger.info('Post OK')
