@@ -91,7 +91,8 @@ def reply_m_secretchina_news(post_url, src):
     payload['captcha_response'] = captcha_response
 
     r = s.post(host + '/ajax_comments/js', data=payload)
-    if 'comment-text' not in r.content:
+    logger.info(r.content)
+    if 'messages error' in r.content:
         logger.error('Reply Error')
         return (False, str(logger))
     logger.info('Reply OK')
