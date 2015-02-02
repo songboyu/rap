@@ -2,5 +2,5 @@
 # file patterns
 *.pyc
 .idea
-log
+log/*
 head
