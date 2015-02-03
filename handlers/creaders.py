@@ -154,12 +154,12 @@ def post_creaders_forum(post_url, src):
     }
     # 发送发主贴post包
     resp = sess.post(url+'post.php?', data=payload)
-    content = resp.content.decode(CHARSET).encode('utf8')
+    content = resp.content.decode(CHARSET, 'ignore')
     
     # By sniper 2015-2-1
     # 标题中的'('和')'等需要在正则表达式中转义
     # 如：[转帖]ZT) 汉服是FQ闹的大笑话
-    subject = re.escape(src['subject'])
+    subject = re.escape(src['subject'].decode('utf8'))
     href = re.findall(r'<a href=\'(.*?)\' class=\'thread_title\'>'+subject, content)[0]
     url = post_url + href
     # 如果url未成功匹配，则抛出异常，Post Error
