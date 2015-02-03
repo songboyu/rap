@@ -118,17 +118,15 @@ def reply_powerapple_news(post_url, src):
     host = get_host(post_url)
     sess = RAPSession(src)
 
-
     # Step 1: 获取回帖页面
     resp = sess.get(post_url)
     soup = BeautifulSoup(resp.content)
-    form = soup.find('form', attrs={'id':'new_comment'})
     # Step 2: 验证码
     # 获取验证码图片
     resp = sess.get(host + 'captcha',
     headers={
-    'Accept': config.accept_image,
-    'Referer': post_url
+        'Accept': config.accept_image,
+        'Referer': post_url
     },
     params={'type': '', 'time': time.time()*1000})
     # 获取验证码字符串              
@@ -137,18 +135,14 @@ def reply_powerapple_news(post_url, src):
 
     # Step 3: 提交回帖
     # 回复内容
-    name = soup.find('input', attrs={'name': 'authenticity_token'})
-    name1 = name.attrs['value']
-    payload = {}
-    payload['utf8'] = '%E2%9C%93'
-    payload['comment[reply_to_id]:'] = ''
-    payload['comment[content]'] = src['content']
+    form = soup.find('form', attrs={'class': 'new_comment'})
+    payload = get_datadic(form)
     payload['captcha'] = seccode
-    payload['authenticity_token'] = name1
+    payload['comment[content]'] = src['content']
     #发送post包
     resp = sess.post(host + form['action'], data=payload)
-    #再次请求原网页，查看是否已经有回帖内容
-    resp = sess.get(post_url)
+    # #再次请求原网页，查看是否已经有回帖内容
+    # resp = sess.get(post_url)
     #判断回帖后页面是否含有回帖内容，若存在则证明回帖成功，否则失败
     if src['content'] in resp.content:
         logger.info('Reply OK')
