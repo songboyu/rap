@@ -7,13 +7,15 @@
 
 import re
 import json
-import thread
 import logging
 import logging.config
 
 import yaml
+import concurrent
 import tornado.ioloop
 import tornado.web
+import tornado.gen
+import tornado.concurrent
 
 import handlers
 import config
@@ -23,6 +25,17 @@ import utils
 class CommentHandler(tornado.web.RequestHandler):
     """CommentHandler"""
 
+    # Thread pool executor.
+    executor = concurrent.futures.ThreadPoolExecutor(CONFIG['max_worker'])
+    
+    @tornado.web.asynchronous
+    @tornado.gen.coroutine
+    def post(self):
+        r, log = yield self._comment(json.loads(self.request.body))
+        self.write(json.dumps({'result': r, 'log': log}))
+        self.finish()
+
+    @tornado.concurrent.run_on_executor
     def _comment(self, params):
         # Convert unicode to utf8.
         for key in params:
@@ -62,15 +75,23 @@ class CommentHandler(tornado.web.RequestHandler):
             logger.exception('Reply Error')
             return (False, str(logger))
 
-    def post(self):
-        # Start comment thread.
-        thread.start_new_thread(self._comment, (json.loads(self.request.body),))
-        self.write(json.dumps({'result': 'true'}))
+
 
 
 class PostHandler(tornado.web.RequestHandler):
     """PostHandler"""
 
+    # Thread pool executor.
+    executor = concurrent.futures.ThreadPoolExecutor(CONFIG['max_worker'])
+    
+    @tornado.web.asynchronous
+    @tornado.gen.coroutine
+    def post(self):
+        url, log = yield self._post(json.loads(self.request.body))
+        self.write(json.dumps({'url': url, 'log': log}))
+        self.finish()
+
+    @tornado.concurrent.run_on_executor
     def _post(self, params):
         # Convert unicode to utf8.
         for key in params:
@@ -104,16 +125,10 @@ class PostHandler(tornado.web.RequestHandler):
             logger.exception('Post Error')
             return ('', str(logger))
 
-    def post(self):
-        # Start post thread.
-        thread.start_new_thread(self._post, (json.loads(self.request.body),))
-        self.write(json.dumps({'result': 'true'}))
-
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.write('Hello world!')
-
+        self.write('Welcome to the cheetah API.')
 
 application = tornado.web.Application([
     (r'/', MainHandler),
@@ -130,4 +145,3 @@ if __name__ == "__main__":
 
     application.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
-    
