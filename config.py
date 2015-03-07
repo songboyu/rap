@@ -108,3 +108,23 @@ dispatch_rule = {
     'boxun\.com/news': ('disqus', 'OUT'),
     'blog\.boxun\.com': ('disqus', 'OUT'),
 }
+
+website_rule = {
+    '凯迪社区': ('kdnet', 'http://club.kdnet.net/list.asp?boardid=2'),
+    '加国华人网论坛': ('1dpw_forum', 'http://bbs.1dpw.com/forum-71-1.html'),
+    '加国无忧论坛': ('51_forum', 'http://bbs.51.ca/forumdisplay.php?fid=40'),
+    '倍可亲论坛': ('backchina_forum', 'http://www.backchina.com/forum/37/index-1.html'),
+    '万维论坛': ('creaders_forum', 'http://bbs.creaders.net/life/'),
+    '多维博客': ('dwnews_blog', 'http://blog.dwnews.com/'),
+    '消息树论坛': ('enewstree_forum', 'http://enewstree.com/discuz/forum.php?mod=forumdisplay&fid=47'),
+    '加拿大家园论坛': ('iask_forum', 'http://forum.iask.ca/forums/%E6%B8%A9%E5%93%A5%E5%8D%8E.14/'),
+    '加拿大加易论坛': ('ieasy5_forum', 'http://ieasy5.com/bbs/thread.php?fid=3'),
+    '明镜博客': ('mirrorbooks_blog', 'http://www.mirrorbooks.com/MIB/blog/main.aspx'),
+    '天涯信息论坛': ('myca168_forum', 'http://www.myca168.com/bbs/index/thread/id/9'),
+    '文学城博客': ('wenxuecity_blog', 'http://blog.wenxuecity.com'),
+    '外来客论坛': ('wailaike_forum', 'http://www.wailaike.net/group_post?gid=1'),
+    '天易论坛': ('wolfax_forum', 'http://bbs.wolfax.com/f-42-1.html'),
+    '温哥华巅峰论坛': ('vanhi_forum', 'http://forum.vanhi.com/forum-38-1.html'),
+    '謎米香港论坛': ('memehk_forum', 'http://forum.memehk.com/forum.php?mod=forumdisplay&fid=60'),
+    '阿波罗论坛': ('aboluowang_forum', 'http://bbs.aboluowang.com/forum.php?mod=forumdisplay&fid=3'),
+}

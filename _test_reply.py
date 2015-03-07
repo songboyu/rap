@@ -4,10 +4,10 @@ import rap
 import logging, logging.handlers
 import sys
 
-import socks
-import socket
-socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1080)
-socket.socket = socks.socksocket
+# import socks
+# import socket
+# socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1080)
+# socket.socket = socks.socksocket
 
 def reply(post_url, src):
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
@@ -61,7 +61,20 @@ if __name__ == '__main__':
 
     # http://boxun.com/news/gb/china/2015/01/201501142221.shtml fail
 
-    r, log = reply('http://bbs.powerapple.com',
-                    {'content': '墙里墙外 男默女泪。',
-                     'username': 'like_test',
-                     'password': 'Like12345'})
+    # r, log = reply('http://bbs.powerapple.com',
+    #                 {'content': '墙里墙外 男默女泪。',
+    #                  'username': 'like_test',
+    #                  'password': 'Like12345'})
+
+    
+    import requests
+    import json
+    payload = {
+        'url': 'http://economics.dwnews.com/news/2015-03-06/59639439.html',
+        'title': '西媒：中国储备3万吨黄金 建大量秘密金库',
+        'content': '中国国家官方持有黄金量为1054.6吨',
+        'account': 'pusongcu61@163.com',
+        'password': 'Bvk117',
+    }
+    r = requests.post('http://127.0.0.1:8888/comment', data=json.dumps(payload))
+    print r.content
