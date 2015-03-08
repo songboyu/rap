@@ -64,6 +64,7 @@ def login_sohu(sess, post_url, src):
     logger.info(resp.content)
     return True
 
+
 def reply_sohu_news(post_url, src):
     """ 搜狐新闻回复函数
 
@@ -173,4 +174,21 @@ def reply_sohu_news(post_url, src):
                      })
     logger.info(resp.content)
     logger.info(' Reply OK')
+    return (True, str(logger))
+
+
+def thumb_up_sohu(post_url, src):
+    logger = utils.RAPLogger(post_url)
+    sess = utils.RAPSession(src)
+    resp = sess.get('http://changyan.sohu.com/api/2/comment/action',
+        headers={'Referer': post_url},
+        params={
+        'callback': 'fn',
+        'action_type': 1,
+        'comment_id': src['extra']['comment_id'],
+        'client_id': post_url.split('/')[4],
+        'topic_id': src['extra']['topic_id'],
+        '_': int(time.time()*1000),
+        })
+    logger.info(resp.content)
     return (True, str(logger))

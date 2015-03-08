@@ -129,6 +129,52 @@ class PostHandler(tornado.web.RequestHandler):
             return ('', str(logger))
 
 
+class PraiseHandler(tornado.web.RequestHandler):
+    """PraiseHandler"""
+
+    # Thread pool executor.
+    executor = concurrent.futures.ThreadPoolExecutor(CONFIG['max_worker'])
+    
+    @tornado.web.asynchronous
+    @tornado.gen.coroutine
+    def post(self):
+        r, log = yield self._praise(json.loads(self.request.body))
+        self.write(json.dumps({'result': r, 'log': log}))
+        self.finish()
+
+    @tornado.concurrent.run_on_executor
+    def _praise(self, params):
+        logger = utils.RAPLogger(params['url'])
+
+        for pattern, handler in config.praise_rule.items():
+            if re.search(pattern, params['url']):
+                real_thumb_up = getattr(handlers, 'thumb_up_' + handler)
+                break
+        else:
+            logger.error('No praise handler')
+            return False
+
+        # Prepare arguments.
+        src = {'TTL': config.max_try, 'extra': params['extra']}
+        if 'account' in params:
+            src['username'] = params['account']
+        if 'password' in params:
+            src['password'] = params['password']
+
+        try:
+            src['proxies'] = {params['proxy_type']: params['proxy_type'] + '://' + params['proxy_ip'] + ':' + params['proxy_port']}
+        except:
+            src['proxies'] = ''
+
+        # Real thumb up.
+        try:
+            r, log = real_thumb_up(params['url'], src)
+            return (r, str(logger) + log)
+        except:
+            logger.exception('Thumb up error')
+            return (False, str(logger))
+
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.write('Welcome to the cheetah API.')
@@ -139,6 +185,7 @@ def main():
         (r'/', MainHandler),
         (r'/comment', CommentHandler),
         (r'/post', PostHandler),
+        (r'/praise', PraiseHandler),
     ])
 
     application.listen(8888)

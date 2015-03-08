@@ -361,6 +361,7 @@ def reply_163_bbs(post_url, src):
     logger.info(' Reply OK')
     return (True, str(logger))
 
+
 def get_account_info_163_bbs(src):
     """ 网易论坛账户信息获取函数
 
@@ -436,4 +437,18 @@ def get_account_info_163_bbs(src):
     }
     logger.info('Get account info OK')
     return (account_info, str(logger))
-    
+
+
+def thumb_up_163(post_url, src):
+    logger = utils.RAPLogger(post_url)
+    sess = utils.RAPSession(src)
+
+    resp = sess.get(post_url)
+    resp = sess.post(src['extra']['target_url'], 
+                     headers={
+                        'Referer': post_url,
+                        'Host': utils.get_host(post_url),
+                        'X-Requested-With': 'XMLHttpRequest',
+                     })
+    logger.info(resp.content)
+    return (True, str(logger))

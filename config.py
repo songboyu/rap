@@ -128,3 +128,9 @@ website_rule = {
     '謎米香港论坛': ('memehk_forum', 'http://forum.memehk.com/forum.php?mod=forumdisplay&fid=60'),
     '阿波罗论坛': ('aboluowang_forum', 'http://bbs.aboluowang.com/forum.php?mod=forumdisplay&fid=3'),
 }
+
+praise_rule = {
+    'comment\.news\.163\.com': '163',
+    'quan\.sohu\.com': 'sohu',
+    'coral\.qq\.com': 'qq',
+}
