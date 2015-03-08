@@ -21,6 +21,11 @@ import handlers
 import config
 import utils
 
+# Load local configurations.
+CONFIG = yaml.load(open('config.yaml'))
+# Logging config.
+logging.config.dictConfig(CONFIG)
+
 
 class CommentHandler(tornado.web.RequestHandler):
     """CommentHandler"""
@@ -63,7 +68,7 @@ class CommentHandler(tornado.web.RequestHandler):
         }
 
         try:
-            src['proxies'] = {params['proxy_type']: params['proxy_type'] + '://' + params['proxy_ip'] + ':' + params['proxy_type']}
+            src['proxies'] = {params['proxy_type']: params['proxy_type'] + '://' + params['proxy_ip'] + ':' + params['proxy_port']}
         except:
             src['proxies'] = ''
 
@@ -74,8 +79,6 @@ class CommentHandler(tornado.web.RequestHandler):
         except:
             logger.exception('Reply Error')
             return (False, str(logger))
-
-
 
 
 class PostHandler(tornado.web.RequestHandler):
@@ -113,7 +116,7 @@ class PostHandler(tornado.web.RequestHandler):
         }
 
         try:
-            src['proxies'] = {params['proxy_type']: params['proxy_type'] + '://' + params['proxy_ip'] + ':' + params['proxy_type']}
+            src['proxies'] = {params['proxy_type']: params['proxy_type'] + '://' + params['proxy_ip'] + ':' + params['proxy_port']}
         except:
             src['proxies'] = ''
 
@@ -130,18 +133,17 @@ class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.write('Welcome to the cheetah API.')
 
-application = tornado.web.Application([
-    (r'/', MainHandler),
-    (r'/comment', CommentHandler),
-    (r'/post', PostHandler),
-])
 
-
-if __name__ == "__main__":
-    # Load local configurations.
-    CONFIG = yaml.load(open('config.yaml'))
-    # Logging config.
-    logging.config.dictConfig(CONFIG)
+def main():
+    application = tornado.web.Application([
+        (r'/', MainHandler),
+        (r'/comment', CommentHandler),
+        (r'/post', PostHandler),
+    ])
 
     application.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
+
+
+if __name__ == "__main__":
+    main()
