@@ -1,8 +1,10 @@
 requests
-requesocks
 Beautifulsoup4
 MySQL-python
 beanstalkc
 PyYAML
 chardet
 tldextract
+futures
+tornado
+rsa
