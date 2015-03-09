@@ -80,10 +80,7 @@ def reply_m_secretchina_news(post_url, src):
     logger.info('%s %s %s = %d' % (a, op, b, captcha_response))
     # Step 3: Submit and check
     payload = get_datadic(form)
-    if 'nickname' in src:
-        payload['name'] = src['nickname']
-    else:
-        payload['name'] = '看中国网友'
+    payload['name'] = '看中国网友'
 
     payload['comment'] = src['content']
     payload['captcha_sid'] = captcha_sid
