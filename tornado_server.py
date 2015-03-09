@@ -20,6 +20,7 @@ import tornado.concurrent
 import handlers
 import config
 import utils
+import get_ip
 
 # Load local configurations.
 CONFIG = yaml.load(open('config.yaml'))
@@ -175,6 +176,26 @@ class PraiseHandler(tornado.web.RequestHandler):
             return (False, str(logger))
 
 
+class IpHandler(tornado.web.RequestHandler):
+    """IpHandler"""
+
+    # Thread pool executor.
+    executor = concurrent.futures.ThreadPoolExecutor(16)
+
+    @tornado.web.asynchronous
+    @tornado.gen.coroutine
+    def post(self):
+        ip = yield self._ip(json.loads(self.request.body))
+        self.write(json.dumps(ip))
+        self.finish()
+
+    @tornado.concurrent.run_on_executor
+    def _ip(self,params):
+        ip = []
+        ip = get_ip.getip()
+        return ip
+
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.write('Welcome to the cheetah API.')
@@ -186,6 +207,7 @@ def main():
         (r'/comment', CommentHandler),
         (r'/post', PostHandler),
         (r'/praise', PraiseHandler),
+        (r'/ip', IpHandler),
     ])
 
     application.listen(8888)
