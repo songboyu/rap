@@ -134,3 +134,11 @@ praise_rule = {
     'quan\.sohu\.com': 'sohu',
     'coral\.qq\.com': 'qq',
 }
+
+account_rule = {
+    '加国无忧论坛':'51',
+    '加拿大加易论坛':'jiayi',
+    '謎米香港论坛':'mimi',
+    '天易论坛':'tianyi',
+    '文学城论坛':'wenxuecheng',
+}

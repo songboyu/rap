@@ -21,6 +21,7 @@ import handlers
 import config
 import utils
 import get_ip
+import register_handler
 
 # Load local configurations.
 CONFIG = yaml.load(open('config.yaml'))
@@ -251,6 +252,35 @@ class IpHandler(tornado.web.RequestHandler):
         return ip
 
 
+class AccoutAddHandler(tornado.web.RequestHandler):
+    """AccoutAddHandler"""
+
+    # Thread pool executor.
+    executor = concurrent.futures.ThreadPoolExecutor(16)
+
+    @tornado.web.asynchronous
+    @tornado.gen.coroutine
+    def post(self):
+        result = yield self._account(json.loads(self.request.body))
+        self.write(json.dumps(result))
+        self.finish()
+
+    @tornado.concurrent.run_on_executor
+    def _account(self,params):
+        # Convert unicode to utf8.
+        for key in params:
+            params[key] = params[key].encode('utf8')
+        # Prepare account infomation.
+        src = {
+            'username': params['account'],
+            'password': params['password'],
+            'email': params['email'],
+        }
+        real_submit = getattr(register_handler,'submit_' + config.account_rule[params['website']])
+        result = real_submit(src)
+        return result
+
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.write('Welcome to the cheetah API.')
@@ -263,6 +293,7 @@ def main():
         (r'/post', PostHandler),
         (r'/praise', PraiseHandler),
         (r'/ip', IpHandler),
+        (r'/account/add',AccoutAddHandler),
     ])
 
     application.listen(7777)
