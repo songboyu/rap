@@ -61,20 +61,19 @@ if __name__ == '__main__':
 
     # http://boxun.com/news/gb/china/2015/01/201501142221.shtml fail
 
-    # r, log = reply('http://bbs.powerapple.com',
+    # r, log = reply('http://xujingbo2012.blog.163.com/blog/static/20373520020152811300171/?touping',
     #                 {'content': '墙里墙外 男默女泪。',
-    #                  'username': 'like_test',
-    #                  'password': 'Like12345'})
+    #                  'username': 'kulala1982',
+    #                  'password': '13936755635'})
 
     
     import requests
     import json
     payload = {
-        'url': 'http://economics.dwnews.com/news/2015-03-06/59639439.html',
-        'title': '西媒：中国储备3万吨黄金 建大量秘密金库',
-        'content': '中国国家官方持有黄金量为1054.6吨',
-        'account': 'pusongcu61@163.com',
-        'password': 'Bvk117',
+        'url': 'http://xujingbo2012.blog.163.com/blog/static/20373520020152811300171/?touping',
+        'content': '俄前副总理遇害案第六名嫌犯引爆炸弹自尽',
+        'account': 'kulala1982',
+        'password': '13936755635',
     }
-    r = requests.post('http://127.0.0.1:8888/comment', data=json.dumps(payload))
+    r = requests.post('http://127.0.0.1:7777/comment', data=payload)
     print r.content

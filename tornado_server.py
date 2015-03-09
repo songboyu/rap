@@ -28,6 +28,45 @@ CONFIG = yaml.load(open('config.yaml'))
 logging.config.dictConfig(CONFIG)
 
 
+def build_response_from_log(log):
+
+    errors = {
+        '未知错误': 10000,
+        '登录失败': 10001,
+        '评论失败': 10002,
+        '发帖失败': 10003,
+        '评论过于频繁': 10004,
+        '发帖过于频繁': 10005,
+        '验证码错误': 10006,
+        '网络异常': 10007,
+        '点赞失败': 10008,
+        '尚未实现': 10009,
+    }
+
+    if 'ConnectionError' in log:
+        description = '网络异常'
+    elif '验证码' in log:
+        description = '验证码错误'
+    elif re.search('No \w+ handler', log):
+        description = '尚未实现'
+    elif 'Login Error' in log:
+        description = '登录失败'
+    elif 'Reply Error' in log:
+        description = '评论失败'
+    elif 'Post Error' in log:
+        description = '发帖失败'
+    elif 'Thumb Up Error' in log:
+        description = '点赞失败'
+    else:
+        description = '未知错误'
+
+    return json.dumps({
+        'httpStatusCode': 500,
+        'description': description,
+        'errorCode': errors[description],
+    })
+
+
 class CommentHandler(tornado.web.RequestHandler):
     """CommentHandler"""
 
@@ -37,15 +76,18 @@ class CommentHandler(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     @tornado.gen.coroutine
     def post(self):
-        r, log = yield self._comment(json.loads(self.request.body))
-        self.write(json.dumps({'result': r, 'log': log}))
+        r, log = yield self._comment(self.request.arguments)
+        if r:
+            self.write(json.dumps({'result': 'true'}))
+        else:
+            self.write(build_response_from_log(log))
         self.finish()
 
     @tornado.concurrent.run_on_executor
     def _comment(self, params):
         # Convert unicode to utf8.
         for key in params:
-            params[key] = params[key].encode('utf8')
+            params[key] = params[key][0]
         logger = utils.RAPLogger(params['url'])
 
         # Get specific handler
@@ -61,7 +103,6 @@ class CommentHandler(tornado.web.RequestHandler):
 
         # Prepare arguments.
         src = {
-            'subject': params['title'],
             'content': params['content'],
             'username': params['account'],
             'password': params['password'],
@@ -72,6 +113,11 @@ class CommentHandler(tornado.web.RequestHandler):
             src['proxies'] = {params['proxy_type']: params['proxy_type'] + '://' + params['proxy_ip'] + ':' + params['proxy_port']}
         except:
             src['proxies'] = ''
+
+        try:
+            src['subject'] = params['title']
+        except:
+            src['subject'] = ''
 
         # Real reply.
         try:
@@ -91,15 +137,18 @@ class PostHandler(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     @tornado.gen.coroutine
     def post(self):
-        url, log = yield self._post(json.loads(self.request.body))
-        self.write(json.dumps({'url': url, 'log': log}))
+        url, log = yield self._post(self.request.arguments)
+        if url:
+            self.write(json.dumps({'result': 'true', 'url': url}))
+        else:
+            self.write(build_response_from_log(log))
         self.finish()
 
     @tornado.concurrent.run_on_executor
     def _post(self, params):
         # Convert unicode to utf8.
         for key in params:
-            params[key] = params[key].encode('utf8')
+            params[key] = params[key][0]
         logger = utils.RAPLogger(params['website'])
 
         if params['website'] not in config.website_rule:
@@ -120,7 +169,7 @@ class PostHandler(tornado.web.RequestHandler):
             src['proxies'] = {params['proxy_type']: params['proxy_type'] + '://' + params['proxy_ip'] + ':' + params['proxy_port']}
         except:
             src['proxies'] = ''
-
+            
         # Real post.
         try:
             url, log = real_post(config.website_rule[params['website']][1], src)
@@ -139,12 +188,18 @@ class PraiseHandler(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     @tornado.gen.coroutine
     def post(self):
-        r, log = yield self._praise(json.loads(self.request.body))
-        self.write(json.dumps({'result': r, 'log': log}))
+        r, log = yield self._praise(self.request.arguments)
+        if r:       
+            self.write(json.dumps({'result': 'true'}))
+        else:
+            self.write(build_response_from_log(log))
         self.finish()
 
     @tornado.concurrent.run_on_executor
     def _praise(self, params):
+        for key in params:
+            params[key] = params[key][0]
+
         logger = utils.RAPLogger(params['url'])
 
         for pattern, handler in config.praise_rule.items():
@@ -172,7 +227,7 @@ class PraiseHandler(tornado.web.RequestHandler):
             r, log = real_thumb_up(params['url'], src)
             return (r, str(logger) + log)
         except:
-            logger.exception('Thumb up error')
+            logger.exception('Thumb Up Error')
             return (False, str(logger))
 
 
@@ -184,13 +239,13 @@ class IpHandler(tornado.web.RequestHandler):
 
     @tornado.web.asynchronous
     @tornado.gen.coroutine
-    def post(self):
-        ip = yield self._ip(json.loads(self.request.body))
+    def get(self):
+        ip = yield self._ip()
         self.write(json.dumps(ip))
         self.finish()
 
     @tornado.concurrent.run_on_executor
-    def _ip(self,params):
+    def _ip(self):
         ip = []
         ip = get_ip.getip()
         return ip
@@ -210,9 +265,8 @@ def main():
         (r'/ip', IpHandler),
     ])
 
-    application.listen(8888)
+    application.listen(7777)
     tornado.ioloop.IOLoop.instance().start()
-
 
 if __name__ == "__main__":
     main()
