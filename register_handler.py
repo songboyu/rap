@@ -21,11 +21,14 @@ def submit_jiayi(params):
     f_user = params['username']
     f_pass = params['password']
     f_email = params['email']
+    proxies = params['proxies']
     cookie = cookielib.CookieJar()
     cookie_handler = urllib2.HTTPCookieProcessor(cookie)
     hds = { 'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36' ,
               'Host':'ieasy5.com'} 
     post_url = 'http://www.ieasy5.com/bbs/register.php'
+    proxy_handler = urllib2.ProxyHandler(proxies)
+    opener = urllib2.build_opener(proxy_handler)
     req = urllib2.Request(url = post_url,headers = hds)
     opener = urllib2.build_opener(cookie_handler) 
     response = opener.open(req)
@@ -43,7 +46,7 @@ def submit_jiayi(params):
         'username':f_user,
     }
     posturl = 'http://www.ieasy5.com/bbs/register.php'
-    request = requests.post(posturl, data=checkloginname, headers=headers)
+    request = requests.post(posturl, data=checkloginname, headers=headers,proxies=proxies)
     text = request.content
     if 'CDATA[4]' in text:
         return '用户名已被他人注册'
@@ -53,7 +56,7 @@ def submit_jiayi(params):
         'email':f_email,
             }
     posturl = 'http://www.ieasy5.com/bbs/register.php'
-    request = requests.post(posturl, data=checkemail, headers=headers)
+    request = requests.post(posturl, data=checkemail, headers=headers,proxies=proxies)
     text = request.content
     if 'CDATA[2]' in text:
         return '邮箱已被他人注册'
@@ -69,7 +72,7 @@ def submit_jiayi(params):
         }
     posturl='http://ieasy5.com/bbs/register.php?'
     postData = urllib.urlencode(postData)
-    request = urllib2.Request(posturl, postData, headers)  
+    request = urllib2.Request(posturl, postData, headers)
     response = urllib2.urlopen(request)  
     text = response.read()
     success = u'注册成功'.encode('gbk')
@@ -83,12 +86,15 @@ def submit_51(params):
     f_user = params['username']
     f_pass = params['password']
     f_email = params['email']
+    proxies = params['proxies']
     ###用cookielib模块创建一个对象，再用urlllib2模块创建一个cookie的handler
     cookie = cookielib.CookieJar()
     cookie_handler = urllib2.HTTPCookieProcessor(cookie)
     hds = { 'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36' ,
             'Host':'www.51.ca'} 
     post_url = 'http://www.51.ca/my/register.php?action=signup'
+    proxy_handler = urllib2.ProxyHandler(proxies)
+    opener = urllib2.build_opener(proxy_handler)
     req = urllib2.Request(url = post_url,headers = hds)
     opener = urllib2.build_opener(cookie_handler) 
     response = opener.open(req)#请求网页，返回句
@@ -108,7 +114,7 @@ def submit_51(params):
         'loginname':f_user,
     }
     posturl = 'http://www.51.ca/ajax/ajax_checkreg.php?'+match[0]+'&op=checkloginname'
-    request = requests.post(posturl, data=checkloginname, headers=headers)
+    request = requests.post(posturl, data=checkloginname, headers=headers,proxies=proxies)
     text = request.content
     text = json.loads(text)
     if len(text['errmsg']) > 0:
@@ -117,7 +123,7 @@ def submit_51(params):
         'email':f_email,
     }
     posturl = 'http://www.51.ca/ajax/ajax_checkreg.php?'+match[0]+'&op=checkemail'
-    request = requests.post(posturl, data=checkemail, headers=headers)
+    request = requests.post(posturl, data=checkemail, headers=headers,proxies=proxies)
     text = request.content
     text = json.loads(text)
     if len(text['errmsg']) > 0:
@@ -138,7 +144,7 @@ def submit_51(params):
         'action':'addmember'
                 }
     posturl='http://www.51.ca/my/register.php'
-    request = requests.post(posturl, data=postData, headers=headers)
+    request = requests.post(posturl, data=postData, headers=headers,proxies=proxies)
     text = request.content
     success = u'注册成功'.encode('gb2312')
     if success in text:
@@ -151,9 +157,11 @@ def submit_mimi(params):
     f_user = params['username']
     f_pass = params['password']
     f_email = params['email']
+    proxies = params['proxies']
     host = 'http://forum.memehk.com/member.php'
     post_url = 'http://forum.memehk.com/misc.php'
     s=requests.session()
+    s.proxies = params['proxies']
     s.headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36' 
     r=s.get(host,params={
             'mod':'register'
@@ -227,6 +235,7 @@ def submit_tianyi(params):
     host = 'http://www.wolfax.com/member.php?mod=register'
     post_url = 'http://www.wolfax.com/misc.php'
     s=requests.session()
+    s.proxies = params['proxies']
     s.headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36' 
     r=s.get(host,params={
             'mod':'register'
@@ -318,6 +327,7 @@ def submit_wenxuecheng(params):
     cj = cookielib.LWPCookieJar()
     br.set_cookiejar(cj)
     # Browser options
+    br.set_proxies(params['proxies'])
     br.set_handle_equiv(True)
     br.set_handle_redirect(True)
     br.set_handle_referer(True)
@@ -325,6 +335,7 @@ def submit_wenxuecheng(params):
     br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
     url = 'http://www.wenxuecity.com/members/passport.php'
     s=requests.session()
+    s.proxies = params['proxies']
     s.headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36' 
     r=s.get(url,params={
             'act':'checkusername',

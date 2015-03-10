@@ -176,7 +176,6 @@ class PostHandler(tornado.web.RequestHandler):
             src['proxies'] = {params['proxy_type']: params['proxy_type'] + '://' + params['proxy_ip'] + ':' + params['proxy_port']}
         except:
             src['proxies'] = ''
-            
         # Real post.
         try:
             url, log = real_post(config.website_rule[params['website']][1], src)
@@ -285,6 +284,11 @@ class AccoutAddHandler(tornado.web.RequestHandler):
             'password': params['password'],
             'email': params['email'],
         }
+        try:
+            src['proxies'] = {params['proxy_type']: params['proxy_type'] + '://' + params['proxy_ip'] + ':' + params['proxy_port']}
+            print src['proxies']
+        except:
+            src['proxies'] = ''
         real_submit = getattr(register_handler,'submit_' + config.account_rule[params['website']])
         result = real_submit(src)
         return result
