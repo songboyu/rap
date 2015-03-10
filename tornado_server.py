@@ -4,7 +4,8 @@
 @author: sniper 
 @since: 2015-3-7
 """
-
+import os
+import random
 import re
 import json
 import logging
@@ -44,9 +45,9 @@ def build_response_from_log(log):
         '尚未实现': 10009,
         '用户名已被他人注册': 10010,
         '邮箱已被他人注册' : 10011,
+        '上传头像失败': 100012,
     }
-
-    if 'ConnectionError' in log:
+    if 'ConnectionError' in log or 'HTTPConnectionPool' in log:
         description = '网络异常'
     elif '验证码' in log:
         description = '验证码错误'
@@ -64,10 +65,13 @@ def build_response_from_log(log):
         description = '用户名已被他人注册'
     elif '邮箱已被他人注册' in log:
         description = '邮箱已被他人注册'
+    elif 'uploadavatar Error' in log:
+        description = '上传头像失败'
     else:
         description = '未知错误'
 
     return json.dumps({
+        'result':'false',
         'httpStatusCode': 500,
         'description': description,
         'errorCode': errors[description],
@@ -111,20 +115,20 @@ class CommentHandler(tornado.web.RequestHandler):
         # Prepare arguments.
         src = {
             'content': params['content'],
-            'username': params['account'],
-            'password': params['password'],
             'TTL': config.max_try,
         }
+
+        if 'account' in params:
+            src['username'] = params['account']
+        if 'password' in params:
+            src['password'] = params['password']
+        if 'title' in params:
+            src['subject'] = params['title']
 
         try:
             src['proxies'] = {params['proxy_type']: params['proxy_type'] + '://' + params['proxy_ip'] + ':' + params['proxy_port']}
         except:
-            src['proxies'] = ''
-
-        try:
-            src['subject'] = params['title']
-        except:
-            src['subject'] = ''
+            pass
 
         # Real reply.
         try:
@@ -175,7 +179,7 @@ class PostHandler(tornado.web.RequestHandler):
         try:
             src['proxies'] = {params['proxy_type']: params['proxy_type'] + '://' + params['proxy_ip'] + ':' + params['proxy_port']}
         except:
-            src['proxies'] = ''
+            pass
             
         # Real post.
         try:
@@ -206,7 +210,6 @@ class PraiseHandler(tornado.web.RequestHandler):
     def _praise(self, params):
         for key in params:
             params[key] = params[key][0]
-
         logger = utils.RAPLogger(params['url'])
 
         for pattern, handler in config.praise_rule.items():
@@ -217,8 +220,7 @@ class PraiseHandler(tornado.web.RequestHandler):
             logger.error('No praise handler')
             return False
 
-        # Prepare arguments.
-        src = {'TTL': config.max_try, 'extra': params['extra']}
+        src = {'TTL': config.max_try, 'extra': eval(params['extra'])}
         if 'account' in params:
             src['username'] = params['account']
         if 'password' in params:
@@ -227,7 +229,7 @@ class PraiseHandler(tornado.web.RequestHandler):
         try:
             src['proxies'] = {params['proxy_type']: params['proxy_type'] + '://' + params['proxy_ip'] + ':' + params['proxy_port']}
         except:
-            src['proxies'] = ''
+            pass
 
         # Real thumb up.
         try:
@@ -258,8 +260,8 @@ class IpHandler(tornado.web.RequestHandler):
         return ip
 
 
-class AccoutAddHandler(tornado.web.RequestHandler):
-    """AccoutAddHandler"""
+class AccoutRegisterHandler(tornado.web.RequestHandler):
+    """AccoutRegisterHandler"""
 
     # Thread pool executor.
     executor = concurrent.futures.ThreadPoolExecutor(16)
@@ -267,8 +269,8 @@ class AccoutAddHandler(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     @tornado.gen.coroutine
     def post(self):
-        result = yield self._account(json.loads(self.request.body))
-        if result == u'注册成功':
+        result = yield self._account(self.request.arguments)
+        if result == '注册成功':
             self.write(json.dumps({'result': 'true'}))
         else:
             self.write(build_response_from_log(result))
@@ -278,7 +280,7 @@ class AccoutAddHandler(tornado.web.RequestHandler):
     def _account(self,params):
         # Convert unicode to utf8.
         for key in params:
-            params[key] = params[key].encode('utf8')
+            params[key] = params[key][0]
         # Prepare account infomation.
         src = {
             'username': params['account'],
@@ -288,6 +290,52 @@ class AccoutAddHandler(tornado.web.RequestHandler):
         real_submit = getattr(register_handler,'submit_' + config.account_rule[params['website']])
         result = real_submit(src)
         return result
+
+class UploadHeadImage(tornado.web.RequestHandler):
+    """UploadHeadImage"""
+
+    # Thread pool executor.
+    executor = concurrent.futures.ThreadPoolExecutor(16)
+
+    @tornado.web.asynchronous
+    @tornado.gen.coroutine
+    def post(self):
+        head_url, log = yield self._upload_head(self.request.arguments)
+        if head_url:       
+            self.write(json.dumps({'result': 'true','head_url':head_url}))
+        else:
+            self.write(build_response_from_log(log))
+        self.finish()
+
+    @tornado.concurrent.run_on_executor
+    def _upload_head(self,params):
+        # Convert unicode to utf8.
+        for key in params:
+            params[key] = params[key][0]
+        # Prepare account infomation.
+        logger = utils.RAPLogger(params['website'])
+
+        if params['website'] not in config.website_rule:
+            logger.error('No upload_head_handler handler')
+            return (False, str(logger))
+        real_upload_head_handler = getattr(handlers, 'upload_head_' + config.website_rule[params['website']][0])
+        heads = os.listdir('head')
+        src = {
+            'username': params['account'],
+            'password': params['password'],
+            'TTL': config.max_try,
+            'head': 'head/' + random.choice(heads)
+        }
+        try:
+            src['proxies'] = {params['proxy_type']: params['proxy_type'] + '://' + params['proxy_ip'] + ':' + params['proxy_port']}
+        except:
+            pass
+        try:
+            head_url, log = real_upload_head_handler(src)
+            return (head_url, str(logger) + log)
+        except:
+            logger.exception('uploadavatar Error')
+            return (False, str(logger))
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -302,7 +350,8 @@ def main():
         (r'/post', PostHandler),
         (r'/praise', PraiseHandler),
         (r'/ip', IpHandler),
-        (r'/account/add',AccoutAddHandler),
+        (r'/account/register', AccoutRegisterHandler),
+        (r'/account/upload_head', UploadHeadImage),
     ])
 
     application.listen(7777)

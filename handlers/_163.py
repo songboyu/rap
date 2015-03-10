@@ -443,7 +443,6 @@ def thumb_up_163(post_url, src):
     logger = utils.RAPLogger(post_url)
     sess = utils.RAPSession(src)
 
-    resp = sess.get(post_url)
     resp = sess.post(src['extra']['target_url'], 
                      headers={
                         'Referer': post_url,

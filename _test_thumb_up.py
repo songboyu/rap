@@ -43,9 +43,13 @@ if __name__ == '__main__':
     #     }
     # )
 
-    payload = {
-        'url': 'http://coral.qq.com/1114873711',
-        'extra': {'target_url': 'http://w.coral.qq.com/article/comment/up/to/5980251539306531055'},
-    }
-    r = requests.post('http://127.0.0.1:8888/praise', data=json.dumps(payload))
-    print r.content
+    # payload = {
+    #     'url': 'http://coral.qq.com/1114873711',
+    #     'extra': {'target_url': 'http://w.coral.qq.com/article/comment/up/to/5980251539306531055'},
+    # }
+    # r = requests.post('http://127.0.0.1:8888/praise', data=json.dumps(payload))
+    # print r.content
+
+    handlers.thumb_up_qq('http://coral.qq.com/1114873711', {'extra': {'target_url': 'http://w.coral.qq.com/article/comment/up/to/5980251539306531055'}})
+    # handlers.thumb_up_sohu('http://quan.sohu.com/pinglun/cyqemw6s1/409482113', {'extra1': '629659051', 'extra2': '507216872', 'proxies': ''})
+    # handlers.thumb_up_163('http://comment.news.163.com/news_guonei8_bbs/AKB1LEQK0001124J.html', {'extra1': 'http://comment.news.163.com/reply/upvote/news_guonei8_bbs/AKB1LEQK0001124J_AKBU4EI6', 'proxies': ''})
