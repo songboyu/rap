@@ -42,6 +42,8 @@ def build_response_from_log(log):
         '网络异常': 10007,
         '点赞失败': 10008,
         '尚未实现': 10009,
+        '用户名已被他人注册': 10010,
+        '邮箱已被他人注册' : 10011,
     }
 
     if 'ConnectionError' in log:
@@ -58,6 +60,10 @@ def build_response_from_log(log):
         description = '发帖失败'
     elif 'Thumb Up Error' in log:
         description = '点赞失败'
+    elif '用户名已被他人注册' in log:
+        description = '用户名已被他人注册'
+    elif '邮箱已被他人注册' in log:
+        description = '邮箱已被他人注册'
     else:
         description = '未知错误'
 
@@ -262,7 +268,10 @@ class AccoutAddHandler(tornado.web.RequestHandler):
     @tornado.gen.coroutine
     def post(self):
         result = yield self._account(json.loads(self.request.body))
-        self.write(json.dumps(result))
+        if result == u'注册成功':
+            self.write(json.dumps({'result': 'true'}))
+        else:
+            self.write(build_response_from_log(result))
         self.finish()
 
     @tornado.concurrent.run_on_executor

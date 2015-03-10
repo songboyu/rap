@@ -1,4 +1,5 @@
-#coding:utf-8
+# -*- coding: utf-8 -*-
+
 import urllib
 import urllib2
 import cookielib
@@ -36,6 +37,26 @@ def submit_jiayi(params):
              'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
              'Content-Type':'application/x-www-form-urlencoded',
              'Host':'ieasy5.com'}
+    checkloginname = {
+        'action':'regcheck',
+        'type':'regname',
+        'username':f_user,
+    }
+    posturl = 'http://www.ieasy5.com/bbs/register.php'
+    request = requests.post(posturl, data=checkloginname, headers=headers)
+    text = request.content
+    if 'CDATA[4]' in text:
+        return '用户名已被他人注册'
+    checkemail = {
+        'action':'regcheck',
+        'type':'regemail',
+        'email':f_email,
+            }
+    posturl = 'http://www.ieasy5.com/bbs/register.php'
+    request = requests.post(posturl, data=checkemail, headers=headers)
+    text = request.content
+    if 'CDATA[2]' in text:
+        return '邮箱已被他人注册'
     postData = {
         'forward':"",
         'step':'2', 
@@ -53,9 +74,9 @@ def submit_jiayi(params):
     text = response.read()
     success = u'注册成功'.encode('gbk')
     if success in text:
-        return 'True'+u'注册成功'
+        return '注册成功'
     else:
-        return 'wrong'+u'注册失败'
+        return '注册失败'
 
 
 def submit_51(params):
@@ -83,9 +104,27 @@ def submit_51(params):
                'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
                'Accept-Encoding' : 'gzip, deflate',
                'Host':'www.51.ca'}
+    checkloginname = {
+        'loginname':f_user,
+    }
+    posturl = 'http://www.51.ca/ajax/ajax_checkreg.php?'+match[0]+'&op=checkloginname'
+    request = requests.post(posturl, data=checkloginname, headers=headers)
+    text = request.content
+    text = json.loads(text)
+    if len(text['errmsg']) > 0:
+        return '用户名已被他人注册'
+    checkemail = {
+        'email':f_email,
+    }
+    posturl = 'http://www.51.ca/ajax/ajax_checkreg.php?'+match[0]+'&op=checkemail'
+    request = requests.post(posturl, data=checkemail, headers=headers)
+    text = request.content
+    text = json.loads(text)
+    if len(text['errmsg']) > 0:
+        return '邮箱已被他人注册'
     postData = {
         's':match[0],
-        'loginname':f_user,  
+        'loginname':f_user,
         'username' : f_user+'25',
         'password' : f_pass,  
         'passwordconfirm' :f_pass,
@@ -99,11 +138,13 @@ def submit_51(params):
         'action':'addmember'
                 }
     posturl='http://www.51.ca/my/register.php'
-    postData = urllib.urlencode(postData)
-    request = urllib2.Request(posturl, postData, headers)  
-    response = urllib2.urlopen(request)  
-    text = response.read()
-    return '注册成功'
+    request = requests.post(posturl, data=postData, headers=headers)
+    text = request.content
+    success = u'注册成功'.encode('gb2312')
+    if success in text:
+        return '注册成功'
+    else :
+        return '注册失败'
 
 
 def submit_mimi(params):
@@ -123,6 +164,29 @@ def submit_mimi(params):
     user=re.findall(r'type=\"text\" id=\"(.*?)\"',page)
     mima=re.findall(r'type=\"password\" id=\"(.*?)\"',page)
     femail=match[0].strip('\n')
+    check_url = 'http://forum.memehk.com/forum.php'
+    username_check = s.get(check_url,params={
+        'mod':'ajax',
+        'inajax':'yes',
+        'infloat':'register',
+        'handlekey':'register',
+        'ajaxmenu':'1',
+        'action':'checkusername',
+        'username':f_user
+        }, headers={'Referer': 'http://forum.memehk.com/member.php?mod=register'})
+    if 'CDATA[succeed]' not in username_check.content:
+        return '用户名已被他人注册'
+    email_check = s.get(check_url,params={
+        'mod':'ajax',
+        'inajax':'yes',
+        'infloat':'register',
+        'handlekey':'register',
+        'ajaxmenu':'1',
+        'action':'checkemail',
+        'email':f_email
+        }, headers={'Referer': 'http://forum.memehk.com/member.php?mod=register'})
+    if 'CDATA[succeed]' not in email_check.content:
+        return '邮箱已被他人注册'
     r=s.get(post_url,params={
         'mod':'seccode',
         'update':'26349',
@@ -151,9 +215,9 @@ def submit_mimi(params):
     text=r.content
     success = u'感謝您註冊'.encode('utf-8')
     if success in text:
-        return 'True'+u'注册成功'
+        return '注册成功'
     else:
-        return 'wrong'+u'注册失败'
+        return '注册失败'
 
 
 def submit_tianyi(params):
@@ -174,6 +238,29 @@ def submit_tianyi(params):
     user=re.findall(r'type=\"text\" id=\"(.*?)\"',page)
     mima=re.findall(r'type=\"password\" id=\"(.*?)\"',page)
     femail=match[0].strip('\n')
+    check_url = 'http://www.wolfax.com/forum.php'
+    username_check = s.get(check_url,params={
+        'mod':'ajax',
+        'inajax':'yes',
+        'infloat':'register',
+        'handlekey':'register',
+        'ajaxmenu':'1',
+        'action':'checkusername',
+        'username':f_user
+        }, headers={'Referer': 'http://www.wolfax.com/member.php?mod=register'})
+    if 'CDATA[succeed]' not in username_check.content:
+        return '用户名已被他人注册'
+    email_check = s.get(check_url,params={
+        'mod':'ajax',
+        'inajax':'yes',
+        'infloat':'register',
+        'handlekey':'register',
+        'ajaxmenu':'1',
+        'action':'checkemail',
+        'email':f_email
+        }, headers={'Referer': 'http://www.wolfax.com/member.php?mod=register'})
+    if 'CDATA[succeed]' not in email_check.content:
+        return '邮箱已被他人注册'
     r=s.get(post_url,params={
             'mod': 'secqaa',
             'action': 'update',
@@ -215,9 +302,9 @@ def submit_tianyi(params):
     text=r.content
     success = u'感谢您注册'.encode('utf-8')
     if success in text:
-        return 'True'+u'注册成功'
+        return '注册成功'
     else:
-        return 'wrong'+u'注册失败'
+        return '注册失败'
 
 
 def submit_wenxuecheng(params):
@@ -236,6 +323,16 @@ def submit_wenxuecheng(params):
     br.set_handle_referer(True)
     br.set_handle_robots(False)
     br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
+    url = 'http://www.wenxuecity.com/members/passport.php'
+    s=requests.session()
+    s.headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36' 
+    r=s.get(url,params={
+            'act':'checkusername',
+            'username':f_user,
+        }, headers={'Referer': 'http://www.wenxuecity.com/members/passport.php?act=register'})
+    page=r.content
+    if u'已经存在'.encode('utf-8') in page:
+        return '用户名已被他人注册'
     agent_header = ('User-agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36')
         # Step 1: Load post page.
     br.addheaders = [agent_header]
@@ -262,4 +359,7 @@ def submit_wenxuecheng(params):
     br["zipcode"]="555555"
     br["private_key"]=str(seccode)
     res = br.submit()
-    return 'True'+u'注册成功'
+    if len(br.response().read()) < 2500:
+        return '注册成功'
+    else:
+        return '邮箱已被他人注册'
