@@ -287,6 +287,11 @@ class AccoutRegisterHandler(tornado.web.RequestHandler):
             'password': params['password'],
             'email': params['email'],
         }
+        try:
+            src['proxies'] = {params['proxy_type']: params['proxy_type'] + '://' + params['proxy_ip'] + ':' + params['proxy_port']}
+            print src['proxies']
+        except:
+            src['proxies'] = ''
         real_submit = getattr(register_handler,'submit_' + config.account_rule[params['website']])
         result = real_submit(src)
         return result
