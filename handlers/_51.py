@@ -11,7 +11,7 @@ from utils import *
 # Coding: utf8
 # Captcha: not required
 # Login: required
-def login_51_forum(post_url, s, src):
+def login_51_forum(sess, src):
     """51资讯论坛登录模块
 
     @param sess:    requests.Session()
@@ -24,10 +24,10 @@ def login_51_forum(post_url, s, src):
     @rtype:            bool
 
     """
-    host = get_host(post_url)
+    host = 'http://bbs.51.ca/'
     
-    r = s.get(host + 'member.php?mod=logging&action=login')
-    soup = BeautifulSoup(r.content)
+    resp = sess.get(host + 'member.php?mod=logging&action=login')
+    soup = BeautifulSoup(resp.content)
     form = soup.find('form', attrs={'name': 'login'})
     payload = get_datadic(form)
     payload['loginfield'] = 'username'
@@ -35,9 +35,9 @@ def login_51_forum(post_url, s, src):
     payload['password'] = src['password']
     payload['questionid'] = 0
     payload['answer'] = ''
-    r = s.post(host + form['action'] + '&inajax=1', data=payload)
+    resp = sess.post(host + form['action'] + '&inajax=1', data=payload)
     # 若指定字样出现在response中，表示登录成功
-    if '欢迎您回来' not in r.content:
+    if '欢迎您回来' not in resp.content:
         return False
     return True
 
@@ -45,21 +45,21 @@ def reply_51_forum(post_url, src):
     
     logger = RAPLogger(post_url)
     host = get_host(post_url)
-    s = RAPSession(src)
+    sess = RAPSession(src)
 
     # 登录
-    if not login_51_forum(post_url, s, src):
-        logger.error(' Login Error')
+    if not login_51_forum(sess, src):
+        logger.error('Login Error')
         return (False, str(logger))
-    logger.info(' Login OK')
+    logger.info('Login OK')
 
-    r = s.get(post_url)
-    soup = BeautifulSoup(r.content)
+    resp = sess.get(post_url)
+    soup = BeautifulSoup(resp.content)
     form = soup.find('form', attrs={'id': 'fastpostform'})
     payload = get_datadic(form)
     payload['message'] = src['content']
-    r = s.post(host + form['action'] + '&inajax=1', data=payload)
-    if '对不起' in r.content:
+    resp = sess.post(host + form['action'] + '&inajax=1', data=payload)
+    if '对不起' in resp.content:
         logger.error('Reply Error')
         return (False, str(logger))
     logger.info('Reply OK')
@@ -88,36 +88,35 @@ def post_51_forum(post_url, src):
 
     """
     logger = RAPLogger(post_url)
-    s = RAPSession(src)
+    sess = RAPSession(src)
 
     # 登录
-    if not login_51_forum(post_url, s, src):
-        logger.error(' Login Error')
+    if not login_51_forum(sess, src):
+        logger.error('Login Error')
         return ('', str(logger))
-    logger.info(' Login OK')
+    logger.info('Login OK')
 
-    fid = re.findall(r'-(\d*)-', post_url)[0]
-    resp = s.get('http://bbs.51.ca/forum.php?mod=post&action=newthread&fid='+fid)
+    fid = re.findall(r'fid=(\d+)', post_url)[0]
+    resp = sess.get('http://bbs.51.ca/forum.php?mod=post&action=newthread&fid='+fid)
     soup = BeautifulSoup(resp.content)
     # 获得发帖form表单
     form = soup.find('form', attrs={'id': 'postform'})
 
     # 构造回复参数
     payload = get_datadic(form)
-    payload['posttime'] = random.randint(1000000000,9999999999)
+    payload['posttime'] = int(time.time()*1000)
     payload['wysiwyg'] = '1'
     payload['subject'] = src['subject']
     payload['message'] = src['content']
 
     #发送发主贴post包
-    resp = s.post('http://bbs.51.ca/forum.php?mod=post&action=newthread&fid='+fid+'&extra=&topicsubmit=yes', data=payload)
+    resp = sess.post('http://bbs.51.ca/forum.php?mod=post&action=newthread&fid='+fid+'&extra=&topicsubmit=yes', data=payload)
     # 若指定字样出现在response中，表示发帖成功
     if src['subject'] not in resp.content:
-        logger.error(' Post Error')
+        logger.error('Post Error')
         return ('', str(logger))
-    logger.info(' Post OK')
+    logger.info('Post OK')
     url = resp.url
-    print url
     return (url, str(logger))
     
 
@@ -261,5 +260,3 @@ def thumb_up_51(post_url, src):
         return (False, str(logger))
     logger.info('Thumb Up OK')
     return (True, str(logger))
-
-
