@@ -112,7 +112,7 @@ dispatch_rule = {
 website_rule = {
     '凯迪社区': ('kdnet', 'http://club.kdnet.net/list.asp?boardid=2'),
     '加国华人网论坛': ('1dpw_forum', 'http://bbs.1dpw.com/forum-71-1.html'),
-    '加国无忧论坛': ('51_forum', 'http://bbs.51.ca/forumdisplay.php?fid=40'),
+    '加国无忧论坛': ('51_forum', 'http://bbs.51.ca/forum-40-1.html'),
     '倍可亲论坛': ('backchina_forum', 'http://www.backchina.com/forum/37/index-1.html'),
     '万维论坛': ('creaders_forum', 'http://bbs.creaders.net/life/'),
     '多维博客': ('dwnews_blog', 'http://blog.dwnews.com/'),
@@ -133,12 +133,34 @@ praise_rule = {
     'comment\.news\.163\.com': '163',
     'quan\.sohu\.com': 'sohu',
     'coral\.qq\.com': 'qq',
+    'blog\.dwnews\.com': 'dwnews',
+    'bbs\.51\.ca': '51',
+    '(bbs|space)\.aboluowang\.com': 'aboluowang',
 }
 
 account_rule = {
-    '加国无忧论坛':'51',
-    '加拿大加易论坛':'jiayi',
-    '謎米香港论坛':'mimi',
-    '天易论坛':'tianyi',
-    '文学城论坛':'wenxuecheng',
+    '无忧':'51',
+    '加易':'jiayi',
+    '谜米':'mimi',
+    '天易':'tianyi',
+    '文学城':'wenxuecheng',
+}
+
+account_status_map = {
+        '凯迪': 'kdnet',
+        '文学城': 'wenxuecity_blog',
+        '无忧': '51_forum',
+        '加易': 'ieasy5_forum',
+        '天易': 'wolfax_forum',
+        '温哥华': 'vanhi_forum',
+        '谜米': 'memehk_forum',
+        '消息树': 'enewstree_forum',
+        '超级苹果': 'powerapple_forum',
+        '外来客': 'wailaike_forum',
+        '新浪': 'sina_club',
+        '欧浪': 'eulam_forum',
+        '加国华人网': '1dpw_forum',
+        '多维': 'dwnews_blog',
+        '阿波罗': 'aboluowang_forum',
+        '倍可亲': 'backchina_forum',
 }

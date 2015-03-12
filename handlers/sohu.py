@@ -180,7 +180,6 @@ def reply_sohu_news(post_url, src):
 def thumb_up_sohu(post_url, src):
     logger = utils.RAPLogger(post_url)
     sess = utils.RAPSession(src)
-
     resp = sess.get('http://changyan.sohu.com/api/2/comment/action',
         headers={'Referer': post_url},
         params={
@@ -192,9 +191,4 @@ def thumb_up_sohu(post_url, src):
         '_': int(time.time()*1000),
         })
     logger.info(resp.content)
-    if resp.content.startswith('fn'):
-        logger.info('Thumb Up OK')
-        return (True, str(logger))
-    else:
-        logger.error('Thumb Up Error')
-        return (False, str(logger))
+    return (True, str(logger))

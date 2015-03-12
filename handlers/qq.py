@@ -14,9 +14,7 @@ def thumb_up_qq(post_url, src):
         'callback': 'ding',
         })
     logger.info(resp.content)
-    if '"errCode":0' in resp.content:
-        logger.info('Thumb Up OK')
-        return (True, str(logger))
-    else:
-        logger.error('Thumb Up Error')
-        return (False, str(logger))
+    if 'Operation too frequent' in resp.content:
+        logger.info('Operation too frequent')
+        return(False, str(logger))
+    return (True, str(logger))

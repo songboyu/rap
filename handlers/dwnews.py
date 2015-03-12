@@ -249,3 +249,19 @@ def get_account_info_dwnews_blog(src):
     logger.info('Get account info OK')
     return (account_info, str(logger))
     
+def thumb_up_dwnews(post_url, src={}):
+    logger = utils.RAPLogger(post_url)
+    sess = utils.RAPSession(src)
+    resp = sess.get('http://blog.dwnews.com/index.php',
+             params={
+                'r': 'club/clubzan',
+                'id': re.findall('(\d+)', post_url)[0],
+                'type': 'nolikes' if src['extra']['like']=='false' or src['extra']['like']=='False' else 'likes',
+                'callback': '?',
+             })
+    logger.info(resp.content)
+    if 'success' not in resp.content:
+        logger.error('Thumb Up Error')
+        return (False, str(logger))
+    logger.info('Thumb Up OK')
+    return (True, str(logger))

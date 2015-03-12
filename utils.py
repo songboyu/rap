@@ -157,8 +157,7 @@ class RAPSession():
         # Fake user agent.
         self.s.headers['User-Agent'] = config.user_agent
         # Use proxies if have one.
-        if 'proxies' in src:
-            self.s.proxies = src['proxies']
+        self.s.proxies = src['proxies']
         # Set the max redirect times or it will take too long.
         self.s.max_redirects = config.max_redirects
         # timeout can only be set in http actions instead of session object.

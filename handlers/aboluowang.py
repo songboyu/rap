@@ -335,3 +335,45 @@ def upload_head_aboluowang_forum(src):
     else:
         logger.info('uploadavatar Error')
         return ('', str(logger))
+
+def thumb_up_aboluowang(post_url, src):
+    logger = RAPLogger(post_url)
+    s = RAPSession(src)
+
+    if not login_aboluowang(s, src['extra']):
+        logger.error('Login Error')
+        return (False, str(logger))
+    logger.info('Login OK')
+
+    r = s.get(post_url)
+    tid = re.findall('action=printable&amp;tid=(\d+)', r.content)[0].strip('\n')
+    # pid = re.findall('summary="pid(\d+)', r.content)[1].strip('\n')
+    pid = src['extra']['pid']
+    _hash = re.findall('name="formhash" value="(.*)"', r.content)[0].strip('\n')
+    url = 'http://bbs.aboluowang.com/forum.php'
+    r = s.get(post_url,
+        headers={'Referer':post_url,
+        'Host':'bbs.aboluowang.com',
+        'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36',
+        'X-Requested-With':'XMLHttpRequest',
+        'Accept':'*/*',
+        'Accept-Encoding':'gzip, deflate, sdch',
+        'Accept-Language':'zh-CN,zh;q=0.8',
+        'Connection':'keep-alive',
+        },
+        params={
+        'mod':'misc',
+        'action':'postreview',
+        'do':'against' if src['extra']['like']=='false' or src['extra']['like']=='False' else 'support',
+        'tid':tid,
+        'pid':pid,
+        'hash':_hash,
+        })
+    if '您已经对此回帖投过票了' in r.content:
+        logger.error('您已经对此回帖投过票了')
+        return (False, str(logger))
+    if '投票成功' not in r.content:
+        logger.error('Thumb Up Error')
+        return (False, str(logger))
+    logger.info('Thumb Up OK')
+    return (True, str(logger))

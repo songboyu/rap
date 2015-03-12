@@ -233,6 +233,7 @@ def upload_head_backchina_forum(src):
     resp = sess.get('http://www.backchina.com/home.php?mod=spacecp&ac=avatar')
     input = urllib.unquote(re.findall(r'input=(.*?)&',resp.content)[0])
     agent = re.findall(r'agent=(.*?)&',resp.content)[0]
+    head_url = re.findall(r'<td><img src="(.*?)"',resp.content)[0]
     print 'input:',input
     print 'agent:',agent
 
@@ -261,7 +262,7 @@ def upload_head_backchina_forum(src):
     print resp.content
     if 'success="1"' in resp.content:
         logger.info('uploadavatar OK')
-        return ('', str(logger))
+        return (head_url, str(logger))
     else:
         logger.info('uploadavatar Error')
         return ('', str(logger))

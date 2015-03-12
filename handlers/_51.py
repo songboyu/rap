@@ -26,13 +26,15 @@ def login_51_forum(post_url, s, src):
     """
     host = get_host(post_url)
     
-    r = s.get(host + 'logging.php?action=login')
+    r = s.get(host + 'member.php?mod=logging&action=login')
     soup = BeautifulSoup(r.content)
     form = soup.find('form', attrs={'name': 'login'})
     payload = get_datadic(form)
+    payload['loginfield'] = 'username'
     payload['username'] = src['username']
     payload['password'] = src['password']
-    payload['fastloginfield'] = 'username'
+    payload['questionid'] = 0
+    payload['answer'] = ''
     r = s.post(host + form['action'] + '&inajax=1', data=payload)
     # 若指定字样出现在response中，表示登录成功
     if '欢迎您回来' not in r.content:
@@ -94,8 +96,8 @@ def post_51_forum(post_url, src):
         return ('', str(logger))
     logger.info(' Login OK')
 
-    fid = re.findall(r'fid=(\d*)', post_url)[0]
-    resp = s.get('http://bbs.51.ca/post.php?action=newthread&fid='+fid)
+    fid = re.findall(r'-(\d*)-', post_url)[0]
+    resp = s.get('http://bbs.51.ca/forum.php?mod=post&action=newthread&fid='+fid)
     soup = BeautifulSoup(resp.content)
     # 获得发帖form表单
     form = soup.find('form', attrs={'id': 'postform'})
@@ -108,7 +110,7 @@ def post_51_forum(post_url, src):
     payload['message'] = src['content']
 
     #发送发主贴post包
-    resp = s.post('http://bbs.51.ca/post.php?action=newthread&fid='+fid+'&extra=&topicsubmit=yes', data=payload)
+    resp = s.post('http://bbs.51.ca/forum.php?mod=post&action=newthread&fid='+fid+'&extra=&topicsubmit=yes', data=payload)
     # 若指定字样出现在response中，表示发帖成功
     if src['subject'] not in resp.content:
         logger.error(' Post Error')
@@ -183,9 +185,10 @@ def upload_head_51_forum(src):
         return ('', str(logger))
     logger.info('Login OK')
 
-    resp = sess.get('http://bbs.51.ca/memcp.php?action=profile&typeid=3')
+    resp = sess.get('http://bbs.51.ca/home.php?mod=spacecp&ac=avatar')
     input = urllib.unquote(re.findall(r'input=(.*?)&',resp.content)[0])
     agent = re.findall(r'agent=(.*?)&',resp.content)[0]
+    head_url = re.findall(r'<td><img src="(.*?)"',resp.content)[0]
     print 'input:',input
     print 'agent:',agent
 
@@ -214,8 +217,49 @@ def upload_head_51_forum(src):
     print resp.content
     if 'success="1"' in resp.content:
         logger.info('uploadavatar OK')
-        return ('', str(logger))
+        return (head_url, str(logger))
     else:
         logger.info('uploadavatar Error')
         return ('', str(logger))
+
+def thumb_up_51(post_url, src):
+    logger = RAPLogger(post_url)
+    s = RAPSession(src)
+
+    if not login_51_forum(post_url, s, src['extra']):
+        logger.error(' Login Error')
+        return ('', str(logger))
+    logger.info(' Login OK')
+    r = s.get(post_url)
+    tid = re.findall('action=printable&amp;tid=(\d+)', r.content)[0].strip('\n')
+    # pid = re.findall('summary="pid(\d+)', r.content)[1].strip('\n')
+    pid = src['extra']['pid']
+    _hash = re.findall('name="formhash" value="(.*)"', r.content)[0].strip('\n')
+    r = s.get(post_url,
+        headers={'Referer':post_url,
+        'Host':'bbs.51.ca',
+        'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36',
+        'X-Requested-With':'XMLHttpRequest',
+        'Accept':'*/*',
+        'Accept-Encoding':'gzip, deflate, sdch',
+        'Accept-Language':'zh-CN,zh;q=0.8',
+        'Connection':'keep-alive',
+        },
+        params={
+        'mod':'misc',
+        'action':'postreview',
+        'do': 'against' if src['extra']['like']=='false' or src['extra']['like']=='False' else 'support',
+        'tid':tid,
+        'pid':pid,
+        'hash':_hash,
+        })
+    if '您已经对此回帖投过票了' in r.content:
+        logger.error('您已经对此回帖投过票了')
+        return (False, str(logger))
+    if '投票成功' not in r.content:
+        logger.error('Thumb Up Error')
+        return (False, str(logger))
+    logger.info('Thumb Up OK')
+    return (True, str(logger))
+
 

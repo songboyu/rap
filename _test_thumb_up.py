@@ -45,11 +45,27 @@ if __name__ == '__main__':
 
     # payload = {
     #     'url': 'http://coral.qq.com/1114873711',
-    #     'extra': {'target_url': 'http://w.coral.qq.com/article/comment/up/to/5980251539306531055'},
+    #     'extra': "{'target_url': 'http://w.coral.qq.com/article/comment/up/to/5980251539306531055'}",
+    #     # 'proxy_ip': '192.168.60.15',
+    #     # 'proxy_port': '808',
+    #     # 'proxy_type': 'http'
     # }
-    # r = requests.post('http://127.0.0.1:8888/praise', data=json.dumps(payload))
-    # print r.content
 
-    handlers.thumb_up_qq('http://coral.qq.com/1114873711', {'extra': {'target_url': 'http://w.coral.qq.com/article/comment/up/to/5980251539306531055'}})
-    # handlers.thumb_up_sohu('http://quan.sohu.com/pinglun/cyqemw6s1/409482113', {'extra1': '629659051', 'extra2': '507216872', 'proxies': ''})
-    # handlers.thumb_up_163('http://comment.news.163.com/news_guonei8_bbs/AKB1LEQK0001124J.html', {'extra1': 'http://comment.news.163.com/reply/upvote/news_guonei8_bbs/AKB1LEQK0001124J_AKBU4EI6', 'proxies': ''})
+    payload = {
+        'url': 'http://blog.dwnews.com/post-820332.html',
+        'extra': "{'like':'true'}"
+    }
+    
+
+    # payload = {
+    #     'url': 'http://bbs.51.ca/thread-627266-1-1.html',
+    #     'extra': "{'like':'true', 'pid': '3030614','username':'baiduqqsougou','password':'blueshit'}"
+    # }
+
+    # payload = {
+    #     'url': 'http://bbs.aboluowang.com/forum.php?mod=viewthread&tid=944219&extra=page%3D1',
+    #     'extra': "{'pid': '1170643','username':'kong0014','password':'h65352475'}",
+    # }
+
+    r = requests.post('http://127.0.0.1:7777/praise', data=payload)
+    print r.content

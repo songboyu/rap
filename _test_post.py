@@ -36,7 +36,7 @@ if __name__ == '__main__':
     import requests
     import json
     payload = {
-        'website': '多维博客',
+        'website': '加国无忧论坛',
         'title': '最最常见的家常菜，这才是家的味道',
         'article': """家常菜是家庭日常制作食用的菜肴，每道菜制作过程简单，用料简单，价格适中。虽比不得餐馆中的菜肴，吃起来却是熟悉的味道，更是妈妈的特色菜肴。今天这几道菜是最常见的菜色，想要学好烹饪的童鞋，不妨拿着几道菜练手。
         尖椒土豆丝
@@ -46,8 +46,8 @@ if __name__ == '__main__':
 2. 锅烧热放少许油，放入花椒粒转小火，捞出花椒粒，放入葱、蒜、红椒丝，炝锅。
 3. 大火放入土豆丝煸炒几下后，放入盐、烹入醋后快炒，翻炒至土豆丝炒熟，汤汁浓稠，加入尖椒丝翻炒均匀即可出锅。
 """,
-        'account': 'pusongcu61@163.com',
-        'password': 'Bvk117',
+        'account': 'baiduqqsougou',
+        'password': 'blueshit',
     }
-    r = requests.post('http://127.0.0.1:8888/post', data=json.dumps(payload))
+    r = requests.post('http://127.0.0.1:7777/post', data=payload)
     print r.content
