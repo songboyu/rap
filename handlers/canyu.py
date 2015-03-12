@@ -50,7 +50,10 @@ def reply_canyu(post_url, src):
     payload = get_datadic(form)
     payload['face'] = '1'
     payload['body'] = src['content'].decode('utf8').encode(CHARSET)
-    payload['username'] = src['username'].decode('utf8').encode(CHARSET)
+    if 'nickname' in src:
+        payload['username'] = src['nickname'].decode('utf8').encode(CHARSET)
+    else:
+        payload['username'] = u'匿名'.encode(CHARSET)
     #发送post包
     resp = sess.post(host + form['action'], data=payload)
     #再次请求原网页，查看是否已经有回帖内容

@@ -49,7 +49,10 @@ def reply_cenews(post_url, src):
     payload = {}
     payload = get_datadic(form)
     payload['comment'] = src['content']
-    payload['author'] = src['username']
+    if 'nickname' in src:
+        payload['author'] = src['nickname']
+    else:
+        payload['author'] = '匿名'
     #发送post包
     resp = sess.post(form['action'], data=payload)
     #再次请求原网页，查看是否已经有回帖内容
