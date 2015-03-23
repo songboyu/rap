@@ -37,15 +37,17 @@ def login_qq(sess, src):
     par = {
         'appid'             : '549000912',
         'js_type'           : 1,
-        'js_ver'            : 10076,
+        'js_ver'            : 10116,
         'login_sig'         : login_sig,
         'r'                 : 0.8861454421075537,
         'regmaster'         : "",
+        'pt_tea'            : "1",
         'u1'                : "http://qzs.qq.com/qzone/v5/loginsucc.html?para=izone",
         'uin'               : src['username']
     }
     resp = sess.get('http://check.ptlogin2.qq.com/check',params = par)
-    _, vcode, uin = re.findall("'([^']+)'", resp.content)
+    print resp.content
+    _, vcode, uin,_,_ = re.findall(r'\'(.*?)\'', resp.content)
     url = 'http://captcha.qq.com/getimage?uin='+src['username']+'&aid=549000912&cap_cd='+vcode+'&0.5720198110211641'
     resp = sess.get(url,headers={
                               'Accept': config.accept_image,
@@ -58,7 +60,7 @@ def login_qq(sess, src):
     'verifycode' : seccode,
     'pt_vcode_v1' : 0,
     'pt_verifysession_v1':sess.s.cookies['verifysession'],
-    'p' : getPwd(src['password'],uin,vcode),
+    'p' : getPwd(src['password'],uin,seccode),
     'pt_randsalt': 0,
     'u1':'http://qzs.qq.com/qzone/v5/loginsucc.html?para=izone',
     'ptredirect':0,
@@ -81,7 +83,9 @@ def login_qq(sess, src):
         print k, v
     resp = sess.get('http://ptlogin2.qq.com/login',params = payload)
     print resp.content
-    return True
+    if '登录成功' in resp.content:
+        return True
+    return False
 
 
 def to_bytes(n, length, endianess='big'):
