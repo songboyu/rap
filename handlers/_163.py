@@ -13,7 +13,6 @@ import re
 import time
 import urllib
 import json
-import urllib
 
 from bs4 import BeautifulSoup
 
