@@ -24,6 +24,8 @@ dispatch_rule = {
     'www\.inmediahk\.net/':('inmediahk','OUT'),
     # kdnet
     'club\.kdnet\.net/': ('kdnet', 'IN'),
+    # sciencenet
+    'bbs\.sciencenet\.cn/': ('sciencenet', 'IN'),
     # 163
     'blog\.163\.com/': ('163_blog', 'IN'),
     '(view|news)\.163\.com/[0-9]': ('163_news', 'IN'),
