@@ -70,10 +70,10 @@ if __name__ == '__main__':
     import requests
     import json
     payload = {
-        'url': 'http://xujingbo2012.blog.163.com/blog/static/20373520020152811300171/?touping',
+        'url': 'http://bbs.51.ca/thread-626875-1-1.html',
         'content': '俄前副总理遇害案第六名嫌犯引爆炸弹自尽',
-        'account': 'kulala1982',
-        'password': '13936755635',
+        'account': 'baiduqqsougou',
+        'password': 'blueshit',
     }
     r = requests.post('http://127.0.0.1:7777/comment', data=payload)
     print r.content

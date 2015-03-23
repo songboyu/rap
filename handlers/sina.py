@@ -107,11 +107,69 @@ def login_sina(sess,src):
         print 'reason: '+ urllib.unquote(reason).decode('GBK')
         return False
 
+def post_sina_blog(post_url, src):
+    """ 新浪博客发帖函数
+
+    @param post_url:   板块地址 blog.sina.com.cn
+    @type post_url:    str
+
+    @param src:        用户名，密码，等等。
+    @type src:         dict
+
+    @return:           是否发帖成功
+    @rtype:            bool
+
+    """
+    logger = utils.RAPLogger(post_url)
+    sess = utils.RAPSession(src)
+
+    # Step 1: 登录
+    if not login_sina(sess, src):
+        logger.error(' Login Error')
+        return (False, str(logger))
+    logger.info(' Login OK')
+
+    resp = sess.get('http://control.blog.sina.com.cn/admin/article/article_add.php')
+
+    soup = BeautifulSoup(resp.content)
+    # 获取回复form
+    form = soup.find('form', attrs={'id': 'editorForm'})
+    payload = utils.get_datadic(form)
+    payload['blog_title'] = src['subject']
+    payload['blog_body'] = src['content']
+    payload['conlen'] = 9
+    payload['x_cms_flag'] = 0
+    payload['x_rank'] = ''
+    print payload
+    resp = sess.post(form['action'], data=payload)
+    jsonData = json.loads(resp.content)
+    print jsonData
+    while jsonData['code'] == 'B06013' and src['TTL']:
+        src['TTL'] = src['TTL']-1
+        captcha = sess.get('http://interface.blog.sina.com.cn/riaapi/checkwd_image.php?r=0.8578676988836378',
+                              headers={
+                                  'Accept': config.accept_image
+                              })
+        # 获取验证码字符串
+        seccode = utils.crack_captcha(captcha.content)
+        logger.info(' captcha:' + seccode)
+        payload['checkword'] = seccode
+
+        resp = sess.post(form['action'], data=payload)
+        jsonData = json.loads(resp.content)
+        print jsonData
+        if jsonData['code'] == 'B06001':
+            url = 'http://blog.sina.com.cn/s/blog_'+jsonData['data']+'.html'
+            logger.info(' Post OK')
+            return (url, str(logger))
+
+    logger.info(' Post Error')
+    return ('', str(logger))
 
 def reply_sina_club(post_url, src):
     """ 新浪论坛回复函数
 
-        - Name:     新浪论坛
+        - Name:     新浪论坛18646492184
         - Feature:  (forum|club).*.sina.com.cn
         - Captcha:  YES
         - Login:    YES
@@ -218,9 +276,9 @@ def reply_sina_news(post_url, src):
 
     # Step 2: 回复
     # 频道id
-    channel = re.findall(r'channel:\'(.*?)\'', resp.content)[0]
+    channel = re.findall(r'channel:.*\'(.*?)\'', resp.content)[0]
     # 新闻id
-    newsid = re.findall(r'newsid:\'(.*?)\'', resp.content)[0]
+    newsid = re.findall(r'newsid:.*\'(.*?)\'', resp.content)[0]
 
     # 构造回复参数
     payload = {

@@ -17,6 +17,24 @@ chaoren_password = '1qazxsw2'
 
 # URL dispatch
 dispatch_rule = {
+    # # IN
+    # r'163\.com/\d+/\d+/\d+/\w+\.html': ('163_news', 'IN', '网易', 'http://news.163.com/'),
+    # r'163\.com/blog/static/\d+': ('163_blog', 'IN', '网易', 'http://blog.163.com/'),
+    # r'163\.com/bbs/\w+/\d+\.html': ('163_bbs', 'IN', '网易', 'http://bbs.163.com/'),
+
+    # r'kdnet\.net/dispbbs\.asp': ('kdnet', 'IN', '凯迪', 'http://club.kdnet.net/'),
+
+    # r'sina\.com\.cn/(\w+/)*\d\d\d\d-\d\d-\d\d/\w+\.shtml': ('sina_news', 'IN', '新浪', 'http://news.sina.com.cn/'),
+    # r'sina\.com\.cn/((\w+/)*thread-\d+-\d-\d\.html|viewthread\.php)': ('sina_club', 'IN', '新浪', 'http://bbs.sina.com.cn/'),
+
+    # r'sohu\.com/\d{8}/\w+\.shtml': ('sohu_news', 'IN', '搜狐', 'http://news.sohu.com/'),
+
+    # # OUT
+    # r'dwnews\.com/news/\d\d\d\d-\d\d-\d\d/\d+\.html': ('dwnews_news', 'OUT', '多维', 'http://www.dwnews.com/'),
+    # r'dwnews\.com/post-\d+\.html': ('dwnews_blog', 'OUT', '多维', 'http://blog.dwnews.com/'),
+
+    'csdn\.net': ('csdn_blog', 'IN'),
+
     # By HSS
     # unitedtimes
     'unitedtimes\.com\.au/':('unitedtimes','OUT'),
@@ -33,6 +51,7 @@ dispatch_rule = {
     # sina
     '(forum|club).*\.sina\.com\.cn': ('sina_club', 'IN'),
     '^http://[^(c|f)].*\.sina\.com\.cn/': ('sina_news', 'IN'),
+    'blog\.sina\.com\.cn/': ('sina_blog', 'IN'),
     # sohu
     'news\.sohu\.com/':('sohu_news','IN'),
     # enewstree
@@ -114,7 +133,7 @@ dispatch_rule = {
 website_rule = {
     '凯迪社区': ('kdnet', 'http://club.kdnet.net/list.asp?boardid=2'),
     '加国华人网论坛': ('1dpw_forum', 'http://bbs.1dpw.com/forum-71-1.html'),
-    '加国无忧论坛': ('51_forum', 'http://bbs.51.ca/forumdisplay.php?fid=40'),
+    '加国无忧论坛': ('51_forum', 'http://bbs.51.ca/forum-40-1.html'),
     '倍可亲论坛': ('backchina_forum', 'http://www.backchina.com/forum/37/index-1.html'),
     '万维论坛': ('creaders_forum', 'http://bbs.creaders.net/life/'),
     '多维博客': ('dwnews_blog', 'http://blog.dwnews.com/'),
@@ -135,12 +154,35 @@ praise_rule = {
     'comment\.news\.163\.com': '163',
     'quan\.sohu\.com': 'sohu',
     'coral\.qq\.com': 'qq',
+    'blog\.dwnews\.com': 'dwnews',
+    'bbs\.51\.ca': '51',
+    '(bbs|space)\.aboluowang\.com': 'aboluowang',
 }
 
 account_rule = {
-    '加国无忧论坛':'51',
-    '加拿大加易论坛':'jiayi',
-    '謎米香港论坛':'mimi',
-    '天易论坛':'tianyi',
-    '文学城论坛':'wenxuecheng',
+    '无忧':'51',
+    '加易':'jiayi',
+    '谜米':'mimi',
+    '天易':'tianyi',
+    '文学城':'wenxuecheng',
+}
+
+account_status_map = {
+    '网易': '163_bbs',
+    '凯迪': 'kdnet',
+    '文学城': 'wenxuecity_blog',
+    '无忧': '51_forum',
+    '加易': 'ieasy5_forum',
+    '天易': 'wolfax_forum',
+    '温哥华': 'vanhi_forum',
+    '谜米': 'memehk_forum',
+    '消息树': 'enewstree_forum',
+    '超级苹果': 'powerapple_forum',
+    '外来客': 'wailaike_forum',
+    '新浪': 'sina_club',
+    '欧浪': 'eulam_forum',
+    '加国华人网': '1dpw_forum',
+    '多维': 'dwnews_blog',
+    '阿波罗': 'aboluowang_forum',
+    '倍可亲': 'backchina_forum',
 }

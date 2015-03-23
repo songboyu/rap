@@ -14,4 +14,7 @@ def thumb_up_qq(post_url, src):
         'callback': 'ding',
         })
     logger.info(resp.content)
+    if 'Operation too frequent' in resp.content:
+        logger.info('Operation too frequent')
+        return(False, str(logger))
     return (True, str(logger))
