@@ -11,7 +11,6 @@ import sys
 # socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1080)
 # socket.socket = socks.socksocket
 
-
 def post(post_url, src):
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
     handler = logging.handlers.TimedRotatingFileHandler('log/log', 'D', 1, 0)

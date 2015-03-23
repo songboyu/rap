@@ -3,6 +3,7 @@ import re
 import time
 import hashlib
 
+import PyV8
 import requests
 from bs4 import BeautifulSoup
 
@@ -57,7 +58,7 @@ def login_qq(sess, src):
     'verifycode' : seccode,
     'pt_vcode_v1' : 0,
     'pt_verifysession_v1':sess.s.cookies['verifysession'],
-    'p' : getPwd(src['password'],src['username'],vcode),
+    'p' : getPwd(src['password'],uin,vcode),
     'pt_randsalt': 0,
     'u1':'http://qzs.qq.com/qzone/v5/loginsucc.html?para=izone',
     'ptredirect':0,
@@ -79,7 +80,7 @@ def login_qq(sess, src):
     for k,v in payload.items():
         print k, v
     resp = sess.get('http://ptlogin2.qq.com/login',params = payload)
-    print resp.content.decode('utf-8').encode('gbk')
+    print resp.content
     return True
 
 
@@ -89,14 +90,16 @@ def to_bytes(n, length, endianess='big'):
     return s if endianess == 'big' else s[::-1]
 
 
-def getPwd(pwd,qq,vcode):
-    str2 = hashlib.md5(pwd.encode())
-    str2 = str2.digest()
-    str2 = hashlib.md5((str2 + to_bytes(int(qq),8, "big")))
-    str2 = str2.hexdigest().upper()
-    str2 = hashlib.md5((str2 + vcode.upper()).encode())
-    return str2.hexdigest().upper()
-
+def getPwd(pwd,salt,vcode):
+    ctxt = PyV8.JSContext()
+    ctxt.enter()
+    for fname in ['rsa.js', 'tea.js', 'encrypt.js']:
+        with open('js/' + fname) as f:
+            ctxt.eval(f.read())
+    code = '$.Encryption.getEncryption("%s", "%s", "%s", false)' % (pwd, salt, vcode)
+    final_pwd = ctxt.eval(code)
+    print final_pwd
+    return final_pwd
 
 def post_qq_blog(post_url, src):
     """ 网易博客发帖函数
