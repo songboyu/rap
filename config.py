@@ -31,6 +31,7 @@ dispatch_rule = {
     # sina
     '(forum|club).*\.sina\.com\.cn': ('sina_club', 'IN'),
     '^http://[^(c|f)].*\.sina\.com\.cn/': ('sina_news', 'IN'),
+    'blog\.sina\.com\.cn/': ('sina_blog', 'IN'),
     # sohu
     'news\.sohu\.com/':('sohu_news','IN'),
     # enewstree

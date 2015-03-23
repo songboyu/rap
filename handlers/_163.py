@@ -12,6 +12,8 @@
 import re
 import time
 import urllib
+import json
+import urllib
 
 from bs4 import BeautifulSoup
 
@@ -159,6 +161,61 @@ def reply_163_blog(post_url, src):
     logger.info(' Reply OK')
     return (True, str(logger))
 
+def post_163_blog(post_url, src):
+    """ 网易博客发帖函数
+
+    @param post_url:   板块地址 blog.163.com
+    @type post_url:    str
+
+    @param src:        用户名，密码，回复内容，等等。
+    @type src:         dict
+
+    @return:           是否发帖成功
+    @rtype:            bool
+
+    """
+    logger = utils.RAPLogger(post_url)
+    sess = utils.RAPSession(src)
+
+    # Step 1: 登录
+    if not login_163(sess, src):
+        logger.error(' Login Error')
+        return (False, str(logger))
+    logger.info(' Login OK')
+    username = src['username'].split('@')[0]
+    resp = sess.get('http://'+username+'.blog.163.com/blog/getBlog.do?fromString=bloglist')
+    parentId = re.findall(r'parentId=(\d+)',resp.content)[0]
+    soup = BeautifulSoup(resp.content)
+    # 获取回复form
+    form = soup.find('form', attrs={'target': 'blog-163-com-post'})
+    payload = utils.get_datadic(form)
+    payload['title'] = src['subject']
+    payload['HEContent'] = src['content']+'<wbr>'
+    print payload
+    url = 'http://api.blog.163.com/'+username+'/editBlogNew.do?p=1&n=1&from=bloglist'
+    resp = sess.post(url, data=payload)
+    print resp.content
+    sfx = re.findall(r'sfx:\'(.*?)\'',resp.content)[0]
+    while sfx == '/' and src['TTL']:
+        src['TTL'] = src['TTL']-1
+        captcha = sess.get('http://api.blog.163.com/cap/captcha.jpgx?parentId='+parentId+'&r=308985',
+                              headers={
+                                  'Accept': config.accept_image
+                              })
+        # 获取验证码字符串
+        seccode = utils.crack_captcha(captcha.content)
+        logger.info(' captcha:' + seccode)
+        payload['valcodeKey'] = seccode
+
+        resp = sess.post(url, data=payload)
+        print resp.content
+        sfx = re.findall(r'sfx:\'(.*?)\'',resp.content)[0]
+        if sfx != '/':
+            blog_url = 'http://'+username+'.blog.163.com/' + sfx
+            logger.info(' Post OK')
+            return (blog_url, str(logger))
+    logger.info(' Post Error')
+    return ('', str(logger))
 
 def reply_163_news(post_url, src):
     """ 网易新闻回复函数
