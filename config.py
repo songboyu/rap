@@ -17,6 +17,24 @@ chaoren_password = '1qazxsw2'
 
 # URL dispatch
 dispatch_rule = {
+    # # IN
+    # r'163\.com/\d+/\d+/\d+/\w+\.html': ('163_news', 'IN', '网易', 'http://news.163.com/'),
+    # r'163\.com/blog/static/\d+': ('163_blog', 'IN', '网易', 'http://blog.163.com/'),
+    # r'163\.com/bbs/\w+/\d+\.html': ('163_bbs', 'IN', '网易', 'http://bbs.163.com/'),
+
+    # r'kdnet\.net/dispbbs\.asp': ('kdnet', 'IN', '凯迪', 'http://club.kdnet.net/'),
+
+    # r'sina\.com\.cn/(\w+/)*\d\d\d\d-\d\d-\d\d/\w+\.shtml': ('sina_news', 'IN', '新浪', 'http://news.sina.com.cn/'),
+    # r'sina\.com\.cn/((\w+/)*thread-\d+-\d-\d\.html|viewthread\.php)': ('sina_club', 'IN', '新浪', 'http://bbs.sina.com.cn/'),
+
+    # r'sohu\.com/\d{8}/\w+\.shtml': ('sohu_news', 'IN', '搜狐', 'http://news.sohu.com/'),
+
+    # # OUT
+    # r'dwnews\.com/news/\d\d\d\d-\d\d-\d\d/\d+\.html': ('dwnews_news', 'OUT', '多维', 'http://www.dwnews.com/'),
+    # r'dwnews\.com/post-\d+\.html': ('dwnews_blog', 'OUT', '多维', 'http://blog.dwnews.com/'),
+
+    'csdn\.net': ('csdn_blog', 'IN'),
+
     # By HSS
     # unitedtimes
     'unitedtimes\.com\.au/':('unitedtimes','OUT'),
