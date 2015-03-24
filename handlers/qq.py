@@ -79,20 +79,13 @@ def login_qq(sess, src):
     'pt_qzone_sig':1,
     '':''
     }
-    for k,v in payload.items():
-        print k, v
+    # for k,v in payload.items():
+    #     print k, v
     resp = sess.get('http://ptlogin2.qq.com/login',params = payload)
     print resp.content
     if '登录成功' in resp.content:
         return True
     return False
-
-
-def to_bytes(n, length, endianess='big'):
-    h = '%x' % n
-    s = ('0'*(len(h) % 2) + h).zfill(length*2).decode('hex')
-    return s if endianess == 'big' else s[::-1]
-
 
 def getPwd(pwd,salt,vcode):
     ctxt = PyV8.JSContext()
@@ -102,11 +95,11 @@ def getPwd(pwd,salt,vcode):
             ctxt.eval(f.read())
     code = '$.Encryption.getEncryption("%s", "%s", "%s", false)' % (pwd, salt, vcode)
     final_pwd = ctxt.eval(code)
-    print final_pwd
+    # print final_pwd
     return final_pwd
 
 def post_qq_blog(post_url, src):
-    """ 网易博客发帖函数
+    """ QQ空间发帖函数
 
     @param post_url:   板块地址 blog.163.com
     @type post_url:    str
@@ -126,8 +119,48 @@ def post_qq_blog(post_url, src):
         logger.error(' Login Error')
         return (False, str(logger))
     logger.info(' Login OK')
-    return ('', str(logger))
 
+    payload = {
+        'qzreferrer':'http://edu.qzs.qq.com/qzone/newblog/v5/editor.html#opener=refererurl&source=1&refererurl=http%3A%2F%2Fedu.qzs.qq.com%2Fqzone%2Fapp%2Fblog%2Fv6%2Fbloglist.html%23nojump%3D1%26page%3D1%26catalog%3Dlist',
+        'cate':'个人日记',
+        'title':src['subject'],
+        'html':'<div class="blog_details_20120222"><div>&nbsp;'+src['content']+'<br></div></div>',
+        'source':1,
+        'blogType':0,
+        'lp_type':0,
+        'lp_flag':0,
+        'lp_id':81177,
+        'lp_style':16843520,
+        'autograph':1,
+        'topFlag':0,
+        'feeds':1,
+        'tweetFlag':0,
+        'rightType':1,
+        'uin':src['username'],
+        'hostUin':src['username'],
+        'iNotice':1,
+        'inCharset':'utf-8',
+        'outCharset':'utf-8',
+        'format':'fs',
+        'ref':'qzone',
+        'json':1,
+        'g_tk':getToken(sess)
+    }
+    print getToken(sess)
+    resp = sess.post('http://b1.edu.qzone.qq.com/cgi-bin/blognew/add_blog?g_tk='+str(getToken(sess)), data=payload)
+    if '发表成功' not in resp.content:
+        logger.error(' Post Error')
+        return ('', str(logger))
+    blogId = re.findall(r'"blogid":(\d+)',resp.content)[0]
+    logger.error(' Post OK')
+    return ('http://user.qzone.qq.com/'+src['username']+'/2/'+blogId, str(logger))
+
+def getToken(sess):
+    b = sess.s.cookies['skey'] or sess.s.cookies['rv2']
+    a = 5381
+    for c in range(0,len(b)):
+        a += (a << 5) + ord(b[c])
+    return a & 2147483647
 
 def thumb_up_qq(post_url, src):
     logger = utils.RAPLogger(post_url)
