@@ -53,11 +53,7 @@ def post_csdn_blog(post_url, src):
         'stat': 'publish',
     }
     resp = sess.post('http://write.blog.csdn.net/postedit?edit=1&isPub=1&joinblogcontest=undefined&r=' + str(random.random()), data=payload)
-    if '保存成功' not in resp.content:
+    if '发布成功' not in resp.content:
         logger.error('Post Error')
         return ('', str(logger))
-    resp = sess.get('http://write.blog.csdn.net/postlist')
-    subject = re.escape(src['subject'])
-    url = re.findall(r'href=\'(.*?)\' target=_blank>' + subject, resp.content)[0]
-    logger.info('Post OK')
-    return (url, str(logger))
+    return (resp.json()['data'], str(logger))
