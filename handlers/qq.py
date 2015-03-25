@@ -3,7 +3,7 @@ import re
 import time
 import hashlib
 
-import PyV8
+import execjs
 import requests
 from bs4 import BeautifulSoup
 
@@ -60,7 +60,7 @@ def login_qq(sess, src):
     'verifycode' : seccode,
     'pt_vcode_v1' : 0,
     'pt_verifysession_v1':sess.s.cookies['verifysession'],
-    'p' : getPwd(src['password'],uin,seccode),
+    'p' : get_pwd(src['password'],uin,seccode),
     'pt_randsalt': 0,
     'u1':'http://qzs.qq.com/qzone/v5/loginsucc.html?para=izone',
     'ptredirect':0,
@@ -87,16 +87,11 @@ def login_qq(sess, src):
         return True
     return False
 
-def getPwd(pwd,salt,vcode):
-    ctxt = PyV8.JSContext()
-    ctxt.enter()
-    for fname in ['rsa.js', 'tea.js', 'encrypt.js']:
-        with open('js/' + fname) as f:
-            ctxt.eval(f.read())
+def get_pwd(pwd,salt,vcode):
+    with open('js/qq.js') as f:
+        ctxt = execjs.compile(f.read())
     code = '$.Encryption.getEncryption("%s", "%s", "%s", false)' % (pwd, salt, vcode)
-    final_pwd = ctxt.eval(code)
-    # print final_pwd
-    return final_pwd
+    return ctxt.eval(code)
 
 def post_qq_blog(post_url, src):
     """ QQ空间发帖函数
