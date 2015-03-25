@@ -10,3 +10,4 @@ tornado
 rsa
 mechanize
 python-dateutil
+PyExecJS
