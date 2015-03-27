@@ -34,6 +34,7 @@ dispatch_rule = {
     # r'dwnews\.com/post-\d+\.html': ('dwnews_blog', 'OUT', '多维', 'http://blog.dwnews.com/'),
 
     'blog\.csdn\.net': ('csdn_blog', 'IN'),
+    'bbs\.csdn\.net': ('csdn_forum', 'IN'),
     'qq\.com': ('qq_blog', 'IN'),
     # By HSS
     # unitedtimes
