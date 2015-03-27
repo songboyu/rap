@@ -12,6 +12,7 @@
 import re
 import time
 from hashlib import md5
+import os,time
 
 from bs4 import BeautifulSoup
 
@@ -175,6 +176,65 @@ def reply_sohu_news(post_url, src):
     logger.info(resp.content)
     logger.info(' Reply OK')
     return (True, str(logger))
+
+
+def post_sohu_blog(post_url, src):
+    """ 搜狐博客发帖函数
+
+    @param post_url:   搜狐地址
+    @type post_url:    str
+
+    @param src:        用户名，密码，回复内容，等等。
+    @type src:         dict
+    
+    @return:           是否回复成功
+    @rtype:            bool
+
+    """
+    logger = utils.RAPLogger(post_url)
+    sess = utils.RAPSession(src)
+
+    # Step 1: 登录
+    if not login_sohu(sess, post_url, src):
+        logger.error(' Login Error')
+        return (False, str(logger))
+    logger.info(' Login OK')
+
+    # Step 2: 回复
+    payload ={
+        'oper':'art_ok',
+        'm':'save',
+        'shortcutFlag':'',
+        'contrChId':'',
+        'contrCataId':'',
+        'subflag':0,
+        'entrytitle':src['subject'].decode('utf-8').encode('gbk'),
+        'keywords':src['subject'].decode('utf-8').encode('gbk'),
+        'categoryId':0,
+        'newGategory':'',
+        'vc':'',
+        'entrycontent':src['content'].decode('utf-8').encode('gbk'),
+        'excerpt':'',
+        'allowComment':2,
+        'perm':0,
+        'postToGroup':'off'
+    }
+    reply_url = 'http://blog.sohu.com/manage/entry.do'
+    headers = {
+        'Host':'blog.sohu.com',
+        'Origin':'http://blog.sohu.com',
+        'Referer':'http://blog.sohu.com/manage/entry.do?m=add&t=shortcut',
+        'User-Agent':config.user_agent
+    }
+    resp = sess.post(reply_url, data=payload, headers=headers)
+    logger.info(' info: '+resp.url)
+    if u'秒钟后自动'.encode('gbk') not in resp.content:
+        logger.error(' Post Error')
+        return ('', str(logger))
+    resp = sess.post('http://blog.sohu.com/home/entry/list.htm')
+    blogId = re.findall(r'data-blogid="(\d+)"',resp.content)[0]
+    logger.info(' Post OK')
+    return ('http://bigdatabigbai.blog.sohu.com/'+blogId+'.html', str(logger))
 
 
 def thumb_up_sohu(post_url, src):

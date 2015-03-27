@@ -54,6 +54,7 @@ dispatch_rule = {
     'blog\.sina\.com\.cn/': ('sina_blog', 'IN'),
     # sohu
     'news\.sohu\.com/':('sohu_news','IN'),
+    'blog\.sohu\.com/':('sohu_blog','IN'),
     # enewstree
     'enewstree\.com/discuz/forum':('enewstree_forum','OUT'),
     # 1dpw
