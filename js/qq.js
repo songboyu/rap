@@ -1,4 +1,4 @@
-
+///////////////////////////////////////////////////////////////////////////////
 $ = function () {}
 window = function () {}
 navigator = function() {}
@@ -868,5 +868,636 @@ $.RSA = function () {
   }
   return {
     rsa_encrypt: U
+  }
+}();
+
+///////////////////////////////////////////////////////////////////////////////
+(function (t) {
+  var u = '',
+  a = 0,
+  h = [
+  ],
+  z = [
+  ],
+  A = 0,
+  w = 0,
+  o = [
+  ],
+  v = [
+  ],
+  p = true;
+  function f() {
+    return Math.round(Math.random() * 4294967295)
+  }
+  function k(E, F, B) {
+    if (!B || B > 4) {
+      B = 4
+    }
+    var C = 0;
+    for (var D = F; D < F + B; D++) {
+      C <<= 8;
+      C |= E[D]
+    }
+    return (C & 4294967295) >>> 0
+  }
+  function b(C, D, B) {
+    C[D + 3] = (B >> 0) & 255;
+    C[D + 2] = (B >> 8) & 255;
+    C[D + 1] = (B >> 16) & 255;
+    C[D + 0] = (B >> 24) & 255
+  }
+  function y(E) {
+    if (!E) {
+      return ''
+    }
+    var B = '';
+    for (var C = 0; C < E.length; C++) {
+      var D = Number(E[C]).toString(16);
+      if (D.length == 1) {
+        D = '0' + D
+      }
+      B += D
+    }
+    return B
+  }
+  function x(C) {
+    var D = '';
+    for (var B = 0; B < C.length; B += 2) {
+      D += String.fromCharCode(parseInt(C.substr(B, 2), 16))
+    }
+    return D
+  }
+  function c(E, B) {
+    if (!E) {
+      return ''
+    }
+    if (B) {
+      E = m(E)
+    }
+    var D = [
+    ];
+    for (var C = 0; C < E.length; C++) {
+      D[C] = E.charCodeAt(C)
+    }
+    return y(D)
+  }
+  function m(E) {
+    var D,
+    F,
+    C = [
+    ],
+    B = E.length;
+    for (D = 0; D < B; D++) {
+      F = E.charCodeAt(D);
+      if (F > 0 && F <= 127) {
+        C.push(E.charAt(D))
+      } else {
+        if (F >= 128 && F <= 2047) {
+          C.push(String.fromCharCode(192 | ((F >> 6) & 31)), String.fromCharCode(128 | (F & 63)))
+        } else {
+          if (F >= 2048 && F <= 65535) {
+            C.push(String.fromCharCode(224 | ((F >> 12) & 15)), String.fromCharCode(128 | ((F >> 6) & 63)), String.fromCharCode(128 | (F & 63)))
+          }
+        }
+      }
+    }
+    return C.join('')
+  }
+  function j(D) {
+    h = new Array(8);
+    z = new Array(8);
+    A = w = 0;
+    p = true;
+    a = 0;
+    var B = D.length;
+    var E = 0;
+    a = (B + 10) % 8;
+    if (a != 0) {
+      a = 8 - a
+    }
+    o = new Array(B + a + 10);
+    h[0] = ((f() & 248) | a) & 255;
+    for (var C = 1; C <= a; C++) {
+      h[C] = f() & 255
+    }
+    a++;
+    for (var C = 0; C < 8; C++) {
+      z[C] = 0
+    }
+    E = 1;
+    while (E <= 2) {
+      if (a < 8) {
+        h[a++] = f() & 255;
+        E++
+      }
+      if (a == 8) {
+        r()
+      }
+    }
+    var C = 0;
+    while (B > 0) {
+      if (a < 8) {
+        h[a++] = D[C++];
+        B--
+      }
+      if (a == 8) {
+        r()
+      }
+    }
+    E = 1;
+    while (E <= 7) {
+      if (a < 8) {
+        h[a++] = 0;
+        E++
+      }
+      if (a == 8) {
+        r()
+      }
+    }
+    return o
+  }
+  function s(F) {
+    var E = 0;
+    var C = new Array(8);
+    var B = F.length;
+    v = F;
+    if (B % 8 != 0 || B < 16) {
+      return null
+    }
+    z = n(F);
+    a = z[0] & 7;
+    E = B - a - 10;
+    if (E < 0) {
+      return null
+    }
+    for (var D = 0; D < C.length; D++) {
+      C[D] = 0
+    }
+    o = new Array(E);
+    w = 0;
+    A = 8;
+    a++;
+    var G = 1;
+    while (G <= 2) {
+      if (a < 8) {
+        a++;
+        G++
+      }
+      if (a == 8) {
+        C = F;
+        if (!g()) {
+          return null
+        }
+      }
+    }
+    var D = 0;
+    while (E != 0) {
+      if (a < 8) {
+        o[D] = (C[w + a] ^ z[a]) & 255;
+        D++;
+        E--;
+        a++
+      }
+      if (a == 8) {
+        C = F;
+        w = A - 8;
+        if (!g()) {
+          return null
+        }
+      }
+    }
+    for (G = 1; G < 8; G++) {
+      if (a < 8) {
+        if ((C[w + a] ^ z[a]) != 0) {
+          return null
+        }
+        a++
+      }
+      if (a == 8) {
+        C = F;
+        w = A;
+        if (!g()) {
+          return null
+        }
+      }
+    }
+    return o
+  }
+  function r() {
+    for (var B = 0; B < 8; B++) {
+      if (p) {
+        h[B] ^= z[B]
+      } else {
+        h[B] ^= o[w + B]
+      }
+    }
+    var C = l(h);
+    for (var B = 0; B < 8; B++) {
+      o[A + B] = C[B] ^ z[B];
+      z[B] = h[B]
+    }
+    w = A;
+    A += 8;
+    a = 0;
+    p = false
+  }
+  function l(B) {
+    var C = 16;
+    var H = k(B, 0, 4);
+    var G = k(B, 4, 4);
+    var J = k(u, 0, 4);
+    var I = k(u, 4, 4);
+    var F = k(u, 8, 4);
+    var E = k(u, 12, 4);
+    var D = 0;
+    var K = 2654435769 >>> 0;
+    while (C-- > 0) {
+      D += K;
+      D = (D & 4294967295) >>> 0;
+      H += ((G << 4) + J) ^ (G + D) ^ ((G >>> 5) + I);
+      H = (H & 4294967295) >>> 0;
+      G += ((H << 4) + F) ^ (H + D) ^ ((H >>> 5) + E);
+      G = (G & 4294967295) >>> 0
+    }
+    var L = new Array(8);
+    b(L, 0, H);
+    b(L, 4, G);
+    return L
+  }
+  function n(B) {
+    var C = 16;
+    var H = k(B, 0, 4);
+    var G = k(B, 4, 4);
+    var J = k(u, 0, 4);
+    var I = k(u, 4, 4);
+    var F = k(u, 8, 4);
+    var E = k(u, 12, 4);
+    var D = 3816266640 >>> 0;
+    var K = 2654435769 >>> 0;
+    while (C-- > 0) {
+      G -= ((H << 4) + F) ^ (H + D) ^ ((H >>> 5) + E);
+      G = (G & 4294967295) >>> 0;
+      H -= ((G << 4) + J) ^ (G + D) ^ ((G >>> 5) + I);
+      H = (H & 4294967295) >>> 0;
+      D -= K;
+      D = (D & 4294967295) >>> 0
+    }
+    var L = new Array(8);
+    b(L, 0, H);
+    b(L, 4, G);
+    return L
+  }
+  function g() {
+    var B = v.length;
+    for (var C = 0; C < 8; C++) {
+      z[C] ^= v[A + C]
+    }
+    z = n(z);
+    A += 8;
+    a = 0;
+    return true
+  }
+  function q(F, E) {
+    var D = [
+    ];
+    if (E) {
+      for (var C = 0; C < F.length; C++) {
+        D[C] = F.charCodeAt(C) & 255
+      }
+    } else {
+      var B = 0;
+      for (var C = 0; C < F.length; C += 2) {
+        D[B++] = parseInt(F.substr(C, 2), 16)
+      }
+    }
+    return D
+  }
+  t.TEA = {
+    encrypt: function (E, D) {
+      var C = q(E, D);
+      var B = j(C);
+      return y(B)
+    },
+    enAsBase64: function (G, F) {
+      var E = q(G, F);
+      var D = j(E);
+      var B = '';
+      for (var C = 0; C < D.length; C++) {
+        B += String.fromCharCode(D[C])
+      }
+      return t.btoa(B)
+    },
+    decrypt: function (D) {
+      var C = q(D, false);
+      var B = s(C);
+      return y(B)
+    },
+    initkey: function (B, C) {
+      u = q(B, C)
+    },
+    bytesToStr: x,
+    strToBytes: c,
+    bytesInStr: y,
+    dataFromStr: q
+  };
+  var d = {
+  };
+  d.PADCHAR = '=';
+  d.ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  d.getbyte = function (D, C) {
+    var B = D.charCodeAt(C);
+    if (B > 255) {
+      throw 'INVALID_CHARACTER_ERR: DOM Exception 5'
+    }
+    return B
+  };
+  d.encode = function (F) {
+    if (arguments.length != 1) {
+      throw 'SyntaxError: Not enough arguments'
+    }
+    var C = d.PADCHAR;
+    var H = d.ALPHA;
+    var G = d.getbyte;
+    var E,
+    I;
+    var B = [
+    ];
+    F = '' + F;
+    var D = F.length - F.length % 3;
+    if (F.length == 0) {
+      return F
+    }
+    for (E = 0; E < D; E += 3) {
+      I = (G(F, E) << 16) | (G(F, E + 1) << 8) | G(F, E + 2);
+      B.push(H.charAt(I >> 18));
+      B.push(H.charAt((I >> 12) & 63));
+      B.push(H.charAt((I >> 6) & 63));
+      B.push(H.charAt(I & 63))
+    }
+    switch (F.length - D) {
+      case 1:
+        I = G(F, E) << 16;
+        B.push(H.charAt(I >> 18) + H.charAt((I >> 12) & 63) + C + C);
+        break;
+      case 2:
+        I = (G(F, E) << 16) | (G(F, E + 1) << 8);
+        B.push(H.charAt(I >> 18) + H.charAt((I >> 12) & 63) + H.charAt((I >> 6) & 63) + C);
+        break
+    }
+    return B.join('')
+  };
+  if (!t.btoa) {
+    t.btoa = d.encode
+  }
+}) ($);
+
+///////////////////////////////////////////////////////////////////////////////
+
+$.Encryption = function () {
+  var hexcase = 1;
+  var b64pad = '';
+  var chrsz = 8;
+  var mode = 32;
+  function md5(s) {
+    return hex_md5(s)
+  }
+  function hex_md5(s) {
+    return binl2hex(core_md5(str2binl(s), s.length * chrsz))
+  }
+  function str_md5(s) {
+    return binl2str(core_md5(str2binl(s), s.length * chrsz))
+  }
+  function hex_hmac_md5(key, data) {
+    return binl2hex(core_hmac_md5(key, data))
+  }
+  function b64_hmac_md5(key, data) {
+    return binl2b64(core_hmac_md5(key, data))
+  }
+  function str_hmac_md5(key, data) {
+    return binl2str(core_hmac_md5(key, data))
+  }
+  function core_md5(x, len) {
+    x[len >> 5] |= 128 << ((len) % 32);
+    x[(((len + 64) >>> 9) << 4) + 14] = len;
+    var a = 1732584193;
+    var b = - 271733879;
+    var c = - 1732584194;
+    var d = 271733878;
+    for (var i = 0; i < x.length; i += 16) {
+      var olda = a;
+      var oldb = b;
+      var oldc = c;
+      var oldd = d;
+      a = md5_ff(a, b, c, d, x[i + 0], 7, - 680876936);
+      d = md5_ff(d, a, b, c, x[i + 1], 12, - 389564586);
+      c = md5_ff(c, d, a, b, x[i + 2], 17, 606105819);
+      b = md5_ff(b, c, d, a, x[i + 3], 22, - 1044525330);
+      a = md5_ff(a, b, c, d, x[i + 4], 7, - 176418897);
+      d = md5_ff(d, a, b, c, x[i + 5], 12, 1200080426);
+      c = md5_ff(c, d, a, b, x[i + 6], 17, - 1473231341);
+      b = md5_ff(b, c, d, a, x[i + 7], 22, - 45705983);
+      a = md5_ff(a, b, c, d, x[i + 8], 7, 1770035416);
+      d = md5_ff(d, a, b, c, x[i + 9], 12, - 1958414417);
+      c = md5_ff(c, d, a, b, x[i + 10], 17, - 42063);
+      b = md5_ff(b, c, d, a, x[i + 11], 22, - 1990404162);
+      a = md5_ff(a, b, c, d, x[i + 12], 7, 1804603682);
+      d = md5_ff(d, a, b, c, x[i + 13], 12, - 40341101);
+      c = md5_ff(c, d, a, b, x[i + 14], 17, - 1502002290);
+      b = md5_ff(b, c, d, a, x[i + 15], 22, 1236535329);
+      a = md5_gg(a, b, c, d, x[i + 1], 5, - 165796510);
+      d = md5_gg(d, a, b, c, x[i + 6], 9, - 1069501632);
+      c = md5_gg(c, d, a, b, x[i + 11], 14, 643717713);
+      b = md5_gg(b, c, d, a, x[i + 0], 20, - 373897302);
+      a = md5_gg(a, b, c, d, x[i + 5], 5, - 701558691);
+      d = md5_gg(d, a, b, c, x[i + 10], 9, 38016083);
+      c = md5_gg(c, d, a, b, x[i + 15], 14, - 660478335);
+      b = md5_gg(b, c, d, a, x[i + 4], 20, - 405537848);
+      a = md5_gg(a, b, c, d, x[i + 9], 5, 568446438);
+      d = md5_gg(d, a, b, c, x[i + 14], 9, - 1019803690);
+      c = md5_gg(c, d, a, b, x[i + 3], 14, - 187363961);
+      b = md5_gg(b, c, d, a, x[i + 8], 20, 1163531501);
+      a = md5_gg(a, b, c, d, x[i + 13], 5, - 1444681467);
+      d = md5_gg(d, a, b, c, x[i + 2], 9, - 51403784);
+      c = md5_gg(c, d, a, b, x[i + 7], 14, 1735328473);
+      b = md5_gg(b, c, d, a, x[i + 12], 20, - 1926607734);
+      a = md5_hh(a, b, c, d, x[i + 5], 4, - 378558);
+      d = md5_hh(d, a, b, c, x[i + 8], 11, - 2022574463);
+      c = md5_hh(c, d, a, b, x[i + 11], 16, 1839030562);
+      b = md5_hh(b, c, d, a, x[i + 14], 23, - 35309556);
+      a = md5_hh(a, b, c, d, x[i + 1], 4, - 1530992060);
+      d = md5_hh(d, a, b, c, x[i + 4], 11, 1272893353);
+      c = md5_hh(c, d, a, b, x[i + 7], 16, - 155497632);
+      b = md5_hh(b, c, d, a, x[i + 10], 23, - 1094730640);
+      a = md5_hh(a, b, c, d, x[i + 13], 4, 681279174);
+      d = md5_hh(d, a, b, c, x[i + 0], 11, - 358537222);
+      c = md5_hh(c, d, a, b, x[i + 3], 16, - 722521979);
+      b = md5_hh(b, c, d, a, x[i + 6], 23, 76029189);
+      a = md5_hh(a, b, c, d, x[i + 9], 4, - 640364487);
+      d = md5_hh(d, a, b, c, x[i + 12], 11, - 421815835);
+      c = md5_hh(c, d, a, b, x[i + 15], 16, 530742520);
+      b = md5_hh(b, c, d, a, x[i + 2], 23, - 995338651);
+      a = md5_ii(a, b, c, d, x[i + 0], 6, - 198630844);
+      d = md5_ii(d, a, b, c, x[i + 7], 10, 1126891415);
+      c = md5_ii(c, d, a, b, x[i + 14], 15, - 1416354905);
+      b = md5_ii(b, c, d, a, x[i + 5], 21, - 57434055);
+      a = md5_ii(a, b, c, d, x[i + 12], 6, 1700485571);
+      d = md5_ii(d, a, b, c, x[i + 3], 10, - 1894986606);
+      c = md5_ii(c, d, a, b, x[i + 10], 15, - 1051523);
+      b = md5_ii(b, c, d, a, x[i + 1], 21, - 2054922799);
+      a = md5_ii(a, b, c, d, x[i + 8], 6, 1873313359);
+      d = md5_ii(d, a, b, c, x[i + 15], 10, - 30611744);
+      c = md5_ii(c, d, a, b, x[i + 6], 15, - 1560198380);
+      b = md5_ii(b, c, d, a, x[i + 13], 21, 1309151649);
+      a = md5_ii(a, b, c, d, x[i + 4], 6, - 145523070);
+      d = md5_ii(d, a, b, c, x[i + 11], 10, - 1120210379);
+      c = md5_ii(c, d, a, b, x[i + 2], 15, 718787259);
+      b = md5_ii(b, c, d, a, x[i + 9], 21, - 343485551);
+      a = safe_add(a, olda);
+      b = safe_add(b, oldb);
+      c = safe_add(c, oldc);
+      d = safe_add(d, oldd)
+    }
+    if (mode == 16) {
+      return Array(b, c)
+    } else {
+      return Array(a, b, c, d)
+    }
+  }
+  function md5_cmn(q, a, b, x, s, t) {
+    return safe_add(bit_rol(safe_add(safe_add(a, q), safe_add(x, t)), s), b)
+  }
+  function md5_ff(a, b, c, d, x, s, t) {
+    return md5_cmn((b & c) | ((~b) & d), a, b, x, s, t)
+  }
+  function md5_gg(a, b, c, d, x, s, t) {
+    return md5_cmn((b & d) | (c & (~d)), a, b, x, s, t)
+  }
+  function md5_hh(a, b, c, d, x, s, t) {
+    return md5_cmn(b ^ c ^ d, a, b, x, s, t)
+  }
+  function md5_ii(a, b, c, d, x, s, t) {
+    return md5_cmn(c ^ (b | (~d)), a, b, x, s, t)
+  }
+  function core_hmac_md5(key, data) {
+    var bkey = str2binl(key);
+    if (bkey.length > 16) {
+      bkey = core_md5(bkey, key.length * chrsz)
+    }
+    var ipad = Array(16),
+    opad = Array(16);
+    for (var i = 0; i < 16; i++) {
+      ipad[i] = bkey[i] ^ 909522486;
+      opad[i] = bkey[i] ^ 1549556828
+    }
+    var hash = core_md5(ipad.concat(str2binl(data)), 512 + data.length * chrsz);
+    return core_md5(opad.concat(hash), 512 + 128)
+  }
+  function safe_add(x, y) {
+    var lsw = (x & 65535) + (y & 65535);
+    var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+    return (msw << 16) | (lsw & 65535)
+  }
+  function bit_rol(num, cnt) {
+    return (num << cnt) | (num >>> (32 - cnt))
+  }
+  function str2binl(str) {
+    var bin = Array();
+    var mask = (1 << chrsz) - 1;
+    for (var i = 0; i < str.length * chrsz; i += chrsz) {
+      bin[i >> 5] |= (str.charCodeAt(i / chrsz) & mask) << (i % 32)
+    }
+    return bin
+  }
+  function binl2str(bin) {
+    var str = '';
+    var mask = (1 << chrsz) - 1;
+    for (var i = 0; i < bin.length * 32; i += chrsz) {
+      str += String.fromCharCode((bin[i >> 5] >>> (i % 32)) & mask)
+    }
+    return str
+  }
+  function binl2hex(binarray) {
+    var hex_tab = hexcase ? '0123456789ABCDEF' : '0123456789abcdef';
+    var str = '';
+    for (var i = 0; i < binarray.length * 4; i++) {
+      str += hex_tab.charAt((binarray[i >> 2] >> ((i % 4) * 8 + 4)) & 15) + hex_tab.charAt((binarray[i >> 2] >> ((i % 4) * 8)) & 15)
+    }
+    return str
+  }
+  function binl2b64(binarray) {
+    var tab = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+    var str = '';
+    for (var i = 0; i < binarray.length * 4; i += 3) {
+      var triplet = (((binarray[i >> 2] >> 8 * (i % 4)) & 255) << 16) | (((binarray[i + 1 >> 2] >> 8 * ((i + 1) % 4)) & 255) << 8) | ((binarray[i + 2 >> 2] >> 8 * ((i + 2) % 4)) & 255);
+      for (var j = 0; j < 4; j++) {
+        if (i * 8 + j * 6 > binarray.length * 32) {
+          str += b64pad
+        } else {
+          str += tab.charAt((triplet >> 6 * (3 - j)) & 63)
+        }
+      }
+    }
+    return str
+  }
+  function hexchar2bin(str) {
+    var arr = [
+    ];
+    for (var i = 0; i < str.length; i = i + 2) {
+      arr.push('\\x' + str.substr(i, 2))
+    }
+    arr = arr.join('');
+    eval('var temp = \'' + arr + '\'');
+    return temp
+  }
+  function __monitor(mid, probability) {
+    if (Math.random() > (probability || 1)) {
+      return
+    }
+    // var url = location.protocol + '//ui.ptlogin2.qq.com/cgi-bin/report?id=' + mid;
+    // var s = document.createElement('img');
+    // s.src = url;
+    // s = null
+  }
+  function getEncryption(password, salt, vcode, isMd5) {
+    vcode = vcode || '';
+    password = password || '';
+    var md5Pwd = isMd5 ? password : md5(password),
+    h1 = hexchar2bin(md5Pwd),
+    s2 = md5(h1 + salt),
+    rsaH1 = $.RSA.rsa_encrypt(h1),
+    rsaH1Len = (rsaH1.length / 2).toString(16),
+    hexVcode = $.TEA.strToBytes(vcode.toUpperCase(), true),
+    vcodeLen = Number(hexVcode.length / 2).toString(16);
+    while (vcodeLen.length < 4) {
+      vcodeLen = '0' + vcodeLen
+    }
+    while (rsaH1Len.length < 4) {
+      rsaH1Len = '0' + rsaH1Len
+    }
+    $.TEA.initkey(s2);
+    var saltPwd = $.TEA.enAsBase64(rsaH1Len + rsaH1 + $.TEA.strToBytes(salt) + vcodeLen + hexVcode);
+    $.TEA.initkey('');
+    __monitor(488358, 1);
+    return saltPwd.replace(/[\/\+=]/g, function (a) {
+      return {
+        '/': '-',
+        '+': '*',
+        '=': '_'
+      }
+      [
+        a
+      ]
+    })
+  }
+  function getRSAEncryption(password, vcode, isMd5) {
+    var str1 = isMd5 ? password : md5(password);
+    var str2 = str1 + vcode.toUpperCase();
+    var str3 = $.RSA.rsa_encrypt(str2);
+    return str3
+  }
+  return {
+    getEncryption: getEncryption,
+    getRSAEncryption: getRSAEncryption,
+    md5: md5
   }
 }();

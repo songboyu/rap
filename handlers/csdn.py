@@ -53,11 +53,49 @@ def post_csdn_blog(post_url, src):
         'stat': 'publish',
     }
     resp = sess.post('http://write.blog.csdn.net/postedit?edit=1&isPub=1&joinblogcontest=undefined&r=' + str(random.random()), data=payload)
-    if '保存成功' not in resp.content:
+    if '发布成功' not in resp.content:
         logger.error('Post Error')
         return ('', str(logger))
-    resp = sess.get('http://write.blog.csdn.net/postlist')
-    subject = re.escape(src['subject'])
-    url = re.findall(r'href=\'(.*?)\' target=_blank>' + subject, resp.content)[0]
-    logger.info('Post OK')
-    return (url, str(logger))
+    return (resp.json()['data'], str(logger))
+
+def post_csdn_forum(post_url, src):
+    logger = RAPLogger(post_url)
+    sess = RAPSession(src)
+
+    if not login_csdn(sess, src):
+        logger.error('Login Error')
+        return ('', str(logger))
+    logger.info('Login OK')
+
+    resp = sess.get('http://bbs.csdn.net/topics/new')
+    with open('0.html', 'w') as f:
+        f.write(resp.content)
+    soup = BeautifulSoup(resp.content)
+    form = soup.find('form', attrs={'id':'new_topic'})
+    payload = get_datadic(form)
+    payload['topic[title]'] = src['subject']
+    payload['topic[body]'] = src['content']
+    payload['topic[forum_id]'] = 'OtherITnews'
+    payload['topic[point]'] = '0',
+
+    # Get captcha.
+    resp = sess.get('http://bbs.csdn.net/captchas/new')
+    captcha_code = re.findall('code=(\w+)', resp.content)[0]
+    captcha_time = re.findall('time=(\d+)', resp.content)[0]
+    resp = sess.get('http://bbs.csdn.net/simple_captcha?code=%s&time=%s' % (captcha_code, captcha_time), 
+                    headers={'Accept': config.accept_image, 
+                             'Referer': 'http://bbs.csdn.net/topics/new'})
+    with open('1.jpg', 'wb') as f:
+        f.write(resp.content)
+    seccode = crack_captcha(resp.content)
+    logger.info('Captcha ' + seccode)
+
+    payload['captcha'] = seccode
+    payload['captcha_key'] = captcha_code
+    for k in payload:
+        print k, payload[k]
+    resp = sess.post('http://bbs.csdn.net/topics', data=payload)
+    with open('1.html', 'w') as f:
+        f.write(resp.content)
+
+    return ('', str(logger))
