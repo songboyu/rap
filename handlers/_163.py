@@ -190,11 +190,16 @@ def post_163_blog(post_url, src):
     payload = utils.get_datadic(form)
     payload['title'] = src['subject']
     payload['HEContent'] = src['content']+'<wbr>'
-    print payload
+    payload['allowview'] = '-100'
+    # print payload
     url = 'http://api.blog.163.com/'+username+'/editBlogNew.do?p=1&n=1&from=bloglist'
     resp = sess.post(url, data=payload)
-    print resp.content
+    logger.info(resp.content)
     sfx = re.findall(r'sfx:\'(.*?)\'',resp.content)[0]
+    if sfx != '/':
+        blog_url = 'http://'+username+'.blog.163.com/' + sfx
+        logger.info(' Post OK')
+        return (blog_url, str(logger))
     while sfx == '/' and src['TTL']:
         src['TTL'] = src['TTL']-1
         captcha = sess.get('http://api.blog.163.com/cap/captcha.jpgx?parentId='+parentId+'&r=308985',
@@ -207,7 +212,7 @@ def post_163_blog(post_url, src):
         payload['valcodeKey'] = seccode
 
         resp = sess.post(url, data=payload)
-        print resp.content
+        logger.info(resp.content)
         sfx = re.findall(r'sfx:\'(.*?)\'',resp.content)[0]
         if sfx != '/':
             blog_url = 'http://'+username+'.blog.163.com/' + sfx

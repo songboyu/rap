@@ -140,11 +140,15 @@ def post_sina_blog(post_url, src):
     payload['conlen'] = 9
     payload['x_cms_flag'] = 0
     payload['x_rank'] = ''
-    print payload
+    #print payload
     resp = sess.post(form['action'], data=payload)
     jsonData = json.loads(resp.content)
-    print jsonData
-    while jsonData['code'] == 'B06013' and src['TTL']:
+    logger.info(resp.content)
+    if jsonData['code'] == u'B06001':
+        url = 'http://blog.sina.com.cn/s/blog_'+jsonData['data']+'.html'
+        logger.info(' Post OK')
+        return (url, str(logger))
+    while jsonData['code'] == u'B06013' and src['TTL']:
         src['TTL'] = src['TTL']-1
         captcha = sess.get('http://interface.blog.sina.com.cn/riaapi/checkwd_image.php?r=0.8578676988836378',
                               headers={
@@ -157,8 +161,8 @@ def post_sina_blog(post_url, src):
 
         resp = sess.post(form['action'], data=payload)
         jsonData = json.loads(resp.content)
-        print jsonData
-        if jsonData['code'] == 'B06001':
+        looger.info(resp.content)
+        if jsonData['code'] == u'B06001':
             url = 'http://blog.sina.com.cn/s/blog_'+jsonData['data']+'.html'
             logger.info(' Post OK')
             return (url, str(logger))
