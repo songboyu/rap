@@ -53,7 +53,9 @@ def post_csdn_blog(post_url, src):
         'stat': 'publish',
     }
     resp = sess.post('http://write.blog.csdn.net/postedit?edit=1&isPub=1&joinblogcontest=undefined&r=' + str(random.random()), data=payload)
-    if '发布成功' not in resp.content:
+    with open('1.html', 'w') as f:
+        f.write(resp.content)
+    if '成功' not in resp.content:
         logger.error('Post Error')
         return ('', str(logger))
     return (resp.json()['data'], str(logger))
