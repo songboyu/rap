@@ -124,7 +124,13 @@ def post_sina_blog(post_url, src):
     sess = utils.RAPSession(src)
 
     # Step 1: 登录
-    if not login_sina(sess, src):
+    is_login = False
+    i = 0
+    while not is_login and i<src['TTL']:
+        i += 1
+        is_login = login_sina(sess, src)
+
+    if not is_login:
         logger.error(' Login Error')
         return (False, str(logger))
     logger.info(' Login OK')
@@ -161,7 +167,7 @@ def post_sina_blog(post_url, src):
 
         resp = sess.post(form['action'], data=payload)
         jsonData = json.loads(resp.content)
-        looger.info(resp.content)
+        logger.info(resp.content)
         if jsonData['code'] == u'B06001':
             url = 'http://blog.sina.com.cn/s/blog_'+jsonData['data']+'.html'
             logger.info(' Post OK')
