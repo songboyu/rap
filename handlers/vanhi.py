@@ -20,15 +20,26 @@ CHARSET = 'gbk'
 def login_vanhi(sess, src):
     # Load login page.
     host = 'http://forum.vanhi.com/'
-    resp = sess.get(host + 'member.php?mod=logging&action=login&referer=&infloat=yes&handlekey=login&inajax=1&ajaxtarget=fwin_content_login')
-    soup = BeautifulSoup(resp.content)
-
-    form = soup.find('form', attrs={'name': 'login'})
-    payload = get_datadic(form, CHARSET)
+    resp = sess.get(host + 'member.php?mod=logging&action=login&referer=&infloat=yes&handlekey=login&inajax=1&ajaxtarget=fwin_content_login', 
+                    headers={'Referer': 'http://forum.vanhi.com/'})
+    payload = {
+        'username': src['username'],
+        'password': src['password'],
+        'formhash': re.findall('name="formhash" value="(\w+)"', resp.content)[0],
+        'referer': 'http://forum.vanhi.com/',
+        'loginfield': 'username',
+        'questionid': 0,
+        'answer': '',
+        'loginsubmit': 'true',
+    }
     payload['username'] = src['username']
     payload['password'] = src['password']
 
-    resp = sess.post(host + form['action'] + '&inajax=1', data=payload)
+    url = host + re.findall('action="([^>]+?)"', resp.content)[0] + '&inajax=1'
+    url = url.replace('&amp;', '&')
+    resp = sess.post(url, data=payload)
+    with open('1.html', 'w') as f:
+        f.write(resp.content)
     if u'欢迎'.encode(CHARSET) not in resp.content:
         return False
     return True
