@@ -49,6 +49,7 @@ def login_powerapple(sess, src):
     if src['username'] in resp.content:
         return True
     return False
+
 # Coding: utf8
 # Captcha: arithmetic
 # Login: required
@@ -86,9 +87,57 @@ def reply_powerapple_forum(post_url, src):
     if src['content'] in resp.content:
         logger.info('Reply OK')
     else:
-        logger.error('Login Error: Reply Error, please try again !')
+        logger.error('Reply Error: please try again !')
         return (False, str(logger))
     return (True, str(logger))
+
+def post_powerapple_forum(post_url, src):
+    """ 超级苹果论坛发主贴函数
+
+    @param post_url:   板块地址 如：http://bbs.powerapple.com/forum.php?mod=forumdisplay&fid=50
+    @type post_url:    str
+
+    @param src:        用户名，密码，标题，主帖内容，等等。
+    @type src:         dict
+
+    @return:           是否发帖成功，帖子URL
+    @rtype:            bool,str
+
+    """
+    logger = utils.RAPLogger(post_url)
+    host = utils.get_host(post_url)
+    sess = utils.RAPSession(src)
+
+    # Step 1: 登录
+    if not login_powerapple(sess, src):
+        logger.error(' Login Error')
+        return ('', str(logger))
+    logger.info(' Login OK')
+    # Step 2: Load post page
+    fid = re.findall(r'fid=(\d+)', post_url)[0]
+    # 获取所需发帖页面，查找与{'id':'fastpostform'}匹配的form标签
+    resp = sess.get('http://bbs.powerapple.com/forum.php?mod=post&action=newthread&fid='+fid)
+    soup = BeautifulSoup(resp.content)
+    form = soup.find('form', attrs={'id':'postform'})
+
+    # Step 3: Submit
+    # 回复内容
+    payload = get_datadic(form)
+    payload['subject'] = src['subject']
+    payload['message'] = src['content']
+    payload['typeid'] = '138'
+    #发送post包
+    resp = sess.post(host + form['action'], data=payload)
+    #获取回帖页面content的HTML
+    soup = BeautifulSoup(resp.content)
+
+    #判断回帖后页面是否含有回帖内容，若存在则证明回帖成功，否则失败
+    if src['content'] in resp.content:
+        logger.info('Post OK')
+    else:
+        logger.error('Reply Error: please try again !')
+        return ('', str(logger))
+    return (resp.url, str(logger))
 
 
 # Coding: utf8
@@ -150,6 +199,7 @@ def reply_powerapple_news(post_url, src):
         logger.error('Login Error: Reply Error, please try again !')
         return (False, str(logger))
     return (True, str(logger))
+
 def get_account_info_powerapple_forum(src):
     """ 超级苹果账户信息获取函数
 

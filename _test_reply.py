@@ -61,19 +61,19 @@ if __name__ == '__main__':
 
     # http://boxun.com/news/gb/china/2015/01/201501142221.shtml fail
 
-    # r, log = reply('http://xujingbo2012.blog.163.com/blog/static/20373520020152811300171/?touping',
-    #                 {'content': '墙里墙外 男默女泪。',
-    #                  'username': 'kulala1982',
-    #                  'password': '13936755635'})
+    r, log = reply('http://www.onmoon.com/chs/2015/08/09/860667.html',
+                    {'content': '墙里墙外 男默女泪。',
+                     'username': 'kulal1982',
+                     'password': '13936755635'})
 
     
-    import requests
-    import json
-    payload = {
-        'url': 'http://bbs.51.ca/thread-626875-1-1.html',
-        'content': '俄前副总理遇害案第六名嫌犯引爆炸弹自尽',
-        'account': 'baiduqqsougou',
-        'password': 'blueshit',
-    }
-    r = requests.post('http://127.0.0.1:7777/comment', data=payload)
-    print r.content
+    # import requests
+    # import json
+    # payload = {
+    #     'url': 'http://bbs.51.ca/thread-626875-1-1.html',
+    #     'content': '俄前副总理遇害案第六名嫌犯引爆炸弹自尽',
+    #     'account': 'baiduqqsougou',
+    #     'password': 'blueshit',
+    # }
+    # r = requests.post('http://127.0.0.1:7777/comment', data=payload)
+    # print r.content

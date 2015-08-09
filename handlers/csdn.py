@@ -7,6 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from utils import *
+import config
 
 def get_userinfo(time_str, username):
     a = sum([int(x) for x in re.split(r'[- :]', time_str)]) % 60
@@ -53,8 +54,8 @@ def post_csdn_blog(post_url, src):
         'stat': 'publish',
     }
     resp = sess.post('http://write.blog.csdn.net/postedit?edit=1&isPub=1&joinblogcontest=undefined&r=' + str(random.random()), data=payload)
-    with open('1.html', 'w') as f:
-        f.write(resp.content)
+    # with open('1.html', 'w') as f:
+    #     f.write(resp.content)
     if '成功' not in resp.content:
         logger.error('Post Error')
         return ('', str(logger))
@@ -87,8 +88,8 @@ def post_csdn_forum(post_url, src):
     resp = sess.get('http://bbs.csdn.net/simple_captcha?code=%s&time=%s' % (captcha_code, captcha_time), 
                     headers={'Accept': config.accept_image, 
                              'Referer': 'http://bbs.csdn.net/topics/new'})
-    with open('1.jpg', 'wb') as f:
-        f.write(resp.content)
+    # with open('1.jpg', 'wb') as f:
+    #     f.write(resp.content)
     seccode = crack_captcha(resp.content)
     logger.info('Captcha ' + seccode)
 

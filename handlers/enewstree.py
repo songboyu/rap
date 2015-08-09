@@ -150,6 +150,7 @@ def post_enewstree_forum(post_url, src):
     url = resp.url
     print url
     return (url, str(logger))
+
 def get_account_info_enewstree_forum(src):
     """ 消息树账户信息获取函数
 
