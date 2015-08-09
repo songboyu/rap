@@ -7,14 +7,14 @@
 """
 import re
 from bs4 import BeautifulSoup
-from hashlib import md5
 from utils import *
 import urllib
 import random
 import config
 import gifextract
-def login_powerapple(sess, src):
-    """ 超级苹果社区登录函数
+
+def login_onmoon(sess, src):
+    """ 飞月网登录函数
 
     @param sess:    requests.Session()
     @type sess:     Session
@@ -40,22 +40,26 @@ def login_powerapple(sess, src):
 
     #将src['username']内容，src['password']加密后内容存入payload中
     payload['username'] = src['username']
-    payload['password'] = md5(src['password']).hexdigest()
+    payload['password'] = src['password']
+    payload['questionid'] = 0
+    payload['loginfield'] = 'username'
 
     sechash = soup.find('input', attrs={'name': 'sechash'})['value']
     resp = sess.get('http://bbs.onmoon.com/misc.php?mod=seccode&action=update&idhash='+sechash+'&inajax=1&ajaxtarget=seccode_'+sechash)
 
-    resp = sess.get('http://bbs.onmoon.com/'+re.findall(r'src="(.*?)"' ,resp.content)[0],
+    resp = sess.get('http://bbs.onmoon.com/'+re.findall(r'src="(.*?)"', resp.content)[0],
                     headers={'Accept': config.accept_image,
                              'Referer': 'http://bbs.onmoon.com/member.php?mod=logging&action=login'})
-    with open('1.gif', 'wb') as f:
-        f.write(resp.content)
-    gif_last_frame = gifextract.processImage('1.gif')
-    seccode = crack_captcha(open('gif/1.gif-9.png').read())
+    result = gifextract.processImage(resp.content, 'attach/result.png')
+    seccode = crack_captcha(result)
     print seccode
     payload['seccodeverify'] = seccode
+
     #发送post包
-    resp = sess.post(login_page + form['action'], data=payload)
+    resp = sess.post(login_page + form['action']+'&inajax=1', data=payload)
+    # with open('attach/1.html', 'w') as f:
+    #     f.write(resp.content)
+    print payload
     #判断登录后页面是否含有用户字段，若存在则证明登录成功，否则失败
     if src['username'] in resp.content:
         return True
@@ -86,11 +90,6 @@ def reply_onmoon_news(post_url, src):
 
     host = get_host(post_url)
     sess = RAPSession(src)
-    # Step 1: 登录
-    if not login_powerapple(sess, src):
-        logger.error(' Login Error')
-        return (False, str(logger))
-    logger.info(' Login OK')
 
     resp = sess.get(post_url)
     soup = BeautifulSoup(resp.content)
@@ -98,7 +97,7 @@ def reply_onmoon_news(post_url, src):
     name = soup.find('input', attrs={'id': 'plid'})
     name1 = name.attrs['value']
     payload = {}
-    payload['']=src['content']
+    payload[''] = src['content']
     u = urllib.urlencode(payload)
     resp = sess.get(host + 'pl.php?nid=' + name1 + '&pl=' + u[1:]+ '&randomnumber=' + str(random.randint(1000,9999)))
     
@@ -114,4 +113,60 @@ def reply_onmoon_news(post_url, src):
         logger.error('Reply Error')
         return (False, str(logger))
     return (True, str(logger))
-    
+
+def post_onmoon_forum(post_url, src):
+    """飞月网新闻回复模块
+    @author: sky
+    @since: 2014-12-08
+
+    @param sess:    requests.Session()
+    @type sess:     Session
+
+    @param post_url:   板块地址  http://bbs.onmoon.com/forum.php?mod=forumdisplay&fid=48
+    @type post_url:    str
+
+    @param src:        用户名，密码，回复内容，等等。
+    @type src:         dict
+
+    @return:           是否登录成功
+    @rtype:            bool
+
+    """
+    logger = RAPLogger(post_url)
+    host = get_host(post_url)
+    sess = RAPSession(src)
+    # Step 1: 登录
+    if not login_onmoon(sess, src):
+        logger.error(' Login Error')
+        return (False, str(logger))
+    logger.info(' Login OK')
+
+    fid = re.findall(r'fid=(\d+)', post_url)[0]
+    resp = sess.get('http://bbs.onmoon.com/forum.php?mod=post&action=newthread&fid='+fid)
+    soup = BeautifulSoup(resp.content)
+
+    form = soup.find('form', attrs={'id': 'postform'})
+    payload = get_datadic(form)
+    payload['subject'] = src['subject']
+    payload['message'] = src['content']
+    sechash = soup.find('input', attrs={'name': 'sechash'})['value']
+    resp = sess.get('http://bbs.onmoon.com/misc.php?mod=seccode&action=update&idhash='+sechash+'&inajax=1&ajaxtarget=seccode_'+sechash)
+
+    resp = sess.get('http://bbs.onmoon.com/'+re.findall(r'src="(.*?)"', resp.content)[0],
+                    headers={'Accept': config.accept_image,
+                             'Referer': 'http://bbs.onmoon.com/member.php?mod=logging&action=login'})
+    result = gifextract.processImage(resp.content, 'attach/result.png')
+    seccode = crack_captcha(result)
+    print seccode
+    payload['seccodeverify'] = seccode
+
+    #发送post包
+    resp = sess.post('http://bbs.onmoon.com/' + form['action'], data=payload)
+
+    if src['content'] in resp.content:
+        logger.info('Reply OK')
+    else:
+        logger.error('Reply Error')
+        return ('', str(logger))
+    return (resp.url, str(logger))
+

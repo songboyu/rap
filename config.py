@@ -36,7 +36,10 @@ dispatch_rule = {
     'blog\.csdn\.net': ('csdn_blog', 'IN'),
     'bbs\.csdn\.net': ('csdn_forum', 'IN'),
     'qq\.com': ('qq_blog', 'IN'),
+
     # By HSS
+    # 66
+    '66\.ca/forum':('66_forum','OUT'),
     # unitedtimes
     'unitedtimes\.com\.au/':('unitedtimes','OUT'),
     # inmediahk
@@ -86,6 +89,7 @@ dispatch_rule = {
     'www\.myca168\.com': ('myca168_forum', 'OUT'),
     # onmoon
     'www\.onmoon\.com':('onmoon_news','OUT'),
+    'bbs\.onmoon\.com':('onmoon_forum','OUT'),
     # canyu
     'www\.canyu\.org/':('canyu','OUT'),
     # cenews

@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
     r, log = reply('http://www.onmoon.com/chs/2015/08/09/860667.html',
                     {'content': '墙里墙外 男默女泪。',
-                     'username': 'kulal1982',
+                     'username': 'kulala1982',
                      'password': '13936755635'})
 
     

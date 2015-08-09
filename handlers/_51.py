@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*- 
 
-import requests, re, random, logging
+import re
 from bs4 import BeautifulSoup
 import urllib
 import time
-import binascii
-
-import config
 from utils import *
+
 # Coding: utf8
 # Captcha: not required
 # Login: required
