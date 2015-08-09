@@ -40,6 +40,8 @@ dispatch_rule = {
     # By HSS
     # 66
     '66\.ca/forum':('66_forum','OUT'),
+    # vanpeople
+    'forum\.vanpeople\.com/':('vanpeople_forum','OUT'),
     # unitedtimes
     'unitedtimes\.com\.au/':('unitedtimes','OUT'),
     # inmediahk
