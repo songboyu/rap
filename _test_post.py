@@ -25,9 +25,9 @@ def post(post_url, src):
 
     return rap.post(post_url, src)
 if __name__ == '__main__':
-    url, log = post('http://forum.vanpeople.com/forum.php?mod=forumdisplay&fid=67',
-                   {'username': 'kulala1982',
-                    'password': '13936755635asd',
+    url, log = post('http://bbs.wenxuecity.com/currentevent/',
+                   {'username': 'android10',
+                    'password': 'blueshit1',
                     'subject':'Mark',
                     'content': '在用Word写作的时候，经常浪费大量时间去思考排版，但是因为Markdown足够简单，你无法思考排版，也没必要思考，所以，逼自己集中精力写作。Markdown语法因为格式足够简单，所以，导致开发者非常容易生成漂亮的版式，一切既有的CSS都可以简单修改之后套用'})
     print url

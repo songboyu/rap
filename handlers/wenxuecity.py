@@ -54,6 +54,38 @@ def reply_wenxuecity_forum(post_url, src):
     logger.info('Reply OK')
     return (True, str(logger))
 
+def post_wenxuecity_forum(post_url, src):
+    """
+    http://bbs.wenxuecity.com/currentevent/
+    """
+    logger = RAPLogger(post_url)
+    host = get_host(post_url)
+    s = RAPSession(src)
+
+    if not login_wenxuecity(s, src):
+        logger.error('Login Error')
+        return ('', str(logger))
+    logger.info('Login OK')
+
+    r = s.get(post_url+'/add')
+    soup = BeautifulSoup(r.content)
+    form = soup.find('form', attrs={'id': 'postform'})
+    payload = get_datadic(form)
+    payload['title'] = src['subject']
+    payload['msgbody'] = src['content']
+    payload['select_subid'] = 'currentevent'
+
+    r = s.post(host + form['action'], data=payload)
+
+    if src['subject'] not in r.content:
+        logger.error('Post Error')
+        return ('', str(logger))
+    logger.info('Post OK')
+
+    soup = BeautifulSoup(r.content)
+    url = soup.find('a', attrs={'title': src['subject']})['href']
+    return (post_url+url[2:], str(logger))
+
 # Coding: utf8
 # Captcha: not required
 # Login: required
