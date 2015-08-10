@@ -25,9 +25,9 @@ def post(post_url, src):
 
     return rap.post(post_url, src)
 if __name__ == '__main__':
-    url, log = post('http://www.taihuabbs.com/thread-htm-fid-106.html',
-                   {'username': 'kulala1682',
-                    'password': '13936755635',
+    url, log = post('https://www.oursteps.com.au/bbs/forum.php?mod=forumdisplay&fid=160',
+                   {'username': 'kulala1882',
+                    'password': '13936755635asdASD',
                     'subject':'台媒:马尔代夫发现疑似MH370残骸 宣布加入搜索',
                     'content': """参考消息网8月10日报道 台媒称，警方8月9日表示，印度洋岛国马尔地夫的岛民发现不明碎片，马尔地夫也加入区域搜寻，寻找马来西亚航空公司失踪班机MH370的残骸。
 
