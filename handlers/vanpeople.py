@@ -55,8 +55,8 @@ def login_vanpeople(sess, src):
 
     #发送post包
     resp = sess.post(login_page + form['action']+'&inajax=1', data=payload)
-    # with open('attach/1.html', 'w') as f:
-    #     f.write(resp.content)
+    with open('attach/result.png', 'wb') as f:
+        f.write(resp.content)
     print payload
     #判断登录后页面是否含有用户字段，若存在则证明登录成功，否则失败
     if src['username'] in resp.content:
@@ -98,23 +98,17 @@ def post_vanpeople_forum(post_url, src):
     payload = get_datadic(form)
     payload['subject'] = src['subject']
     payload['message'] = src['content']
-    sechash = soup.find('input', attrs={'name': 'sechash'})['value']
-    resp = sess.get('http://forum.vanpeople.com/misc.php?mod=seccode&action=update&idhash='+sechash+'&inajax=1&ajaxtarget=seccode_'+sechash)
-
-    resp = sess.get('http://forum.vanpeople.com/'+re.findall(r'src="(.*?)"', resp.content)[0],
-                    headers={'Accept': config.accept_image,
-                             'Referer': 'http://forum.vanpeople.com/member.php?mod=logging&action=login'})
-    seccode = crack_captcha(resp.content)
-    print seccode
-    payload['seccodeverify'] = seccode
 
     #发送post包
-    resp = sess.post('http://bbs.onmoon.com/' + form['action'], data=payload)
+    resp = sess.post('http://forum.vanpeople.com/' + form['action'], data=payload)
+
+    with open('attach/1.html', 'w') as f:
+        f.write(resp.content)
 
     if src['content'] in resp.content:
-        logger.info('Reply OK')
+        logger.info('Post OK')
     else:
-        logger.error('Reply Error')
+        logger.error('Post Error')
         return ('', str(logger))
     return (resp.url, str(logger))
 
