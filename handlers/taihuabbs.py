@@ -78,7 +78,7 @@ def post_taihuabbs_forum(post_url, src):
     try:
         payload = get_datadic(form)
     except:
-        logger.error('Post Error:用户组每日限制发帖5篇')
+        logger.error('Post Error:用户组发帖限制')
         return ('', str(logger))
     payload['atc_title'] = src['subject'].decode('utf8').encode(CHARSET)
     payload['atc_content'] = '<div>'+src['content'].decode('utf8').encode(CHARSET)+'</div>'
@@ -90,6 +90,14 @@ def post_taihuabbs_forum(post_url, src):
     payload['replyreward[replyrewardreptimes]'] = '1'
     payload['replyreward[replyrewardchance]'] = '10'
     payload['qkey'] = '-1'
+
+    payload['atc_newrp'] = '0'
+    payload['atc_hide'] = '0'
+    payload['atc_requireenhide'] = '0'
+    payload['replyreward[replyreward]'] = '0'
+    payload['atc_anonymous'] = '0'
+    payload['atc_requiresell'] = '0'
+
     # a, o, b = re.findall(ur'验证问题:.*?(\d+)(.*?)(\d+)', resp.content.decode(CHARSET))[0]
     # # print m
     # # a = m[0], o = m[1], b = m[2]
