@@ -49,7 +49,7 @@ class RAPMaxTryException(RAPException):
 # Helper functions
 
 def print_to_file(content):
-    f = open('debug.html','w')
+    f = open('attach/debug.html','w')
     f.write(content)
     f.close()
 
