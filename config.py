@@ -38,6 +38,8 @@ dispatch_rule = {
     'qq\.com': ('qq_blog', 'IN'),
 
     # By HSS
+    # nychinaren
+    'www\.nychinaren\.com':('nychinaren_forum','OUT'),
     # oursteps
     'oursteps\.com\.au/bbs':('oursteps_forum','OUT'),
     # taihuabbs

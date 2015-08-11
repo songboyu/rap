@@ -91,6 +91,7 @@ def post_taihuabbs_forum(post_url, src):
     payload['replyreward[replyrewardchance]'] = '10'
     payload['qkey'] = '-1'
 
+    payload['atc_html'] = '0'
     payload['atc_newrp'] = '0'
     payload['atc_hide'] = '0'
     payload['atc_requireenhide'] = '0'

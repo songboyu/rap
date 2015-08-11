@@ -102,7 +102,7 @@ def post_oursteps_forum(post_url, src):
     if '5 加 1 减 2 等于' in resp.content:
         payload['secanswer'] = '4'
     elif '中国英文最后一个字母是' in resp.content:
-        payload['secanswer'] = 'o'
+        payload['secanswer'] = 'g'
     elif '100 的1后面有多少个0' in resp.content:
         payload['secanswer'] = '2'
     elif '10 等于多少个 5' in resp.content:
@@ -111,8 +111,8 @@ def post_oursteps_forum(post_url, src):
 
     #发送post包
     resp = sess.post(host + form['action'], data=payload)
-    # with open('attach/debug.html', 'w') as f:
-    #     f.write(resp.content)
+    with open('attach/debug.html', 'w') as f:
+        f.write(resp.content)
     if '主题已发布' in resp.content:
         logger.info('Post OK')
     else:
