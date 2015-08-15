@@ -110,7 +110,7 @@ if __name__ == '__main__':
     # Logging config.
     logging.config.dictConfig(CONFIG)
 
-    dir = u'I:/work/正能量/'
+    dir = u'正能量/'
     date = '2015-8-14'
 
     main(dir, date)
