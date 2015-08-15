@@ -36,15 +36,15 @@ def login_enewstree(post_url, sess, src):
     form = soup.find('form', attrs={'id': 'lsform'})
     # 构造回复参数
     payload = utils.get_datadic(form)
-    payload['username'] = src['username'].decode('utf8').encode(CHARSET)
-    payload['password'] = src['password'].decode('utf8').encode(CHARSET)
+    payload['username'] = src['username'].decode('utf8').encode(CHARSET,'ignore')
+    payload['password'] = src['password'].decode('utf8').encode(CHARSET,'ignore')
     # 发送登录post包
     resp = sess.post('http://enewstree.com/discuz/'+form['action'], data=payload,
                      headers = {
                          'Referer':post_url
                      })
     # 若指定字样出现在response中，表示登录成功
-    if src['username'].decode('utf8') not in resp.content.decode(CHARSET):
+    if src['username'].decode('utf8') not in resp.content.decode(CHARSET,'ignore'):
         return False
     return True
 
@@ -80,14 +80,14 @@ def reply_enewstree_forum(post_url, src):
     form = soup.find('form', attrs={'id': 'fastpostform'})
     # 构造回复参数
     payload = utils.get_datadic(form)
-    payload['message'] = src['content'].decode('utf8').encode(CHARSET),
+    payload['message'] = src['content'].decode('utf8').encode(CHARSET,'ignore'),
 
     resp = sess.post('http://enewstree.com/discuz/'+form['action'],
                      data=payload,
                      headers = {
                          'Referer':post_url
                      })
-    if src['content'].decode('utf8') not in resp.content.decode(CHARSET):
+    if src['content'].decode('utf8') not in resp.content.decode(CHARSET,'ignore'):
         logger.error(' Reply Error')
         return (False, str(logger))
     logger.info(' Reply OK')
@@ -122,8 +122,8 @@ def post_enewstree_forum(post_url, src):
         'formhash':formhash,
         'posttime':int(time.time()),
         'wysiwyg':'1',
-        'subject':src['subject'].decode('utf8').encode(CHARSET),
-        'message':src['content'].decode('utf8').encode(CHARSET),
+        'subject':src['subject'].decode('utf8').encode(CHARSET,'ignore'),
+        'message':src['content'].decode('utf8').encode(CHARSET,'ignore'),
         'allownoticeauthor':'1',
         'usesig':'1',
         'secqaahash':'qSxqZkkW',
@@ -135,6 +135,7 @@ def post_enewstree_forum(post_url, src):
         'uploadalbum':'-2',
         'newalbum':'',
     }
+
     # 发送登录post包
     resp = sess.post('http://enewstree.com/discuz/forum.php?mod=post&action=newthread&fid='+fid
                      +'&extra=&topicsubmit=yes',
@@ -142,6 +143,7 @@ def post_enewstree_forum(post_url, src):
                      headers = {
                          'Referer':post_url
                      })
+    utils.print_to_file(resp.content)
     # 若指定字样出现在response中，表示回复成功
     if src['subject'].decode('utf8') not in resp.content.decode(CHARSET):
         logger.error(' Post Error')

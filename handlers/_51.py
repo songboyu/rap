@@ -75,7 +75,7 @@ def post_51_forum(post_url, src):
     @param sess:    requests.Session()
     @type sess:     Session
 
-    @param post_url:   帖子地址  http://bbs.51.ca/forumdisplay.php?fid=40
+    @param post_url:   帖子地址  http://bbs.51.ca/forum-40-1.html
     @type post_url:    str
 
     @param src:        用户名，密码，回复内容，等等。
@@ -94,7 +94,7 @@ def post_51_forum(post_url, src):
         return ('', str(logger))
     logger.info('Login OK')
 
-    fid = re.findall(r'fid=(\d+)', post_url)[0]
+    fid = re.findall(r'forum-(\d+)-1', post_url)[0]
     resp = sess.get('http://bbs.51.ca/forum.php?mod=post&action=newthread&fid='+fid)
     soup = BeautifulSoup(resp.content)
     # 获得发帖form表单

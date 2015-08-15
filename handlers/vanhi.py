@@ -87,8 +87,8 @@ def post_vanhi_forum(post_url, src):
     soup = BeautifulSoup(resp.content)
     form = soup.find('form', attrs={'id':'fastpostform'})
     payload = get_datadic(form, CHARSET)
-    payload['subject'] = src['subject'].decode('utf8').encode(CHARSET)
-    payload['message'] = src['content'].decode('utf8').encode(CHARSET)
+    payload['subject'] = src['subject'].decode('utf8').encode(CHARSET,'ignore')
+    payload['message'] = src['content'].decode('utf8').encode(CHARSET,'ignore')
 
     resp = sess.post(host + form['action'] + '&inajax=1', data=payload)
     if u'主题已发布'.encode(CHARSET) not in resp.content:

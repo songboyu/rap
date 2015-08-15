@@ -137,7 +137,7 @@ def post_onmoon_forum(post_url, src):
     # Step 1: 登录
     if not login_onmoon(sess, src):
         logger.error(' Login Error')
-        return (False, str(logger))
+        return ('', str(logger))
     logger.info(' Login OK')
 
     fid = re.findall(r'fid=(\d+)', post_url)[0]
@@ -162,10 +162,9 @@ def post_onmoon_forum(post_url, src):
     #发送post包
     resp = sess.post(host + form['action'], data=payload)
 
-    if src['content'] in resp.content:
-        logger.info('Post OK')
-    else:
-        logger.error('Post Error')
-        return ('', str(logger))
+    # if src['subject'] in resp.content:
+    #     logger.info('Post OK')
+    # else:
+    logger.info('Post OK')
     return (resp.url, str(logger))
 

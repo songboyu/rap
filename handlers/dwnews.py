@@ -29,6 +29,7 @@ def login_dwnews(sess, src):
     }
     # 发送登录get包
     resp = sess.get('http://passport.dwnews.com/ucenter/login', params=payload)
+    print resp.content
     if 'ok' not in resp.content:
         return False
     global uid

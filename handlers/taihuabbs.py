@@ -80,9 +80,9 @@ def post_taihuabbs_forum(post_url, src):
     except:
         logger.error('Post Error:用户组发帖限制')
         return ('', str(logger))
-    payload['atc_title'] = src['subject'].decode('utf8').encode(CHARSET)
-    payload['atc_content'] = '<div>'+src['content'].decode('utf8').encode(CHARSET)+'</div>'
-    payload['p_type'] = '38'
+    payload['atc_title'] = src['subject'].decode('utf8').encode(CHARSET,'ignore')
+    payload['atc_content'] = '<div>'+src['content'].decode('utf8').encode(CHARSET,'ignore')+'</div>'
+    payload['p_type'] = '2600'
     payload['p_sub_type'] = '0'
     payload['atc_credittype'] = 'money'
     payload['atc_enhidetype'] = 'money'
@@ -99,27 +99,30 @@ def post_taihuabbs_forum(post_url, src):
     payload['atc_anonymous'] = '0'
     payload['atc_requiresell'] = '0'
 
-    # a, o, b = re.findall(ur'验证问题:.*?(\d+)(.*?)(\d+)', resp.content.decode(CHARSET))[0]
-    # # print m
-    # # a = m[0], o = m[1], b = m[2]
-    # if u'+' in o:
-    #     r = int(a) + int(b)
-    # else:
-    #     r = int(a) - int(b)
-    # payload['qanswer'] = r
-    #
-    # print a,o,b,'= '+str(r)
+    m = re.findall(ur'验证问题:.*?(\d+)(.*?)(\d+)', resp.content.decode(CHARSET))
+    if m:
+        a, o, b = m[0]
 
-    # captcha_url = re.findall(r'cloudcaptchaurl = "(.*?)"', resp.content)[0]
-    # resp = sess.get(captcha_url,
-    #                 headers={'Accept': config.accept_image,
-    #                          'Referer': host + '/post.php?fid='+fid})
-    # seccode = crack_captcha(resp.content)
-    # payload['gdcode'] = seccode
-    print payload
+        if u'+' in o:
+            r = int(a) + int(b)
+        else:
+            r = int(a) - int(b)
+        payload['qanswer'] = str(r)
+        
+        print a,o,b,'= '+str(r)
+
+        captcha_url = re.findall(r'cloudcaptchaurl = "(.*?)"', resp.content)[0]
+        resp = sess.get(captcha_url,
+                        headers={'Accept': config.accept_image,
+                                 'Referer': host + '/post.php?fid='+fid})
+        seccode = crack_captcha(resp.content)
+        payload['gdcode'] = seccode
+
+
+    # print payload
     time.sleep(3)
     resp = sess.post(host + form['action'], data=payload)
-    print resp.content.decode(CHARSET)
+    print resp.content
 
     if u'success' not in resp.content.decode(CHARSET):
         logger.error('Post Error')

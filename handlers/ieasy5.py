@@ -159,8 +159,8 @@ def post_ieasy5_forum(post_url, src):
     soup = BeautifulSoup(resp.content)
     form = soup.find('form', attrs={'id': 'mainForm'})
     payload = get_datadic(form)
-    payload['atc_title'] = src['subject'].decode('utf8').encode('gbk')
-    payload['atc_content'] = src['content'].decode('utf8').encode('gbk')
+    payload['atc_title'] = src['subject'].decode('utf8').encode('gbk','ignore')
+    payload['atc_content'] = src['content'].decode('utf8').encode('gbk','ignore')
     payload['step'] = '2'
     payload['pid'] = ''
     payload['action'] = 'new'

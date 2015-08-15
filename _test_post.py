@@ -6,10 +6,10 @@ import sys
 
 # Patch socket for socks proxy support.
 # Comment this block when you don't use socks proxy.
-# import socks
-# import socket
-# socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1080)
-# socket.socket = socks.socksocket
+import socks
+import socket
+socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1080)
+socket.socket = socks.socksocket
 
 def post(post_url, src):
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
@@ -25,9 +25,9 @@ def post(post_url, src):
 
     return rap.post(post_url, src)
 if __name__ == '__main__':
-    url, log = post('http://www.nychinaren.com/f/page_viewforum/f_19.html',
-                   {'username': 'blueshit',
-                    'password': '13936755635',
+    url, log = post('http://enewstree.com/discuz/forum.php?mod=forumdisplay&fid=59',
+                   {'username': 'banana',
+                    'password': 'qazxsw',
                     'subject':'媒体称孙杨宣布退赛前曾与巴西女运动员起争执',
                     'content': """新华社喀山8月10日体育专电 熟悉游泳的人都知道，泳池中人与人难免有一些肢体接触，喀山游泳世锦赛由于参赛选手众多，比赛池和热身池总是仿佛“下饺子”，热闹非凡。运动员之间有点小碰撞本来很正常，但是这事到了孙杨身上，就格外引人关注。而实际上，无论是对孙杨，对中国游泳队，还是巴西游泳队来说，这都是“小事一桩”。
 
