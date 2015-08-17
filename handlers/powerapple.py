@@ -129,10 +129,10 @@ def post_powerapple_forum(post_url, src):
     #发送post包
     resp = sess.post(host + form['action'], data=payload)
     #获取回帖页面content的HTML
-    soup = BeautifulSoup(resp.content)
 
+    print_to_file(resp.content)
     #判断回帖后页面是否含有回帖内容，若存在则证明回帖成功，否则失败
-    if src['content'] in resp.content:
+    if src['subject'] in resp.content:
         logger.info('Post OK')
     else:
         logger.error('Reply Error: please try again !')

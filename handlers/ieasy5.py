@@ -158,6 +158,8 @@ def post_ieasy5_forum(post_url, src):
     resp = sess.get('http://ieasy5.com/bbs/post.php?fid='+fid)
     soup = BeautifulSoup(resp.content)
     form = soup.find('form', attrs={'id': 'mainForm'})
+
+    _hexie = re.findall(r'document\.FORM\._hexie\.value.*=.*\'(.*?)\'',resp.content)[0]
     payload = get_datadic(form)
     payload['atc_title'] = src['subject'].decode('utf8').encode('gbk','ignore')
     payload['atc_content'] = src['content'].decode('utf8').encode('gbk','ignore')
@@ -168,9 +170,21 @@ def post_ieasy5_forum(post_url, src):
     payload['tid'] = '0'
     payload['article'] = '0'
     payload['special'] = '0'
-    payload['_hexie'] = 'cn0zz'
+    payload['_hexie'] = _hexie
     payload['atc_hide'] = '0'
 
+    payload['atc_requireenhide'] = '0'
+    payload['atc_anonymous'] = '0'
+    payload['atc_requiresell'] = '0'
+    payload['atc_convert'] = '0'
+    payload['atc_newrp'] = '0'
+    payload['attachment_1'] = ''
+    payload['atc_desc1'] = ''
+    payload['atc_credittype'] = 'money'
+    payload['att_special1']= '0'
+    payload['att_ctype1'] = 'money'
+    payload['atc_needrvrc1']= '0'
+    print payload
     resp = sess.post(host + form['action'], data=payload)
     soup = BeautifulSoup(resp.content)
     tag = soup.find('div', attrs={'class': 'cc'})
@@ -179,7 +193,6 @@ def post_ieasy5_forum(post_url, src):
         return ('', str(logger))
     logger.info('Post OK')
     url = host + tag.find('a')['href']
-    print url
     return (url, str(logger))
 
 

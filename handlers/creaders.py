@@ -146,16 +146,16 @@ def post_creaders_forum(post_url, src):
     resp = sess.get(url+'post.php?')
     # 构造回复参数
     payload = {
-        'user_name2':src['username'].decode('utf8').encode(CHARSET),
-        'user_password2':src['password'].decode('utf8').encode(CHARSET),
+        'user_name2':src['username'].decode('utf8').encode(CHARSET, 'ignore'),
+        'user_password2':src['password'].decode('utf8').encode(CHARSET, 'ignore'),
         'captcha':'',
-        'trd_subject':src['subject'].decode('utf8').encode(CHARSET),
-        'trd_content':src['content'].decode('utf8').encode(CHARSET)
+        'trd_subject':src['subject'].decode('utf8').encode(CHARSET, 'ignore'),
+        'trd_content':src['content'].decode('utf8').encode(CHARSET, 'ignore')
     }
     # 发送发主贴post包
     resp = sess.post(url+'post.php?', data=payload)
     content = resp.content.decode(CHARSET, 'ignore')
-    
+    # utils.print_to_file(resp.content)
     # By sniper 2015-2-1
     # 标题中的'('和')'等需要在正则表达式中转义
     # 如：[转帖]ZT) 汉服是FQ闹的大笑话
