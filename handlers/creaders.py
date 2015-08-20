@@ -153,7 +153,8 @@ def post_creaders_forum(post_url, src):
         'trd_content':src['content'].decode('utf8').encode(CHARSET, 'ignore')
     }
     # 发送发主贴post包
-    resp = sess.post(url+'post.php?', data=payload)
+    # print url+'post.php'
+    resp = sess.post(url+'post.php', data=payload)
     content = resp.content.decode(CHARSET, 'ignore')
     # utils.print_to_file(resp.content)
     # By sniper 2015-2-1

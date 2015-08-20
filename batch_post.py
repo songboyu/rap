@@ -28,7 +28,7 @@ site_name_map = {
         '18': (u'倍可亲','http://www.backchina.com/forum/37/index-1.html'),
         # '20': (u'纽约华人','http://www.nychinaren.com/f/page_viewforum/f_19.html'),
         # '23': (u'澳洲新足迹','https://www.oursteps.com.au/bbs/forum.php?mod=forumdisplay&fid=160'),
-        '4': (u'万维','http://bbs.creaders.net/life/'),
+        '4': (u'万维','http://bbs.creaders.net/politics/'),
 
         '2': (u'无忧论坛','http://bbs.51.ca/forum-40-1.html'),
         '3': (u'阿波罗论坛','http://bbs.aboluowang.com/forum.php?mod=forumdisplay&fid=4'),
@@ -39,8 +39,8 @@ site_name_map = {
         '13': (u'温哥华巅峰论坛','http://forum.vanhi.com/forum-38-1.html'),
         '15': (u'天易论坛','http://bbs.wolfax.com/f-42-1.html'),
         '16': (u'加易论坛','http://ieasy5.com/bbs/thread.php?fid=3'),
-        '19': (u'天涯信息论坛','http://www.myca168.com/bbs/index/thread/id/9'),
-        '21': (u'泰国华人论坛','http://www.taihuabbs.com/thread-htm-fid-130.html'),
+        '19': (u'天涯信息论坛','http://www.myca168.com/bbs/index/thread/id/6'),
+        # '21': (u'泰国华人论坛','http://www.taihuabbs.com/thread-htm-fid-130.html'),
         '22': (u'外来客论坛','http://www.wailaike.net/group_post?gid=1'),
     }
 
@@ -78,7 +78,8 @@ def main(dir, date):
 
     print site_name.encode('utf8'), '账号数:', len(cur)
 
-    for i in range(len(titles)):
+    # for i in range(len(titles)):
+    for i in range(1):
         if i<10:
             t = '00'+str(i+1)
         elif i<100:

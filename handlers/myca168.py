@@ -167,7 +167,7 @@ def reply_myca168_forum(post_url, src):
     r = s.post(reply_url, files=payload)
     r = s.get(post_url)
     #判断回帖后页面是否含有回帖内容，若存在则证明回帖成功，否则失败
-    if src['content'] in r.content:
+    if src['subject'] in r.content:
         logger.info('Reply OK')
     else:
         logger.error('Reply Error, please try again !')

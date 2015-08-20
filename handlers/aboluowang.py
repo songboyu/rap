@@ -164,63 +164,68 @@ def post_aboluowang_forum(post_url, src):
         return ('', str(logger))
     logger.info('Login OK')
 
+    fid = re.findall(r'fid=(\d+)', post_url)[0]
     # # Step 2: Load post page
-    resp = sess.get(post_url)
+    resp = sess.get('http://bbs.aboluowang.com/forum.php?mod=post&action=newthread&fid='+fid+'&infloat=yes&handlekey=newthread&inajax=1&ajaxtarget=fwin_content_newthread')
     soup = BeautifulSoup(resp.content)
-    form = soup.find('form', attrs={'id':'fastpostform'})
+    form = soup.find('form', attrs={'id':'postform'})
     #
     # # Step 3: Retrieve captcha question and crack
-    resp = sess.get(host + 'misc.php',
-                    params={
-                        'mod': 'secqaa',
-                        'action': 'update',
-                        'idhash': hidden_value(form, 'sechash'),
-                        'inajax': 1,
-                        'ajaxtarget': 'secqaa_' + hidden_value(form, 'sechash'),
-                    },
-                    headers={'Referer': post_url})
+    # resp = sess.get(host + 'misc.php',
+    #                 params={
+    #                     'mod': 'secqaa',
+    #                     'action': 'update',
+    #                     'idhash': hidden_value(form, 'sechash'),
+    #                     'inajax': 1,
+    #                     'ajaxtarget': 'secqaa_' + hidden_value(form, 'sechash'),
+    #                 },
+    #                 headers={'Referer': post_url})
     
-    # Crack the silly captcha question
-    # Server responses are as follows:
-    # <root><![CDATA[输入下面问题的答案<br />七加五是多少？]]></root>
-    # <root><![CDATA[输入下面问题的答案<br />七加三是多少？]]></root>
-    # ...
-    chinese_numbers = [u'零', u'一', u'二', u'三', u'四', u'五', u'六', u'七', u'八', u'九']
-    formula = resp.content.decode('utf8')
-    plus_index = formula.find(u'加')
-    a = chinese_numbers.index(formula[plus_index - 1])
-    b = chinese_numbers.index(formula[plus_index + 1])
-    seccode = a + b
-    logger.info('%d + %d = %d' % (a, b, seccode))
+    # # Crack the silly captcha question
+    # # Server responses are as follows:
+    # # <root><![CDATA[输入下面问题的答案<br />七加五是多少？]]></root>
+    # # <root><![CDATA[输入下面问题的答案<br />七加三是多少？]]></root>
+    # # ...
+    # chinese_numbers = [u'零', u'一', u'二', u'三', u'四', u'五', u'六', u'七', u'八', u'九']
+    # formula = resp.content.decode('utf8')
+    # plus_index = formula.find(u'加')
+    # a = chinese_numbers.index(formula[plus_index - 1])
+    # b = chinese_numbers.index(formula[plus_index + 1])
+    # seccode = a + b
+    # logger.info('%d + %d = %d' % (a, b, seccode))
     
-    # Verify the captcha question ACTIVELY.
-    resp = sess.get('http://bbs.aboluowang.com/misc.php',
-                    params={
-                        'mod': 'secqaa',
-                        'action': 'check',
-                        'idhash': hidden_value(form, 'sechash'),
-                        'inajax': 1,
-                        'secverify': seccode,
-                    },
-                    headers={'Referer': post_url})
+    # # Verify the captcha question ACTIVELY.
+    # resp = sess.get('http://bbs.aboluowang.com/misc.php',
+    #                 params={
+    #                     'mod': 'secqaa',
+    #                     'action': 'check',
+    #                     'idhash': hidden_value(form, 'sechash'),
+    #                     'inajax': 1,
+    #                     'secverify': seccode,
+    #                 },
+    #                 headers={'Referer': post_url})
     #
     # # Step 4: Submit and check
     payload = get_datadic(form)
     payload['subject'] = src['subject']
     payload['message'] = src['content']
-    payload['secanswer'] = seccode
+    # payload['secanswer'] = seccode
 
     resp = sess.post(host + form['action'], data=payload)
-    soup = BeautifulSoup(resp.content)
-    tag = soup.find('div', attrs={'id': 'messagetext'})
-    if tag:
-        logger.error('Post Error: ' + tag.find('p').text)
-        # Captcha cracking is absolutely right, unless the schema has changed
-        # It's not necessary to retry for captcha error
-        # But it is necessary now...
-        if u'验证问答' in tag.find('p').text:
-            src['TTL'] -= 1
-            return post_aboluowang_forum(post_url, src)
+    # print_to_file(resp.content)
+    # soup = BeautifulSoup(resp.content)
+    # tag = soup.find('div', attrs={'id': 'messagetext'})
+    # if tag:
+    #     logger.error('Post Error: ' + tag.find('p').text)
+    #     # Captcha cracking is absolutely right, unless the schema has changed
+    #     # It's not necessary to retry for captcha error
+    #     # But it is necessary now...
+    #     if u'验证问答' in tag.find('p').text:
+    #         src['TTL'] -= 1
+    #         return post_aboluowang_forum(post_url, src)
+    #     return ('', str(logger))
+    if src['subject'] not in resp.content:
+        logger.info('Post Error')
         return ('', str(logger))
     logger.info('Post OK')
     return (resp.url, str(logger))

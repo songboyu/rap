@@ -48,12 +48,11 @@ def login_wailaike(sess, src):
 
     resp = sess.get(
         'http://www.wailaike.net/pass.php')
-    payload['time'] = re.findall('"time":"(.*?)"', resp.content)[0]
 
     payload = {
-        'email': 'cangchedaobo3@163.com',
-        'password': payload['time'],
-        'passwordFake': 'wenshen4921119',
+        'email': src['username']+'@163.com',
+        'password': re.findall('"time":"(.*?)"', resp.content)[0],
+        'passwordFake': src['password'],
         'redirect_to': 'http://www.wailaike.net/'
     }
 
