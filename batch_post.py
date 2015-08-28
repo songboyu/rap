@@ -9,6 +9,7 @@ import random
 import logging
 import logging.config
 import time
+from hashlib import md5
 
 import beanstalkc
 import MySQLdb
@@ -18,31 +19,7 @@ import codecs
 import handlers
 import rap
 
-site_name_map = {
-        # '1': (u'加国华人网','http://bbs.1dpw.com/forum-71-1.html'),
-        '6': (u'超级苹果','http://bbs.powerapple.com/forum.php?mod=forumdisplay&fid=50'),
-        # '11': (u'加拿大家园','http://forum.iask.ca/forums/%E6%B8%A9%E5%93%A5%E5%8D%8E.14/'),
-        '12': (u'谜米','http://forum.memehk.com/forum.php?mod=forumdisplay&fid=60'),
-        # '14': (u'人在温哥华','http://forum.vanpeople.com/forum.php?mod=forumdisplay&fid=67'),
-        # '17': (u'六六网','http://www.66.ca/forum.php?mod=forumdisplay&fid=36'),
-        '18': (u'倍可亲','http://www.backchina.com/forum/37/index-1.html'),
-        # '20': (u'纽约华人','http://www.nychinaren.com/f/page_viewforum/f_19.html'),
-        # '23': (u'澳洲新足迹','https://www.oursteps.com.au/bbs/forum.php?mod=forumdisplay&fid=160'),
-        '4': (u'万维','http://bbs.creaders.net/politics/'),
-
-        '2': (u'无忧论坛','http://bbs.51.ca/forum-40-1.html'),
-        '3': (u'阿波罗论坛','http://bbs.aboluowang.com/forum.php?mod=forumdisplay&fid=4'),
-        '5': (u'飞月网论坛','http://bbs.onmoon.com/forum.php?mod=forumdisplay&fid=48'),
-        '7': (u'文学城论坛','http://bbs.wenxuecity.com/currentevent/'),
-        '9': (u'多维社区','http://blog.dwnews.com/'),
-        '10': (u'消息树论坛','http://enewstree.com/discuz/forum.php?mod=forumdisplay&fid=47'),
-        '13': (u'温哥华巅峰论坛','http://forum.vanhi.com/forum-38-1.html'),
-        '15': (u'天易论坛','http://bbs.wolfax.com/f-42-1.html'),
-        '16': (u'加易论坛','http://ieasy5.com/bbs/thread.php?fid=3'),
-        '19': (u'天涯信息论坛','http://www.myca168.com/bbs/index/thread/id/6'),
-        # '21': (u'泰国华人论坛','http://www.taihuabbs.com/thread-htm-fid-130.html'),
-        '22': (u'外来客论坛','http://www.wailaike.net/group_post?gid=1'),
-    }
+# 1 2 3 4 5 6 7 8 9 10 11 12 13 18 22
 
 def db_connect():
     """数据库连接
@@ -50,39 +27,48 @@ def db_connect():
     @return:            connection
     @rtype:             MySQLdb.connections.Connection
     """
-    return MySQLdb.connect('192.168.8.55','root','123456','eventdb',charset='utf8')
+    return MySQLdb.connect('192.168.8.55','root','123456','comment',charset='utf8')
 
 def main(dir, date):
-    if len(sys.argv) < 2 or sys.argv[1] not in site_name_map:
-        print '参数错误'
+    if len(sys.argv) < 2:
+        print '缺少参数'
         return
-    if len(sys.argv) == 3:
-        date = sys.argv[2]
+    # 连接数据库
     conn = db_connect()
     cursor = conn.cursor()
+    # 第一个参数为site_id
+    site_id = sys.argv[1] 
+    # 第二个参数非空则为日期
+    if len(sys.argv) == 3:
+        date = sys.argv[2]
+    # 读取site_url, site_name
+    cursor.execute('select site_url, site_name from site where site_id = "' + site_id  + '"')
+    cur = cursor.fetchall()[0]
+    print cur
+    if len(cur) == 0:
+        print '参数1：site_id不存在'
+        return
+    post_url, site_name = cur
 
     titles = os.listdir(dir+date)
 
-    site_id = sys.argv[1] 
-
-    site_name, post_url = site_name_map[site_id]
-
+    # 保存本地结果的文件夹
     article_url_dir = dir+'article_url/'+date+'/'
     if not os.path.exists(article_url_dir):
         os.mkdir(article_url_dir)
 
     f = codecs.open(article_url_dir + site_name+'.txt','w', 'utf-8')
-
-    cursor.execute('select site_sign, username, password from account where site_id = "' + site_id  + '"')
+    # 读取账号
+    cursor.execute('select site_sign, username, password from account_post where site_id = "' + site_id  + '"')
     cur = cursor.fetchall()
 
     print site_name.encode('utf8'), '账号数:', len(cur)
 
-    # for i in range(len(titles)):
-    for i in range(1):
-        if i<10:
+    for i in range(len(titles)):
+    # for i in range(1):
+        if i<9:
             t = '00'+str(i+1)
-        elif i<100:
+        elif i<99:
             t = '0'+str(i+1)
         else:
             t = str(i+1)
@@ -108,7 +94,12 @@ def main(dir, date):
         line = tid + '\t' + site_name + '\t' + titles[i][:-4] + '\t' + article_url
         print line.encode('utf8')
         f.write(line+'\n')
-        if article_url!= '':
+        if article_url != '':   
+            sql = 'insert into posts (urlmd5, tid, site_id, title, url, post_time) values (%s, %s, %s, %s, %s, now())'
+            urlmd5 = md5(article_url).hexdigest()
+            param = (urlmd5, tid, site_id, titles[i][:-4], article_url)
+            cursor.execute(sql, param)
+            conn.commit()
             time.sleep(60*10)
 
     f.close()

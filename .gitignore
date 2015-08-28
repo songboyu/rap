@@ -1,6 +1,7 @@
-
+﻿
 # file patterns
 *.pyc
 .idea
 log/*
 head
+正能量/*

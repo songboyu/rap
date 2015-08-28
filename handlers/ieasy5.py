@@ -184,7 +184,7 @@ def post_ieasy5_forum(post_url, src):
     payload['att_special1']= '0'
     payload['att_ctype1'] = 'money'
     payload['atc_needrvrc1']= '0'
-    print payload
+    # print payload
     resp = sess.post(host + form['action'], data=payload)
     soup = BeautifulSoup(resp.content)
     tag = soup.find('div', attrs={'class': 'cc'})
