@@ -42,6 +42,13 @@ def f5_wenxuecity(url):
 
 def f5_dwnews(url):
     sess = get_session()
+    resp = sess.get(url)
+    ikey = re.findall('ikey = "(.+?)"', resp.content)[0]
+    sess.get('http://g.dwnews.net:8081/view.js',
+        params={
+            'ikey': ikey,
+            '_': int(time.time() * 1000),
+        })
     sess.get('http://blog.dwnews.com/index.php',
         params={
             'r': 'club/clubzan',
