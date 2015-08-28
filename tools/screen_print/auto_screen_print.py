@@ -29,7 +29,7 @@ def auto_screen_print():
 
             for row in cursor.fetchall():
                 urlmd5, url, title, post_time = row
-                print url,title
+                print url
 
                 # ps = Pagescreen(url, urlmd5+'.png', [])
                 # ps.shot()
