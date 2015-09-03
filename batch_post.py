@@ -19,7 +19,7 @@ import codecs
 import handlers
 import rap
 
-# 1 2 3 4 5 6 7 8 9 10 11 12 13 18 22
+# 45 62 44 33 8 13 2 17 37 15 3 12 34 60 39 10 5
 
 def db_connect():
     """数据库连接
@@ -42,7 +42,7 @@ def main(dir, date):
     if len(sys.argv) == 3:
         date = sys.argv[2]
     # 读取site_url, site_name
-    cursor.execute('select site_url, site_name from site where site_id = "' + site_id  + '"')
+    cursor.execute('select post_url, site_name from site where site_id = "' + site_id  + '"')
     cur = cursor.fetchall()[0]
     print cur
     if len(cur) == 0:
@@ -59,7 +59,8 @@ def main(dir, date):
 
     f = codecs.open(article_url_dir + site_name+'.txt','w', 'utf-8')
     # 读取账号
-    cursor.execute('select site_sign, username, password from account_post where site_id = "' + site_id  + '"')
+    POST_ROLE = 1
+    cursor.callproc('get_accounts', (site_id, POST_ROLE))
     cur = cursor.fetchall()
 
     print site_name.encode('utf8'), '账号数:', len(cur)
@@ -76,8 +77,8 @@ def main(dir, date):
         tid = 'Hong_'+date+'_'+t
         print tid, dir.encode('utf8')+date+'/'+titles[i].encode('utf8')[:-4],
 
-        site_sign, username, password = cur[i%(len(cur))]
-        print site_sign.encode('utf8'), username.encode('utf8'), password.encode('utf8')
+        username, password = cur[i%(len(cur))]
+        print username.encode('utf8'), password.encode('utf8')
 
         c = open(dir+date+'/'+titles[i]).read()
         try:
