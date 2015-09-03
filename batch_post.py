@@ -94,13 +94,16 @@ def main(dir, date):
         line = tid + '\t' + site_name + '\t' + titles[i][:-4] + '\t' + article_url
         print line.encode('utf8')
         f.write(line+'\n')
-        if article_url != '':   
+        if article_url != '':
             sql = 'insert into posts (urlmd5, tid, site_id, title, url, post_time) values (%s, %s, %s, %s, %s, now())'
             urlmd5 = md5(article_url).hexdigest()
             param = (urlmd5, tid, site_id, titles[i][:-4], article_url)
-            cursor.execute(sql, param)
-            conn.commit()
-            time.sleep(60*10)
+            try:
+                cursor.execute(sql, param)
+                conn.commit()
+                time.sleep(60*10)
+            except:
+                continue
 
     f.close()
     cursor.close()

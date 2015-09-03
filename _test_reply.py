@@ -61,10 +61,11 @@ if __name__ == '__main__':
 
     # http://boxun.com/news/gb/china/2015/01/201501142221.shtml fail
 
-    r, log = reply('http://www.boxun.com/forum/201507/shipin4/12677.shtml',
-                    {'content': '墙里墙外 男默女泪。',
-                     'username': 'kulala1982',
-                     'password': '13936755635'})
+    r, log = reply('https://bbs.powerapple.com/forum.php?mod=viewthread&tid=2704994&extra=page=1',
+                    {'content': '用两年时间写出自己一生经历',
+                     'username': 'bvkqa117',
+                     'password': 'Bvk117'})
+
 
     
     # import requests

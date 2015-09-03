@@ -24,19 +24,18 @@ def auto_screen_print():
         conn = db_connect()
         cursor = conn.cursor()
 
-        while True:
-            cursor.execute('select urlmd5, url, title, post_time from posts where screen_print = 0 order by tid desc')
+        cursor.execute('select urlmd5, url, title, post_time from posts where screen_print = 0 order by tid desc')
 
-            for row in cursor.fetchall():
-                urlmd5, url, title, post_time = row
-                print url
+        for row in cursor.fetchall():
+            urlmd5, url, title, post_time = row
+            print url
 
-                # ps = Pagescreen(url, urlmd5+'.png', [])
-                # ps.shot()
-                # app.exec_()
-                if ps.capture(url, 'capture/'+urlmd5+'.png'):
-                    cursor.execute('update posts set screen_print = 1 where urlmd5="'+urlmd5+'"')
-                    conn.commit()
+            # ps = Pagescreen(url, urlmd5+'.png', [])
+            # ps.shot()
+            # app.exec_()
+            if ps.capture(url, 'capture/'+urlmd5+'.png'):
+                cursor.execute('update posts set screen_print = 1 where urlmd5="'+urlmd5+'"')
+                conn.commit()
 
         cursor.close()
         conn.close()
