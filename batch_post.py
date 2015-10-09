@@ -62,7 +62,9 @@ def main(dir, date):
     POST_ROLE = 1
     cursor.callproc('get_accounts', (site_id, POST_ROLE))
     cur = cursor.fetchall()
+    cursor.close()
 
+    cursor = conn.cursor()
     print site_name.encode('utf8'), '账号数:', len(cur)
 
     for i in range(len(titles)):
@@ -103,7 +105,9 @@ def main(dir, date):
                 cursor.execute(sql, param)
                 conn.commit()
                 time.sleep(60*10)
-            except:
+            except Exception, e:
+                #异常的堆栈信息    
+                print e
                 continue
 
     f.close()
